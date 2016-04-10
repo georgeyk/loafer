@@ -7,6 +7,7 @@ import logging
 import os
 import signal
 
+from .conf import settings
 from .consumer import AsyncSQSConsumer
 
 logger = logging.getLogger(__name__)
@@ -14,23 +15,20 @@ logger = logging.getLogger(__name__)
 
 class LoaferManager(object):
 
-    def __init__(self, max_jobs=5):
-        self._max_jobs = max_jobs
-
+    def __init__(self):
         self._loop = asyncio.get_event_loop()
         self._loop.add_signal_handler(signal.SIGINT, self.stop)
         self._loop.add_signal_handler(signal.SIGTERM, self.stop)
 
         # see https://github.com/python/asyncio/issues/258
         # reuse pool of 5 (asyncio default)
-        self._executor = ThreadPoolExecutor(5)
+        self._executor = ThreadPoolExecutor(settings.MAX_THREAD_POOL)
         self._loop.set_default_executor(self._executor)
-        self._loop.set_debug(True)
 
     def start(self):
         logger.info('Starting Loafer (pid={}) ...'.format(os.getpid()))
 
-        self._consumer = AsyncSQSConsumer(self._max_jobs)
+        self._consumer = AsyncSQSConsumer()
         self._future = asyncio.gather(self._consumer.consume(self._loop))
 
         try:

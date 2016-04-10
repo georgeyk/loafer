@@ -4,15 +4,20 @@
 import asyncio
 import json
 from functools import partial
+import logging
 
 import boto3
 
 from prettyconf import config
 
+from .conf import settings
+
+logger = logging.getLogger(__name__)
+
 
 class AsyncSQSConsumer(object):
-    def __init__(self, max_jobs):
-        self._semaphore = asyncio.Semaphore(max_jobs)
+    def __init__(self):
+        self._semaphore = asyncio.Semaphore(settings.MAX_JOBS)
         self._client = boto3.client('sqs')
 
         # XXX: Refactor this

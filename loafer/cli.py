@@ -4,8 +4,8 @@
 import logging
 
 import click
-from prettyconf import config
 
+from .conf import settings
 from .manager import LoaferManager
 from .utils import echo
 
@@ -13,14 +13,13 @@ from .utils import echo
 logger = logging.getLogger(__name__)
 
 
-def _setup_logging():
-        default_log_format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-        logging.basicConfig(level=config('LOGLEVEL', default='INFO'),
-                            format=config('LOG_FORMAT', default=default_log_format))
+def _bootstrap():
+    logging.basicConfig(level=settings.LOGLEVEL, format=settings.LOG_FORMAT)
 
 
 def main():
-    _setup_logging()
+    _bootstrap()
+
     echo('Starting loafer ...')
     echo('Hit CTRL-C to stop', bold=True)
 
