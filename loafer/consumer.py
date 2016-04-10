@@ -8,44 +8,42 @@ import logging
 
 import boto3
 
-from prettyconf import config
-
 from .conf import settings
 
 logger = logging.getLogger(__name__)
 
 
 class AsyncSQSConsumer(object):
-    def __init__(self):
+
+    def __init__(self, loop=None):
+        self._loop = loop or asyncio.get_event_loop()
         self._semaphore = asyncio.Semaphore(settings.MAX_JOBS)
         self._client = boto3.client('sqs')
 
-        # XXX: Refactor this
-        self._queue = config('QUEUE')
+    async def process_message(self, route, message):
+        logger.info('Message received, handling to route={}'.format(route))
+        logger.debug('Processing Message={}', message)
 
-    async def _receive_messages(self, loop):
-        fn = partial(self._client.receive_message, QueueUrl=self._queue, WaitTimeSeconds=5)
-        # XXX: Refactor this when boto support asyncio
-        response = await loop.run_in_executor(None, fn)
-        return response.get('Messages', [])
-
-    async def process_message(self, message, loop):
         body = json.loads(message['Body'])
-        print(body['Message'])
-        print(type(body))
-        # long running process
-        asyncio.sleep(5)
-        return message['ReceiptHandle']
+        # Since we don't know what will happen on message handler, use semaphore
+        # to protect scheduling or executing too many coroutines/threads
+        with await self._semaphore:
+            # long running process
+            await route.handle_message(body['Message'])
 
-    async def ack_message(self, receipt, loop):
-        fn = partial(self._client.delete_message, QueueUrl=self._queue, ReceiptHandle=receipt)
+        await self.ack_message(route.queue_url, message['ReceiptHandle'])
+
+    async def ack_message(self, queue, receipt):
+        logger.info('Acking message')
+        logger.debug('receipt={}'.format(receipt))
+
+        fn = partial(self._client.delete_message, QueueUrl=queue, ReceiptHandle=receipt)
         # XXX: Refactor this when boto support asyncio
-        return await loop.run_in_executor(None, fn)
+        return await self._loop.run_in_executor(None, fn)
 
-    async def consume(self, loop):
+    async def consume(self, routes):
         while True:
-            messages = await self._receive_messages(loop)
-            for message in messages:
-                with await self._semaphore:
-                    receipt = await self.process_message(message, loop)
-                    await self.ack_message(receipt, loop)
+            for router in routes:
+                messages = await router.fetch_messages()
+                for message in messages:
+                    await self.process_message(router, message)
