@@ -24,12 +24,23 @@ class AsyncSQSConsumer(object):
         logger.info('Message received, handling to route={}'.format(route))
         logger.debug('Processing Message={}', message)
 
-        body = json.loads(message['Body'])
+        # TODO: better heuristic
+        try:
+            body = json.loads(message['Body'])
+        except json.decoder.JSONDecodeError:
+            body = message['Body']
+
+        content = body
+        if isinstance(body, dict):
+            if 'Message' in body:
+                content = body['Message']
+
         # Since we don't know what will happen on message handler, use semaphore
         # to protect scheduling or executing too many coroutines/threads
         with await self._semaphore:
-            # long running process
-            await route.handle_message(body['Message'])
+            # TODO: depending on content type, we should pass as *args or **kwargs
+            logger.info('Message content data type is {!r}'.format(type(content)))
+            await route.handle_message(content)
 
         await self.ack_message(route.queue_url, message['ReceiptHandle'])
 
