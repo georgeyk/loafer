@@ -39,7 +39,8 @@ class LoaferManager(object):
             self._loop.close()
 
     def stop(self, *args, **kwargs):
-        logger.debug('Stopping Loafer ...')
+        logger.info('Stopping Loafer ...')
+
         self._future.cancel()
         self._executor.shutdown(wait=True)
         self._loop.stop()
