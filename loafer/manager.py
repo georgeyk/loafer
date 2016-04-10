@@ -7,7 +7,7 @@ import logging
 import os
 import signal
 
-from consumer import AsyncSQSConsumer
+from .consumer import AsyncSQSConsumer
 
 logger = logging.getLogger(__name__)
 
@@ -43,12 +43,3 @@ class LoaferManager(object):
         self._future.cancel()
         self._executor.shutdown(wait=True)
         self._loop.stop()
-
-
-def main():
-    loafer = LoaferManager()
-    loafer.start()
-
-
-if __name__ == '__main__':
-    main()
