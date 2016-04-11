@@ -21,10 +21,13 @@ class LoaferManager(object):
         self._loop.add_signal_handler(signal.SIGINT, self.stop)
         self._loop.add_signal_handler(signal.SIGTERM, self.stop)
 
-        # see https://github.com/python/asyncio/issues/258
-        # reuse pool of 5 (asyncio default)
+        # XXX: See https://github.com/python/asyncio/issues/258
+        # The minimum value depends on the number of cores in the machine
+        # See https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.ThreadPoolExecutor
         self._executor = ThreadPoolExecutor(settings.MAX_THREAD_POOL)
         self._loop.set_default_executor(self._executor)
+
+        self._loop.set_debug(settings.LOGLEVEL == 'DEBUG')
 
     def get_routes(self, routes_values=None):
         routes = []

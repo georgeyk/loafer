@@ -10,7 +10,7 @@ class Settings(object):
                         default='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
     MAX_JOBS = config('MAX_JOBS', default=10)
-    MAX_THREAD_POOL = config('MAX_THREAD_POOL', default=5)
+    MAX_THREAD_POOL = config('MAX_THREAD_POOL', default=None)
     LOAFER_ROUTES = [('example-queue-name', 'loafer.jobs.async_example_job')]
 
 
