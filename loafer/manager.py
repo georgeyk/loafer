@@ -8,6 +8,7 @@ import os
 import signal
 
 from .conf import settings
+from .exceptions import ConsumerError
 from .route import Route
 from .consumer import AsyncSQSConsumer
 
@@ -52,6 +53,7 @@ class LoaferManager(object):
         routes = self.get_routes(routes_values)
         self._consumer = AsyncSQSConsumer()
         self._future = asyncio.gather(self._consumer.consume(routes))
+        self._future.add_done_callback(self.on_future__errors)
 
         try:
             self._loop.run_forever()
@@ -64,3 +66,9 @@ class LoaferManager(object):
         self._future.cancel()
         self._executor.shutdown(wait=True)
         self._loop.stop()
+
+    def on_future__errors(self, future):
+        exc = future.exception()
+        if isinstance(exc, ConsumerError):
+            logger.error('Fatal error caught: {!r}'.format(exc))
+            self.stop()

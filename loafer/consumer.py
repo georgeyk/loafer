@@ -7,8 +7,10 @@ from functools import partial
 import logging
 
 import boto3
+import botocore.exceptions
 
 from .conf import settings
+from .exceptions import ConsumerError
 
 logger = logging.getLogger(__name__)
 
@@ -55,6 +57,11 @@ class AsyncSQSConsumer(object):
     async def consume(self, routes):
         while True:
             for router in routes:
-                messages = await router.fetch_messages()
+                try:
+                    messages = await router.fetch_messages()
+                except botocore.exceptions.ClientError as exc:
+                    logger.exception(exc)
+                    raise ConsumerError('Error when fetching messages') from exc
+
                 for message in messages:
                     await self.process_message(router, message)
