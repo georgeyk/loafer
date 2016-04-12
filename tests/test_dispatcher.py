@@ -11,7 +11,8 @@ from loafer.dispatcher import LoaferDispatcher
 
 @pytest.fixture
 def consumer_consume_mock():
-    return CoroutineMock(consume=CoroutineMock(return_value=['message']))
+    return CoroutineMock(consume=CoroutineMock(return_value=['message']),
+                         confirm_message=CoroutineMock())
 
 
 @pytest.fixture
@@ -31,12 +32,12 @@ async def test_dispatch_message(route):
     dispatcher = LoaferDispatcher(routes)
     message = 'foobar'
 
-    await dispatcher.dispatch_message(message, route)
+    confirmation = await dispatcher.dispatch_message(message, route)
+
+    assert confirmation
 
     assert route.deliver.called
     assert route.deliver.called_once_with('foobar')
-    assert route.confirm_message.called
-    assert route.confirm_message.called_once_with('receipt')
 
 
 @pytest.mark.asyncio
@@ -44,9 +45,11 @@ async def test_dispatch_message_without_confirmation(route):
     route.deliver = CoroutineMock(return_value=None)
     routes = [route]
     dispatcher = LoaferDispatcher(routes)
-    message = 'foobar'
+    # XXX: refactor this after error handling implementation
+    message = False
 
-    await dispatcher.dispatch_message(message, route)
+    confirmation = await dispatcher.dispatch_message(message, route)
+    assert not confirmation
 
     assert route.deliver.called
     assert route.deliver.called_once_with('foobar')
@@ -71,3 +74,5 @@ async def test_dispatch_consumers(route):
     assert route.get_consumer().consume.called
     assert dispatcher.dispatch_message.called
     assert dispatcher.dispatch_message.called_called_once_with('message', route)
+    assert route.get_consumer().confirm_message.called
+    assert route.get_consumer().confirm_message.called_once_with('message')

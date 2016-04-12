@@ -27,8 +27,9 @@ class Consumer(object):
         response = await self._loop.run_in_executor(None, fn)
         return response['QueueUrl']
 
-    async def confirm_message(self, receipt):
+    async def confirm_message(self, message):
         logger.info('Confirming message (ACK)')
+        receipt = message['ReceiptHandle']
         logger.debug('receipt={}'.format(receipt))
 
         queue_url = await self.get_queue_url()

@@ -27,7 +27,8 @@ async def test_confirm_message(mock_boto_client_sqs_with_delete_message, mock_de
     with mock_boto_client_sqs_with_delete_message:
         consumer = Consumer('queue-name')
         queue_url = await consumer.get_queue_url()
-        await consumer.confirm_message('message-receipt-handle')
+        message = {'ReceiptHandle': 'message-receipt-handle'}
+        await consumer.confirm_message(message)
 
         assert mock_delete_message.called_once_with(
             QueueUrl=queue_url,

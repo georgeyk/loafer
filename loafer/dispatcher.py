@@ -19,6 +19,7 @@ class LoaferDispatcher(object):
 
     async def dispatch_message(self, message, route):
         logger.debug('Dispatching message: {!r}'.format(message))
+
         # in the future, we may change the route depending on message content
         content = StringMessageTranslator().translate(message)
 
@@ -26,10 +27,9 @@ class LoaferDispatcher(object):
         # to protect scheduling or executing too many coroutines/threads
         with await self._semaphore:
             # TODO: handle errors here
-            confirmation = await route.deliver(content)
+            await route.deliver(content)
 
-        if confirmation:
-            await route.confirm_message(confirmation)
+        return message
 
     async def dispatch_consumers(self, stopper=None):
         if stopper is None:
@@ -41,7 +41,9 @@ class LoaferDispatcher(object):
                 consumer = route.get_consumer()
                 messages = await consumer.consume()
                 for message in messages:
-                    await self.dispatch_message(message, route)
+                    confirmation = await self.dispatch_message(message, route)
+                    if confirmation:
+                        await consumer.confirm_message(message)
 
     def _stopper(self):
         return self._stopped_consumers
