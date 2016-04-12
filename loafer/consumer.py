@@ -15,7 +15,7 @@ from .exceptions import ConsumerError
 logger = logging.getLogger(__name__)
 
 
-class AsyncSQSConsumer(object):
+class SQSConsumer(object):
 
     def __init__(self, loop=None):
         self._loop = loop or asyncio.get_event_loop()

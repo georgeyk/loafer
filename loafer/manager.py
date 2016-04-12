@@ -10,7 +10,7 @@ import signal
 from .conf import settings
 from .exceptions import ConsumerError
 from .route import Route
-from .consumer import AsyncSQSConsumer
+from .consumer import SQSConsumer
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +51,7 @@ class LoaferManager(object):
         logger.info('Starting Loafer (pid={}) ...'.format(os.getpid()))
 
         routes = self.get_routes(routes_values)
-        self._consumer = AsyncSQSConsumer()
+        self._consumer = SQSConsumer()
         self._future = asyncio.gather(self._consumer.consume(routes))
         self._future.add_done_callback(self.on_future__errors)
 
