@@ -11,6 +11,10 @@ class Settings(object):
 
     MAX_JOBS = config('MAX_JOBS', default=10)
     MAX_THREAD_POOL = config('MAX_THREAD_POOL', default=None)
+    # SQS long-polling
+    SQS_WAIT_TIME_SECONDS = config('SQS_WAIT_TIME_SECONDS', default=5)
+    # 10 is the maximum value
+    SQS_MAX_MESSAGES = config('SQS_MAX_MESSAGES', default=10)
     LOAFER_ROUTES = [('example-queue-name', 'loafer.jobs.async_example_job')]
 
 

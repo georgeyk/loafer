@@ -9,6 +9,8 @@ import boto3
 
 from cached_property import cached_property
 
+from .conf import settings
+
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +49,7 @@ class Route(object):
     async def fetch_messages(self):
         fn = partial(self._client.receive_message,
                      QueueUrl=self.queue_url,
-                     WaitTimeSeconds=5,
-                     MaxNumberOfMessages=10)
+                     WaitTimeSeconds=settings.SQS_WAIT_TIME_SECONDS,
+                     MaxNumberOfMessages=settings.SQS_MAX_MESSAGES)
         response = await self._loop.run_in_executor(None, fn)
         return response.get('Messages', [])
