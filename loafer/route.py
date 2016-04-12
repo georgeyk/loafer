@@ -35,8 +35,16 @@ class Route(object):
     def handler(self):
         package = '.'.join(self._handler.split('.')[:-1])
         name = self._handler.split('.')[-1]
-        module = importlib.import_module(package)
-        return getattr(module, name)
+        try:
+            module = importlib.import_module(package)
+        except ValueError as exc:
+            raise ImportError('Error trying to import {!r}'.format(self._handler)) from exc
+
+        handler = getattr(module, name)
+        if not callable(handler):
+            raise ImportError('{!r} should be callable'.format(self._handler))
+
+        return handler
 
     async def handle_message(self, message):
         if asyncio.iscoroutinefunction(self.handler):
