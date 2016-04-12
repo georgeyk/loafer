@@ -56,12 +56,12 @@ class SQSConsumer(object):
 
     async def consume(self, routes):
         while True:
-            for router in routes:
+            for route in routes:
                 try:
-                    messages = await router.fetch_messages()
+                    messages = await route.fetch_messages()
                 except botocore.exceptions.ClientError as exc:
                     logger.exception(exc)
                     raise ConsumerError('Error when fetching messages') from exc
 
                 for message in messages:
-                    await self.process_message(router, message)
+                    await self.process_message(route, message)
