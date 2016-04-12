@@ -7,7 +7,7 @@ import click
 
 from .conf import settings
 from .manager import LoaferManager
-from .publisher import Publisher
+from .aws.publisher import Publisher
 from .utils import echo
 
 
