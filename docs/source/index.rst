@@ -13,7 +13,7 @@ Quickstart
 ----------
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 1
 
     installation.rst
     usage.rst
@@ -24,15 +24,16 @@ Components
 ----------
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 1
 
     settings.rst
     manager.rst
-    router.rst
+    dispatcher.rst
     route.rst
     message-translator.rst
     consumer.rst
     publisher.rst
+    exceptions.rst
 
 
 Other
