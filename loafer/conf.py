@@ -17,5 +17,7 @@ class Settings(object):
     SQS_MAX_MESSAGES = config('SQS_MAX_MESSAGES', default=10)
     LOAFER_ROUTES = [('example-queue-name', 'loafer.jobs.async_example_job')]
 
+    LOAFER_DEFAULT_CONSUMER_CLASS = 'loafer.aws.consumer.Consumer'
+
 
 settings = Settings()

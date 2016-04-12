@@ -37,7 +37,7 @@ def test_get_consumer():
             self.queue = queue
 
     route = Route('foo-queue', 'invalid_job')
-    route.consumer_class = CustomConsumer
+    route.get_consumer_class = lambda: CustomConsumer
     consumer = route.get_consumer()
 
     assert consumer.queue == 'foo-queue'

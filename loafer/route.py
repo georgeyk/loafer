@@ -5,6 +5,7 @@ import logging
 
 from cached_property import cached_property
 
+from .conf import settings
 from .utils import import_callable
 
 
@@ -12,8 +13,6 @@ logger = logging.getLogger(__name__)
 
 
 class Route(object):
-    # TODO: load default/settings
-    consumer_class = object()
 
     def __init__(self, queue_name, handler):
         self.queue_name = queue_name
@@ -22,12 +21,16 @@ class Route(object):
     def __str__(self):
         return '<Route(queue={} handler={})>'.format(self.queue_name, self._handler)
 
+    def get_consumer_class(self):
+        return import_callable(settings.LOAFER_DEFAULT_CONSUMER_CLASS)
+
     @cached_property
     def handler(self):
         return import_callable(self._handler)
 
     def get_consumer(self):
-        return self.consumer_class(self.queue_name)
+        klass = self.get_consumer_class()
+        return klass(self.queue_name)
 
     async def deliver(self, content, loop=None):
         if asyncio.iscoroutinefunction(self.handler):
