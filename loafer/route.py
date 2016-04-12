@@ -46,7 +46,7 @@ class Route(object):
 
         return handler
 
-    async def handle_message(self, message):
+    async def deliver(self, message):
         if asyncio.iscoroutinefunction(self.handler):
             logger.info('Handler is coroutine! {!r}'.format(self.handler))
             return await self.handler(message)

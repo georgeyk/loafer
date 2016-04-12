@@ -42,7 +42,7 @@ class AsyncSQSConsumer(object):
         with await self._semaphore:
             # TODO: depending on content type, we should pass as *args or **kwargs
             logger.info('Message content data type is {!r}'.format(type(content)))
-            await route.handle_message(content)
+            await route.deliver(content)
 
         await self.ack_message(route.queue_url, message['ReceiptHandle'])
 
