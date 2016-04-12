@@ -25,6 +25,11 @@ def mock_receive_message():
     return mock.Mock(return_value={'Messages': [message]})
 
 
+@pytest.fixture
+def mock_delete_message():
+    return mock.Mock()
+
+
 # boto client mock
 
 @pytest.fixture
@@ -45,4 +50,11 @@ def mock_boto_client_sqs_with_empty_messages(mock_get_queue_url,
 def mock_boto_client_sqs_with_messages(mock_get_queue_url, mock_receive_message):
     mock_client = mock.Mock(get_queue_url=mock_get_queue_url,
                             receive_message=mock_receive_message)
+    return mock.patch('boto3.client', return_value=mock_client)
+
+
+@pytest.fixture
+def mock_boto_client_sqs_with_delete_message(mock_get_queue_url, mock_delete_message):
+    mock_client = mock.Mock(get_queue_url=mock_get_queue_url,
+                            delete_message=mock_delete_message)
     return mock.patch('boto3.client', return_value=mock_client)

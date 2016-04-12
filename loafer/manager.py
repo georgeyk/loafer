@@ -8,9 +8,9 @@ import os
 import signal
 
 from .conf import settings
+from .dispatcher import LoaferDispatcher
 from .exceptions import ConsumerError
 from .route import Route
-from .consumer import SQSConsumer
 
 logger = logging.getLogger(__name__)
 
@@ -27,8 +27,6 @@ class LoaferManager(object):
         # See https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.ThreadPoolExecutor
         self._executor = ThreadPoolExecutor(settings.MAX_THREAD_POOL)
         self._loop.set_default_executor(self._executor)
-
-        self._loop.set_debug(settings.LOGLEVEL == 'DEBUG')
 
     def get_routes(self, routes_values=None):
         routes = []
@@ -51,8 +49,8 @@ class LoaferManager(object):
         logger.info('Starting Loafer (pid={}) ...'.format(os.getpid()))
 
         routes = self.get_routes(routes_values)
-        self._consumer = SQSConsumer()
-        self._future = asyncio.gather(self._consumer.consume(routes))
+        self._dispatcher = LoaferDispatcher(routes)
+        self._future = asyncio.gather(self._dispatcher.dispatch_consumers())
         self._future.add_done_callback(self.on_future__errors)
 
         try:
@@ -61,11 +59,11 @@ class LoaferManager(object):
             self._loop.close()
 
     def stop(self, *args, **kwargs):
-        logger.info('Stopping Loafer ...')
-
+        self._dispatcher.stop_consumers()
         self._future.cancel()
         self._executor.shutdown(wait=True)
         self._loop.stop()
+        logger.info('Stopping Loafer ...')
 
     def on_future__errors(self, future):
         exc = future.exception()

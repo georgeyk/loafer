@@ -1,63 +1,42 @@
 # -*- coding: utf-8 -*-
 
 import asyncio
-from functools import partial
-import importlib
 import logging
-
-import boto3
 
 from cached_property import cached_property
 
 from .conf import settings
+from .utils import import_callable
 
 
 logger = logging.getLogger(__name__)
 
 
 class Route(object):
-    def __init__(self, queue, handler, loop=None):
-        self._loop = loop or asyncio.get_event_loop()
-        self._client = boto3.client('sqs')
 
-        self.queue_name = queue
+    def __init__(self, queue_name, handler):
+        self.queue_name = queue_name
         self._handler = handler
 
     def __str__(self):
-        return '<Router(queue={} handler={})>'.format(self.queue_name, self._handler)
+        return '<Route(queue={} handler={})>'.format(self.queue_name, self._handler)
 
-    @cached_property
-    def queue_url(self):
-        response = self._client.get_queue_url(QueueName=self.queue_name)
-        return response['QueueUrl']
+    def get_consumer_class(self):
+        return import_callable(settings.LOAFER_DEFAULT_CONSUMER_CLASS)
 
     @cached_property
     def handler(self):
-        package = '.'.join(self._handler.split('.')[:-1])
-        name = self._handler.split('.')[-1]
-        try:
-            module = importlib.import_module(package)
-        except ValueError as exc:
-            raise ImportError('Error trying to import {!r}'.format(self._handler)) from exc
+        return import_callable(self._handler)
 
-        handler = getattr(module, name)
-        if not callable(handler):
-            raise ImportError('{!r} should be callable'.format(self._handler))
+    def get_consumer(self):
+        klass = self.get_consumer_class()
+        return klass(self.queue_name)
 
-        return handler
-
-    async def deliver(self, message):
+    async def deliver(self, content, loop=None):
         if asyncio.iscoroutinefunction(self.handler):
             logger.info('Handler is coroutine! {!r}'.format(self.handler))
-            return await self.handler(message)
+            return await self.handler(content)
         else:
             logger.info('Handler will run in a separate thread: {!r}'.format(self.handler))
-            return await self._loop.run_in_executor(None, self.handler, message)
-
-    async def fetch_messages(self):
-        fn = partial(self._client.receive_message,
-                     QueueUrl=self.queue_url,
-                     WaitTimeSeconds=settings.SQS_WAIT_TIME_SECONDS,
-                     MaxNumberOfMessages=settings.SQS_MAX_MESSAGES)
-        response = await self._loop.run_in_executor(None, fn)
-        return response.get('Messages', [])
+            loop = loop or asyncio.get_event_loop()
+            return await loop.run_in_executor(None, self.handler, content)
