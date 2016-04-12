@@ -59,12 +59,11 @@ class LoaferManager(object):
             self._loop.close()
 
     def stop(self, *args, **kwargs):
-        logger.info('Stopping Loafer ...')
-
         self._dispatcher.stop_consumers()
         self._future.cancel()
         self._executor.shutdown(wait=True)
         self._loop.stop()
+        logger.info('Stopping Loafer ...')
 
     def on_future__errors(self, future):
         exc = future.exception()
