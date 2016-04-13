@@ -39,8 +39,8 @@ class LoaferManager(object):
             raise ValueError(msg)
 
         routes = []
-        for name, data in self._conf.LOAFER_ROUTES.items():
-            routes.append(Route(data['source'], data['handler'], name))
+        for data in self._conf.LOAFER_ROUTES:
+            routes.append(Route(data['source'], data['handler'], data['name']))
 
         return routes
 

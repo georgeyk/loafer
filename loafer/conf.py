@@ -20,13 +20,12 @@ class Settings(object):
     LOAFER_DEFAULT_MESSAGE_TRANSLATOR_CLASS = 'loafer.message_translator.StringMessageTranslator'
 
     # Routes
-    LOAFER_ROUTES = {
-        # route name
-        'example_route':
-            {'source': 'test-images',
-             'handler': 'loafer.example.jobs.async_example_job',
-             'translator': LOAFER_DEFAULT_MESSAGE_TRANSLATOR_CLASS},
-    }
+    LOAFER_ROUTES = [
+        {'name': 'example_route',
+         'source': 'test-images',
+         'handler': 'loafer.example.jobs.async_example_job',
+         'translator': LOAFER_DEFAULT_MESSAGE_TRANSLATOR_CLASS},
+    ]
 
     # Consumer
 
