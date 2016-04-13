@@ -2,9 +2,11 @@
 # vi:si:et:sw=4:sts=4:ts=4
 
 import asyncio
+from unittest import mock
 
 import pytest
 
+from loafer.message_translator import StringMessageTranslator
 from loafer.route import Route
 
 
@@ -36,17 +38,15 @@ def test_name():
     assert route.name == 'foo'
 
 
-def test_get_consumer():
-    class CustomConsumer(object):
-        def __init__(self, queue, options=None):
-            self.queue = queue
+def test_message_translator():
+    route = Route('foo', 'invalid', message_translator=mock.Mock)
+    assert isinstance(route.message_translator, mock.Mock)
 
-    route = Route('foo-queue', 'invalid_job')
-    route.get_consumer_class = lambda: CustomConsumer
-    consumer = route.get_consumer()
 
-    assert consumer.queue == 'foo-queue'
-    assert isinstance(consumer, CustomConsumer)
+def test_default_message_translator():
+    route = Route('foo', 'invalid')
+    translator = route.message_translator
+    assert isinstance(translator, StringMessageTranslator)
 
 
 # FIXME: Improve all test_deliver* tests
