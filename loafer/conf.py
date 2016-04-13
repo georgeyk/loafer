@@ -16,6 +16,18 @@ class Settings(object):
     # Default value are determined from the number of machine cores
     LOAFER_MAX_THREAD_POOL = config('LOAFER_MAX_THREAD_POOL', default=None)
 
+    # Translator
+    LOAFER_DEFAULT_MESSAGE_TRANSLATOR_CLASS = 'loafer.message_translator.StringMessageTranslator'
+
+    # Routes
+    LOAFER_ROUTES = {
+        # route name
+        'example_route':
+            {'source': 'test-images',
+             'handler': 'loafer.jobs.async_example_job',
+             'translator': LOAFER_DEFAULT_MESSAGE_TRANSLATOR_CLASS},
+    }
+
     # Consumer
 
     # Currently, only AWS is supported, references:
@@ -26,12 +38,6 @@ class Settings(object):
     LOAFER_DEFAULT_CONSUMER_CLASS = 'loafer.aws.consumer.Consumer'
     LOAFER_DEFAULT_CONSUMER_OPTIONS = {'WaitTimeSeconds': 5,  # from 1-20
                                        'MaxNumberOfMessages': 5}  # from 1-10
-
-    # Translator
-    LOAFER_DEFAULT_MESSAGE_TRANSLATOR_CLASS = 'loafer.message_translator.StringMessageTranslator'
-
-    # Routes
-    LOAFER_ROUTES = [('test-images', 'loafer.jobs.async_example_job')]
 
     def __init__(self, **defaults):
         if defaults:

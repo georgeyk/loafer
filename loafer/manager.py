@@ -36,13 +36,14 @@ class LoaferManager(object):
                 self.stop()
                 raise ValueError('Missing LOAFER_ROUTES configuration')
         else:
-            for queue, handler in routes_values:
-                routes.append(Route(queue, handler))
+            for source, handler in routes_values:
+                name = '{}-{}'.format(source, handler)
+                routes.append(Route(source, handler, name=name))
 
         # direct parameters takes precedence over configuration
         if not routes:
-            for queue, handler in settings.LOAFER_ROUTES:
-                routes.append(Route(queue, handler))
+            for name, data in settings.LOAFER_ROUTES.items():
+                routes.append(Route(data['source'], data['handler'], name))
 
         return routes
 
