@@ -9,10 +9,10 @@ from loafer.route import Route
 
 
 def test_handler_property():
-    route = Route('foo-queue', 'loafer.jobs.example_job')
+    route = Route('foo-queue', 'loafer.example.jobs.example_job')
     assert callable(route.handler)
 
-    route = Route('foo-queue', 'loafer.jobs.async_example_job')
+    route = Route('foo-queue', 'loafer.example.jobs.async_example_job')
     assert callable(route.handler)
 
 
@@ -21,7 +21,7 @@ def test_handle_property_errors():
     with pytest.raises(ImportError):
         route.handler
 
-    route = Route('foo-queue', 'loafer.jobs')
+    route = Route('foo-queue', 'loafer.example')
     with pytest.raises(ImportError):
         route.handler
 

@@ -24,7 +24,7 @@ class Settings(object):
         # route name
         'example_route':
             {'source': 'test-images',
-             'handler': 'loafer.jobs.async_example_job',
+             'handler': 'loafer.example.jobs.async_example_job',
              'translator': LOAFER_DEFAULT_MESSAGE_TRANSLATOR_CLASS},
     }
 
