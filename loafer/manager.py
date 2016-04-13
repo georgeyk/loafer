@@ -18,7 +18,9 @@ logger = logging.getLogger(__name__)
 
 class LoaferManager(object):
 
-    def __init__(self):
+    def __init__(self, configuration=None):
+        self._conf = configuration or settings
+
         self._loop = asyncio.get_event_loop()
         self._loop.add_signal_handler(signal.SIGINT, self.stop)
         self._loop.add_signal_handler(signal.SIGTERM, self.stop)
@@ -26,34 +28,32 @@ class LoaferManager(object):
         # XXX: See https://github.com/python/asyncio/issues/258
         # The minimum value depends on the number of cores in the machine
         # See https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.ThreadPoolExecutor
-        self._executor = ThreadPoolExecutor(settings.LOAFER_MAX_THREAD_POOL)
+        self._executor = ThreadPoolExecutor(self._conf.LOAFER_MAX_THREAD_POOL)
         self._loop.set_default_executor(self._executor)
 
-    def get_routes(self, routes_values=None):
-        routes = []
-        if routes_values is None:
-            if not settings.LOAFER_ROUTES:
-                self.stop()
-                raise ValueError('Missing LOAFER_ROUTES configuration')
-        else:
-            for source, handler in routes_values:
-                name = '{}-{}'.format(source, handler)
-                routes.append(Route(source, handler, name=name))
+    def get_routes(self):
+        if not self._conf.LOAFER_ROUTES:
+            msg = 'Missing LOAFER_ROUTES configuration'
+            logger.critical(msg)
+            self.stop()
+            raise ValueError(msg)
 
-        # direct parameters takes precedence over configuration
-        if not routes:
-            for name, data in settings.LOAFER_ROUTES.items():
-                routes.append(Route(data['source'], data['handler'], name))
+        routes = []
+        for name, data in self._conf.LOAFER_ROUTES.items():
+            routes.append(Route(data['source'], data['handler'], name))
 
         return routes
+
+    @property
+    def dispatcher(self):
+        routes = self.get_routes()
+        return LoaferDispatcher(routes)
 
     def start(self, routes_values=None):
         start = 'Starting Loafer - Version: {} (pid={}) ...'
         logger.info(start.format(__version__, os.getpid()))
 
-        routes = self.get_routes(routes_values)
-        self._dispatcher = LoaferDispatcher(routes)
-        self._future = asyncio.gather(self._dispatcher.dispatch_consumers())
+        self._future = asyncio.gather(self.dispatcher.dispatch_consumers())
         self._future.add_done_callback(self.on_future__errors)
 
         try:
@@ -62,14 +62,20 @@ class LoaferManager(object):
             self._loop.close()
 
     def stop(self, *args, **kwargs):
-        self._dispatcher.stop_consumers()
+        logger.info('Stopping Loafer ...')
+
+        logger.debug('Stopping consumers ...')
+        self.dispatcher.stop_consumers()
+
+        logger.debug('Cancel schedulled operations ...')
         self._future.cancel()
+
+        logger.debug('Waiting to shutdown ...')
         self._executor.shutdown(wait=True)
         self._loop.stop()
-        logger.info('Stopping Loafer ...')
 
     def on_future__errors(self, future):
         exc = future.exception()
         if isinstance(exc, ConsumerError):
-            logger.error('Fatal error caught: {!r}'.format(exc))
+            logger.critical('Fatal error caught: {!r}'.format(exc))
             self.stop()
