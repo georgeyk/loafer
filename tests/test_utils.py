@@ -28,3 +28,8 @@ def test_error_on_method_name():
 def test_error_on_invalid_name():
     with pytest.raises(ImportError):
         import_callable('invalid-1234')
+
+
+def test_error_on_non_callable():
+    with pytest.raises(ImportError):
+        import_callable('loafer')

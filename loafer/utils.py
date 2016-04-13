@@ -14,14 +14,17 @@ def echo(message, **kwargs):
 
 
 def import_callable(full_name):
-    package = '.'.join(full_name.split('.')[:-1])
-    name = full_name.split('.')[-1]
+    package, *name = full_name.rsplit('.', 1)
     try:
         module = importlib.import_module(package)
     except ValueError as exc:
         raise ImportError('Error trying to import {!r}'.format(full_name)) from exc
 
-    handler = getattr(module, name)
+    if name:
+        handler = getattr(module, name[0])
+    else:
+        handler = module
+
     if not callable(handler):
         raise ImportError('{!r} should be callable'.format(full_name))
 
