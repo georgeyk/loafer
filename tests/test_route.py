@@ -26,9 +26,14 @@ def test_handle_property_errors():
         route.handler
 
 
-def test_queue_name():
-    route = Route('foo-queue', 'invalid_job')
-    assert route.queue_name == 'foo-queue'
+def test_source():
+    route = Route(source='foo-queue', handler='invalid_job')
+    assert route.source == 'foo-queue'
+
+
+def test_name():
+    route = Route(source='foo-queue', handler='invalid_job', name='foo')
+    assert route.name == 'foo'
 
 
 def test_get_consumer():

@@ -14,12 +14,14 @@ logger = logging.getLogger(__name__)
 
 class Route(object):
 
-    def __init__(self, queue_name, handler):
-        self.queue_name = queue_name
+    def __init__(self, source, handler, name='default'):
+        self.name = name
+        self.source = source
         self._handler = handler
 
     def __str__(self):
-        return '<Route(queue={} handler={})>'.format(self.queue_name, self._handler)
+        return '<Route(name={} queue={} handler={})>'.format(
+            self.name, self.source, self._handler)
 
     def get_consumer_class(self):
         return import_callable(settings.LOAFER_DEFAULT_CONSUMER_CLASS)
@@ -30,7 +32,7 @@ class Route(object):
 
     def get_consumer(self):
         klass = self.get_consumer_class()
-        return klass(self.queue_name, settings.LOAFER_DEFAULT_CONSUMER_OPTIONS)
+        return klass(self.source, settings.LOAFER_DEFAULT_CONSUMER_OPTIONS)
 
     async def deliver(self, content, loop=None):
         if asyncio.iscoroutinefunction(self.handler):
