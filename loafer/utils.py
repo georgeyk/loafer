@@ -3,15 +3,6 @@
 
 import importlib
 
-import click
-
-
-def echo(message, **kwargs):
-    msg = '>. {}'.format(message)
-    if kwargs:
-        msg = click.style(msg, **kwargs)
-    click.echo(msg)
-
 
 def import_callable(full_name):
     package, *name = full_name.rsplit('.', 1)

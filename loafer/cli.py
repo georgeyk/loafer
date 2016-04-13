@@ -9,7 +9,6 @@ from . import __version__
 from .conf import settings
 from .manager import LoaferManager
 from .aws.publisher import Publisher
-from .utils import echo
 
 
 logger = logging.getLogger(__name__)
@@ -20,20 +19,27 @@ def _bootstrap():
                         format=settings.LOAFER_LOG_FORMAT)
 
 
-def main():
+def main(**kwargs):
+    click.secho('>. Starting Loafer (Version={}) ...'.format(__version__),
+                bold=True, fg='green')
 
-    echo('Starting Loafer (Version={}) ...'.format(__version__),
-         bold=True, fg='green')
+    _bootstrap(**kwargs)
 
-    _bootstrap()
-
-    echo('Hit CTRL-C to stop', bold=True, fg='yellow')
+    click.secho('>. Hit CTRL-C to stop', bold=True, fg='yellow')
 
     loafer = LoaferManager()
     loafer.start()
 
 
-@click.group(invoke_without_command=True)
+#
+# CLI
+#
+
+CLICK_CONTEXT_SETTINGS = {'help_option_names': ['-h', '--help']}
+
+
+@click.group(invoke_without_command=True,
+             context_settings=CLICK_CONTEXT_SETTINGS)
 @click.pass_context
 def cli(context):
     if context.invoked_subcommand is None:
@@ -41,10 +47,17 @@ def cli(context):
 
 
 @cli.command()
+def version():
+    """Show Loafer version"""
+    click.echo('{}'.format(__version__))
+
+
+@cli.command()
 @click.option('--queue', default=None, help='SQS queue name ou url')
 @click.option('--topic', default=None, help='SNS topic name ou arn')
 @click.option('--msg', help='Message to publish (assumes json format)')
 def publish(queue, topic, msg):
+    """Publish messages"""
     # TODO: check the "click" way to validate parameters
     if not (queue or topic):
         raise click.UsageError('--queue or --topic parameter are missing')
@@ -60,4 +73,4 @@ def publish(queue, topic, msg):
         destination = topic
 
     response = publisher.publish(service, destination, msg)
-    echo('Response: {}'.format(response))
+    click.echo('Response: {}'.format(response))
