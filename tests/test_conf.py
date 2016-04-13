@@ -3,14 +3,7 @@
 
 import os
 
-import pytest
-
 from loafer.conf import Settings
-
-
-@pytest.fixture
-def default_settings():
-    return Settings()
 
 
 def test_configuration_from_env():
@@ -19,9 +12,15 @@ def test_configuration_from_env():
     settings.LOAFER_LOG_FORMAT == 'whatever'
 
 
-def test_configuration_has_defaults(default_settings):
+def test_configuration_has_defaults():
     # XXX: add more keys wit default values
-    assert default_settings.LOAFER_LOGLEVEL == 'WARNING'
+    # Make sure key does not exist in env
+    if 'LOAFER_LOGLEVEL' in os.environ:
+        del os.environ['LOAFER_LOGLEVEL']
+
+    settings = Settings()
+    # the value does matter, it exists
+    assert settings.LOAFER_LOGLEVEL
 
 
 def test_override_env_configuration():
