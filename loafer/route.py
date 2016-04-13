@@ -14,29 +14,34 @@ logger = logging.getLogger(__name__)
 
 class Route(object):
 
-    def __init__(self, queue_name, handler):
-        self.queue_name = queue_name
+    def __init__(self, source, handler, name='default', message_translator=None):
+        self.name = name
+        self.source = source
         self._handler = handler
+        self._message_translator = message_translator
 
     def __str__(self):
-        return '<Route(queue={} handler={})>'.format(self.queue_name, self._handler)
+        return '<Route(name={} queue={} handler={})>'.format(
+            self.name, self.source, self._handler)
 
-    def get_consumer_class(self):
-        return import_callable(settings.LOAFER_DEFAULT_CONSUMER_CLASS)
+    @cached_property
+    def message_translator(self):
+        if self._message_translator:
+            return self._message_translator()
+        klass = import_callable(settings.LOAFER_DEFAULT_MESSAGE_TRANSLATOR_CLASS)
+        return klass()
 
     @cached_property
     def handler(self):
         return import_callable(self._handler)
 
-    def get_consumer(self):
-        klass = self.get_consumer_class()
-        return klass(self.queue_name)
-
     async def deliver(self, content, loop=None):
+        logger.info('Delivering message content to handler={}'.format(self.handler))
+
         if asyncio.iscoroutinefunction(self.handler):
-            logger.info('Handler is coroutine! {!r}'.format(self.handler))
+            logger.debug('Handler is coroutine! {!r}'.format(self.handler))
             return await self.handler(content)
         else:
-            logger.info('Handler will run in a separate thread: {!r}'.format(self.handler))
+            logger.debug('Handler will run in a separate thread: {!r}'.format(self.handler))
             loop = loop or asyncio.get_event_loop()
             return await loop.run_in_executor(None, self.handler, content)

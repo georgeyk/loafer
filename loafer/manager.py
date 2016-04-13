@@ -7,18 +7,23 @@ import logging
 import os
 import signal
 
+from cached_property import cached_property
+
 from . import __version__
 from .conf import settings
 from .dispatcher import LoaferDispatcher
 from .exceptions import ConsumerError
 from .route import Route
+from .utils import import_callable
 
 logger = logging.getLogger(__name__)
 
 
 class LoaferManager(object):
 
-    def __init__(self):
+    def __init__(self, configuration=None):
+        self._conf = configuration or settings
+
         self._loop = asyncio.get_event_loop()
         self._loop.add_signal_handler(signal.SIGINT, self.stop)
         self._loop.add_signal_handler(signal.SIGTERM, self.stop)
@@ -26,33 +31,46 @@ class LoaferManager(object):
         # XXX: See https://github.com/python/asyncio/issues/258
         # The minimum value depends on the number of cores in the machine
         # See https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.ThreadPoolExecutor
-        self._executor = ThreadPoolExecutor(settings.MAX_THREAD_POOL)
+        self._executor = ThreadPoolExecutor(self._conf.LOAFER_MAX_THREAD_POOL)
         self._loop.set_default_executor(self._executor)
 
-    def get_routes(self, routes_values=None):
+    @cached_property
+    def routes(self):
+        if not self._conf.LOAFER_ROUTES:
+            msg = 'Missing LOAFER_ROUTES configuration'
+            logger.critical(msg)
+            self.stop()
+            raise ValueError(msg)
+
         routes = []
-        if routes_values is None:
-            if not settings.LOAFER_ROUTES:
-                self.stop()
-                raise ValueError('Missing LOUFER_ROUTES configuration')
-        else:
-            for queue, handler in routes_values:
-                routes.append(Route(queue, handler))
-
-        # direct parameters takes precedence over configuration
-        if not routes:
-            for queue, handler in settings.LOAFER_ROUTES:
-                routes.append(Route(queue, handler))
-
+        for data in self._conf.LOAFER_ROUTES:
+            message_translator = data.get('message_translator', None)
+            routes.append(Route(data['source'], data['handler'], data['name'],
+                                message_translator=message_translator))
         return routes
 
-    def start(self, routes_values=None):
+    @cached_property
+    def consumers(self):
+        if not self._conf.LOAFER_CONSUMERS:
+            return []
+
+        consumers = []
+        for consumer_settings in self._conf.LOAFER_CONSUMERS:
+            for source, consumer_data in consumer_settings.items():
+                klass = import_callable(consumer_data.get('consumer_class'))
+                options = consumer_data.get('consumer_options')
+                consumers.append(klass(source, options))
+        return consumers
+
+    @cached_property
+    def dispatcher(self):
+        return LoaferDispatcher(self.routes, self.consumers)
+
+    def start(self):
         start = 'Starting Loafer - Version: {} (pid={}) ...'
         logger.info(start.format(__version__, os.getpid()))
 
-        routes = self.get_routes(routes_values)
-        self._dispatcher = LoaferDispatcher(routes)
-        self._future = asyncio.gather(self._dispatcher.dispatch_consumers())
+        self._future = asyncio.gather(self.dispatcher.dispatch_consumers())
         self._future.add_done_callback(self.on_future__errors)
 
         try:
@@ -61,14 +79,20 @@ class LoaferManager(object):
             self._loop.close()
 
     def stop(self, *args, **kwargs):
-        self._dispatcher.stop_consumers()
+        logger.info('Stopping Loafer ...')
+
+        logger.debug('Stopping consumers ...')
+        self.dispatcher.stop_consumers()
+
+        logger.debug('Cancel schedulled operations ...')
         self._future.cancel()
+
+        logger.debug('Waiting to shutdown ...')
         self._executor.shutdown(wait=True)
         self._loop.stop()
-        logger.info('Stopping Loafer ...')
 
     def on_future__errors(self, future):
         exc = future.exception()
         if isinstance(exc, ConsumerError):
-            logger.error('Fatal error caught: {!r}'.format(exc))
+            logger.critical('Fatal error caught: {!r}'.format(exc))
             self.stop()
