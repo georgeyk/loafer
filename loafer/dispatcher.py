@@ -14,7 +14,7 @@ class LoaferDispatcher(object):
 
     def __init__(self, routes):
         self.routes = routes
-        self._semaphore = asyncio.Semaphore(settings.MAX_JOBS)
+        self._semaphore = asyncio.Semaphore(settings.LOAFER_MAX_JOBS)
         self._stopped_consumers = True
 
     async def dispatch_message(self, message, route):

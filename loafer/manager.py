@@ -26,7 +26,7 @@ class LoaferManager(object):
         # XXX: See https://github.com/python/asyncio/issues/258
         # The minimum value depends on the number of cores in the machine
         # See https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.ThreadPoolExecutor
-        self._executor = ThreadPoolExecutor(settings.MAX_THREAD_POOL)
+        self._executor = ThreadPoolExecutor(settings.LOAFER_MAX_THREAD_POOL)
         self._loop.set_default_executor(self._executor)
 
     def get_routes(self, routes_values=None):
@@ -34,7 +34,7 @@ class LoaferManager(object):
         if routes_values is None:
             if not settings.LOAFER_ROUTES:
                 self.stop()
-                raise ValueError('Missing LOUFER_ROUTES configuration')
+                raise ValueError('Missing LOAFER_ROUTES configuration')
         else:
             for queue, handler in routes_values:
                 routes.append(Route(queue, handler))

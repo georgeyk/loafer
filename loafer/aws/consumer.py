@@ -41,8 +41,8 @@ class Consumer(object):
         queue_url = await self.get_queue_url()
         fn = partial(self._client.receive_message,
                      QueueUrl=queue_url,
-                     WaitTimeSeconds=settings.SQS_WAIT_TIME_SECONDS,
-                     MaxNumberOfMessages=settings.SQS_MAX_MESSAGES)
+                     WaitTimeSeconds=settings.LOAFER_SQS_WAIT_TIME_SECONDS,
+                     MaxNumberOfMessages=settings.LOAFER_SQS_MAX_MESSAGES)
         # XXX: Refactor this when boto support asyncio
         response = await self._loop.run_in_executor(None, fn)
         return response.get('Messages', [])
