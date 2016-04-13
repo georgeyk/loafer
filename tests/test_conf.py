@@ -31,7 +31,12 @@ def test_override_env_configuration():
 
 
 def test_ignore_lower_keys():
-    settings = Settings(WILL_APPEAR=1, foobar=2)
-    assert hasattr(settings, 'WILL_APPEAR')
-    assert settings.WILL_APPEAR == 1
+    settings = Settings(foobar=2)
     assert not hasattr(settings, 'foobar')
+
+
+def test_ignore_if_miss_loafer_prefix():
+    settings = Settings(LOAFER_FOO=1, WITHOUT_PREFIX=2)
+    assert hasattr(settings, 'LOAFER_FOO')
+    assert settings.LOAFER_FOO == 1
+    assert not hasattr(settings, 'WITHOUT_PREFIX')
