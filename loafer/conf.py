@@ -22,9 +22,9 @@ class Settings(object):
     # Routes
     LOAFER_ROUTES = [
         {'name': 'example_route',
-         'source': 'test-images',
+         'source': 'route_source',
          'handler': 'loafer.example.jobs.async_example_job',
-         'translator': LOAFER_DEFAULT_MESSAGE_TRANSLATOR_CLASS},
+         'message_translator': LOAFER_DEFAULT_MESSAGE_TRANSLATOR_CLASS},
     ]
 
     # Consumer
@@ -37,6 +37,15 @@ class Settings(object):
     LOAFER_DEFAULT_CONSUMER_CLASS = 'loafer.aws.consumer.Consumer'
     LOAFER_DEFAULT_CONSUMER_OPTIONS = {'WaitTimeSeconds': 5,  # from 1-20
                                        'MaxNumberOfMessages': 5}  # from 1-10
+
+    # Setting LOAFER_CONSUMERS is only needed when there's more than one consumer.
+    # Otherwise, all routes will use the LOAFER_DEFAULT_CONSUMER_CLASS
+    # and LOAFER_DEFAULT_MESSAGE_TRANSLATOR_CLASS automatically.
+    # This is an example configuration and will not match anything (probably).
+    LOAFER_CONSUMERS = [
+        {'route_source': {'consumer_class': LOAFER_DEFAULT_CONSUMER_CLASS,
+                          'consumer_options': LOAFER_DEFAULT_CONSUMER_OPTIONS}},
+    ]
 
     def __init__(self, **defaults):
         if defaults:

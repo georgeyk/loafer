@@ -7,11 +7,14 @@ import logging
 import os
 import signal
 
+from cached_property import cached_property
+
 from . import __version__
 from .conf import settings
 from .dispatcher import LoaferDispatcher
 from .exceptions import ConsumerError
 from .route import Route
+from .utils import import_callable
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +34,8 @@ class LoaferManager(object):
         self._executor = ThreadPoolExecutor(self._conf.LOAFER_MAX_THREAD_POOL)
         self._loop.set_default_executor(self._executor)
 
-    def get_routes(self):
+    @cached_property
+    def routes(self):
         if not self._conf.LOAFER_ROUTES:
             msg = 'Missing LOAFER_ROUTES configuration'
             logger.critical(msg)
@@ -40,16 +44,29 @@ class LoaferManager(object):
 
         routes = []
         for data in self._conf.LOAFER_ROUTES:
-            routes.append(Route(data['source'], data['handler'], data['name']))
-
+            message_translator = data.get('message_translator', None)
+            routes.append(Route(data['source'], data['handler'], data['name'],
+                                message_translator=message_translator))
         return routes
 
-    @property
-    def dispatcher(self):
-        routes = self.get_routes()
-        return LoaferDispatcher(routes)
+    @cached_property
+    def consumers(self):
+        if not self._conf.LOAFER_CONSUMERS:
+            return []
 
-    def start(self, routes_values=None):
+        consumers = []
+        for consumer_settings in self._conf.LOAFER_CONSUMERS:
+            for source, consumer_data in consumer_settings.items():
+                klass = import_callable(consumer_data.get('consumer_class'))
+                options = consumer_data.get('consumer_options')
+                consumers.append(klass(source, options))
+        return consumers
+
+    @cached_property
+    def dispatcher(self):
+        return LoaferDispatcher(self.routes, self.consumers)
+
+    def start(self):
         start = 'Starting Loafer - Version: {} (pid={}) ...'
         logger.info(start.format(__version__, os.getpid()))
 
