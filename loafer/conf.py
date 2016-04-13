@@ -5,24 +5,52 @@ from prettyconf import config
 
 
 class Settings(object):
+    # Logging
     LOAFER_LOGLEVEL = config('LOAFER_LOGLEVEL', default='WARNING')
     LOAFER_LOG_FORMAT = config('LOAFER_LOG_FORMAT',
                                default='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-    MAX_JOBS = config('MAX_JOBS', default=10)
-    MAX_THREAD_POOL = config('MAX_THREAD_POOL', default=None)
-    # SQS long-polling
-    SQS_WAIT_TIME_SECONDS = config('SQS_WAIT_TIME_SECONDS', default=5)
-    # 10 is the maximum value
-    SQS_MAX_MESSAGES = config('SQS_MAX_MESSAGES', default=10)
+    # Max concurrent jobs (asyncio)
+    LOAFER_MAX_JOBS = config('LOAFER_MAX_JOBS', default=10)
 
-    LOAFER_ROUTES = [('test-images', 'loafer.jobs.async_example_job')]
+    # Default value are determined from the number of machine cores
+    LOAFER_MAX_THREAD_POOL = config('LOAFER_MAX_THREAD_POOL', default=None)
 
+    # Translator
+    LOAFER_DEFAULT_MESSAGE_TRANSLATOR_CLASS = 'loafer.message_translator.StringMessageTranslator'
+
+    # Routes
+    LOAFER_ROUTES = [
+        {'name': 'example_route',
+         'source': 'route_source',
+         'handler': 'loafer.example.jobs.async_example_job',
+         'message_translator': LOAFER_DEFAULT_MESSAGE_TRANSLATOR_CLASS},
+    ]
+
+    # Consumer
+
+    # Currently, only AWS is supported, references:
+    # http://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-long-polling.html
+    # http://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_ReceiveMessage.html
+    # By default, SQS does not set long-polling (WaitTimeSeconds) and the MaxNumberOfMessages is 1
+    # TODO: tweak default values for acceptable performance
     LOAFER_DEFAULT_CONSUMER_CLASS = 'loafer.aws.consumer.Consumer'
+    LOAFER_DEFAULT_CONSUMER_OPTIONS = {'WaitTimeSeconds': 5,  # from 1-20
+                                       'MaxNumberOfMessages': 5}  # from 1-10
+
+    # Setting LOAFER_CONSUMERS is only needed when there's more than one consumer.
+    # Otherwise, all routes will use the LOAFER_DEFAULT_CONSUMER_CLASS
+    # and LOAFER_DEFAULT_MESSAGE_TRANSLATOR_CLASS automatically.
+    # This is an example configuration and will not match anything (probably).
+    LOAFER_CONSUMERS = [
+        {'route_source': {'consumer_class': LOAFER_DEFAULT_CONSUMER_CLASS,
+                          'consumer_options': LOAFER_DEFAULT_CONSUMER_OPTIONS}},
+    ]
 
     def __init__(self, **defaults):
         if defaults:
-            safe_defaults = {k: v for k, v in defaults.items() if k.isupper()}
+            safe_defaults = {k: v for k, v in defaults.items()
+                             if k.isupper() and k.startswith('LOAFER_')}
             self.__dict__.update(safe_defaults)
 
 

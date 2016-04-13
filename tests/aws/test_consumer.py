@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 # vi:si:et:sw=4:sts=4:ts=4
 
-from unittest import mock
-
 import pytest
 
 from loafer.aws.consumer import Consumer
@@ -36,12 +34,11 @@ async def test_confirm_message(mock_boto_client_sqs_with_delete_message, mock_de
 
 
 @pytest.mark.asyncio
-@mock.patch('loafer.aws.consumer.settings',
-            return_value=mock.Mock(SQS_WAIT_TIME_SECONDS=5, SQS_MAX_MESSAGES=10))
-async def test_fetch_messages(patched_settings, mock_boto_client_sqs_with_messages,
+async def test_fetch_messages(mock_boto_client_sqs_with_messages,
                               mock_receive_message):
+    options = {'WaitTimeSeconds': 5, 'MaxNumberOfMessages': 10}
     with mock_boto_client_sqs_with_messages:
-        consumer = Consumer('queue-name')
+        consumer = Consumer('queue-name', options)
         messages = await consumer.fetch_messages()
 
         assert len(messages) == 1
@@ -49,23 +46,23 @@ async def test_fetch_messages(patched_settings, mock_boto_client_sqs_with_messag
 
         assert mock_receive_message.called_once_with(
             QueueUrl=await consumer.get_queue_url(),
-            WaitTimeSeconds=patched_settings.SQS_WAIT_TIME_SECONDS,
-            MaxNumberOfMessages=patched_settings.SQS_MAX_MESSAGES)
+            WaitTimeSeconds=options.get('WaitTimeSeconds'),
+            MaxNumberOfMessages=options.get('MaxNumberOfMessages'))
 
 
 @pytest.mark.asyncio
-@mock.patch('loafer.aws.consumer.settings',
-            return_value=mock.Mock(SQS_WAIT_TIME_SECONDS=5, SQS_MAX_MESSAGES=10))
-async def test_fetch_messages_returns_empty(patched_settings,
-                                            mock_boto_client_sqs_with_empty_messages,
-                                            mock_receive_message_empty):
+async def test_fetch_messages_returns_empty(
+        mock_boto_client_sqs_with_empty_messages,
+        mock_receive_message_empty):
+
+    options = {'WaitTimeSeconds': 5, 'MaxNumberOfMessages': 10}
     with mock_boto_client_sqs_with_empty_messages:
-        consumer = Consumer('queue-name')
+        consumer = Consumer('queue-name', options)
         messages = await consumer.fetch_messages()
 
         assert messages == []
 
         assert mock_receive_message_empty.called_once_with(
             QueueUrl=await consumer.get_queue_url(),
-            WaitTimeSeconds=patched_settings.SQS_WAIT_TIME_SECONDS,
-            MaxNumberOfMessages=patched_settings.SQS_MAX_MESSAGES)
+            WaitTimeSeconds=options.get('WaitTimeSeconds'),
+            MaxNumberOfMessages=options.get('MaxNumberOfMessages'))

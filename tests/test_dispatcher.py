@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # vi:si:et:sw=4:sts=4:ts=4
 
+from unittest.mock import Mock
+
 from asynctest import CoroutineMock
 from asynctest import Mock as AsyncMock  # flake8: NOQA
 import pytest
@@ -10,19 +12,52 @@ from loafer.dispatcher import LoaferDispatcher
 
 
 @pytest.fixture
-def consumer_consume_mock():
+def route():
+    route = AsyncMock(source='queue', handler='handler', spec=Route)
+    return route
+
+
+@pytest.fixture
+def consumer():
     return CoroutineMock(consume=CoroutineMock(return_value=['message']),
                          confirm_message=CoroutineMock())
 
 
-@pytest.fixture
-def route(consumer_consume_mock):
-    get_consumer_mock = AsyncMock(return_value=consumer_consume_mock)
-    route = AsyncMock(queue_name='queue', handler='handler',
-                      get_consumer=get_consumer_mock,
-                      confirm_message=CoroutineMock(),
-                      spec=Route)
-    return route
+def test_without_consumers(route):
+    dispatcher = LoaferDispatcher(routes=[route])
+    assert dispatcher.consumers == []
+    assert len(dispatcher.consumers) == 0
+
+
+def test_with_consumers(route):
+    consumer = Mock()
+    dispatcher = LoaferDispatcher(routes=[route], consumers=[consumer])
+    assert len(dispatcher.consumers) == 1
+    assert dispatcher.consumers[0] is consumer
+
+
+def test_get_consumer_default(route):
+    dispatcher = LoaferDispatcher(routes=[route])
+    consumer = dispatcher.get_consumer(route)
+    assert consumer
+
+
+def test_get_consumer_custom(route):
+    consumer = Mock(source=route.source)
+    dispatcher = LoaferDispatcher(routes=[route], consumers=[consumer])
+    returned_consumer = dispatcher.get_consumer(route)
+
+    assert returned_consumer
+    assert returned_consumer is consumer
+
+
+def test_get_consumer_default_with_custom(route):
+    consumer = Mock(source='other-source')
+    dispatcher = LoaferDispatcher(routes=[route], consumers=[consumer])
+    returned_consumer = dispatcher.get_consumer(route)
+
+    assert returned_consumer
+    assert returned_consumer is not consumer
 
 
 @pytest.mark.asyncio
@@ -41,10 +76,11 @@ async def test_dispatch_message(route):
 
 
 @pytest.mark.asyncio
-async def test_dispatch_message_without_confirmation(route):
+async def test_dispatch_message_without_confirmation(route, consumer):
     route.deliver = CoroutineMock(return_value=None)
     routes = [route]
     dispatcher = LoaferDispatcher(routes)
+    dispatcher.get_consumer = Mock(return_value=consumer)
     # XXX: refactor this after error handling implementation
     message = False
 
@@ -53,14 +89,16 @@ async def test_dispatch_message_without_confirmation(route):
 
     assert route.deliver.called
     assert route.deliver.called_once_with('foobar')
-    assert not route.confirm_message.called
+    assert not dispatcher.get_consumer().called
+    assert not consumer.confirm_message.called
 
 
 @pytest.mark.asyncio
-async def test_dispatch_consumers(route):
+async def test_dispatch_consumers(route, consumer):
     routes = [route]
     dispatcher = LoaferDispatcher(routes)
     dispatcher.dispatch_message = CoroutineMock()
+    dispatcher.get_consumer = Mock(return_value=consumer)
 
     # consumers will stop after the first iteration
     running_values = [False, True]
@@ -70,9 +108,12 @@ async def test_dispatch_consumers(route):
 
     await dispatcher.dispatch_consumers(stopper)
 
-    assert route.get_consumer.called
-    assert route.get_consumer().consume.called
+    assert dispatcher.get_consumer.called
+    assert dispatcher.get_consumer.called_once_with(route)
+    assert consumer.consume.called
+
     assert dispatcher.dispatch_message.called
     assert dispatcher.dispatch_message.called_called_once_with('message', route)
-    assert route.get_consumer().confirm_message.called
-    assert route.get_consumer().confirm_message.called_once_with('message')
+
+    assert consumer.confirm_message.called
+    assert consumer.confirm_message.called_once_with('message')

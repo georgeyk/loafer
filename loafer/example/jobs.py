@@ -11,9 +11,11 @@ logger = logging.getLogger(__name__)
 
 # The regular function will be executed in the threadpool
 def example_job(*args, **kwargs):
-    logger.info('Got message: example_job with  args={} kwargs={}'.format(args, kwargs))
+    message = 'Called example_job with args={} kwargs={}'.format(args, kwargs)
+    logger.warning(message)
 
 
 # The coroutine will be scheduled in the event loop
 async def async_example_job(*args, **kwargs):
-    logger.info('Got message: async_example_job with args={} kwargs={}'.format(args, kwargs))
+    message = 'Called async_example_job with args={} kwargs={}'.format(args, kwargs)
+    logger.warning(message)

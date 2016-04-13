@@ -29,6 +29,14 @@ def test_error_on_invalid_name():
     with pytest.raises(ImportError):
         import_callable('invalid-1234')
 
+    with pytest.raises(ImportError):
+        import_callable('')
+
+
+def test_error_on_module():
+    with pytest.raises(ImportError):
+        import_callable('loafer.example')
+
 
 def test_error_on_non_callable():
     with pytest.raises(ImportError):

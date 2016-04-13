@@ -2,17 +2,19 @@
 # vi:si:et:sw=4:sts=4:ts=4
 
 import asyncio
+from unittest import mock
 
 import pytest
 
+from loafer.message_translator import StringMessageTranslator
 from loafer.route import Route
 
 
 def test_handler_property():
-    route = Route('foo-queue', 'loafer.jobs.example_job')
+    route = Route('foo-queue', 'loafer.example.jobs.example_job')
     assert callable(route.handler)
 
-    route = Route('foo-queue', 'loafer.jobs.async_example_job')
+    route = Route('foo-queue', 'loafer.example.jobs.async_example_job')
     assert callable(route.handler)
 
 
@@ -21,27 +23,30 @@ def test_handle_property_errors():
     with pytest.raises(ImportError):
         route.handler
 
-    route = Route('foo-queue', 'loafer.jobs')
+    route = Route('foo-queue', 'loafer.example')
     with pytest.raises(ImportError):
         route.handler
 
 
-def test_queue_name():
-    route = Route('foo-queue', 'invalid_job')
-    assert route.queue_name == 'foo-queue'
+def test_source():
+    route = Route(source='foo-queue', handler='invalid_job')
+    assert route.source == 'foo-queue'
 
 
-def test_get_consumer():
-    class CustomConsumer(object):
-        def __init__(self, queue):
-            self.queue = queue
+def test_name():
+    route = Route(source='foo-queue', handler='invalid_job', name='foo')
+    assert route.name == 'foo'
 
-    route = Route('foo-queue', 'invalid_job')
-    route.get_consumer_class = lambda: CustomConsumer
-    consumer = route.get_consumer()
 
-    assert consumer.queue == 'foo-queue'
-    assert isinstance(consumer, CustomConsumer)
+def test_message_translator():
+    route = Route('foo', 'invalid', message_translator=mock.Mock)
+    assert isinstance(route.message_translator, mock.Mock)
+
+
+def test_default_message_translator():
+    route = Route('foo', 'invalid')
+    translator = route.message_translator
+    assert isinstance(translator, StringMessageTranslator)
 
 
 # FIXME: Improve all test_deliver* tests
