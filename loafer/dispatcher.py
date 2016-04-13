@@ -18,6 +18,7 @@ class LoaferDispatcher(object):
         self._stopped_consumers = True
 
     async def dispatch_message(self, message, route):
+        logger.info('Dispatching message to route={}'.format(route))
         logger.debug('Dispatching message: {!r}'.format(message))
 
         # in the future, we may change the route depending on message content
@@ -49,5 +50,5 @@ class LoaferDispatcher(object):
         return self._stopped_consumers
 
     def stop_consumers(self):
-        logger.info('Stopping dispatching consumers')
+        logger.info('Stopping consumers')
         self._stopped_consumers = True

@@ -28,7 +28,8 @@ class Consumer(object):
         return response['QueueUrl']
 
     async def confirm_message(self, message):
-        logger.info('Confirming message (ACK)')
+        logger.info('Confirm message (ACK/Deletion)')
+
         receipt = message['ReceiptHandle']
         logger.debug('receipt={}'.format(receipt))
 
@@ -39,6 +40,8 @@ class Consumer(object):
 
     async def fetch_messages(self):
         queue_url = await self.get_queue_url()
+        logger.info('Fetching messages on {}'.format(queue_url))
+
         options = self._consumer_options or {}
         fn = partial(self._client.receive_message, QueueUrl=queue_url, **options)
         # XXX: Refactor this when boto support asyncio

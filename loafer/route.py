@@ -35,10 +35,12 @@ class Route(object):
         return klass(self.source, settings.LOAFER_DEFAULT_CONSUMER_OPTIONS)
 
     async def deliver(self, content, loop=None):
+        logger.info('Delivering message content to handler={}'.format(self.handler))
+
         if asyncio.iscoroutinefunction(self.handler):
-            logger.info('Handler is coroutine! {!r}'.format(self.handler))
+            logger.debug('Handler is coroutine! {!r}'.format(self.handler))
             return await self.handler(content)
         else:
-            logger.info('Handler will run in a separate thread: {!r}'.format(self.handler))
+            logger.debug('Handler will run in a separate thread: {!r}'.format(self.handler))
             loop = loop or asyncio.get_event_loop()
             return await loop.run_in_executor(None, self.handler, content)
