@@ -5,6 +5,7 @@ import logging
 
 import click
 
+from . import __version__
 from .conf import settings
 from .manager import LoaferManager
 from .aws.publisher import Publisher
@@ -20,10 +21,13 @@ def _bootstrap():
 
 
 def main():
+
+    echo('Starting Loafer (Version={}) ...'.format(__version__),
+         bold=True, fg='green')
+
     _bootstrap()
 
-    echo('Starting loafer ...')
-    echo('Hit CTRL-C to stop', bold=True)
+    echo('Hit CTRL-C to stop', bold=True, fg='yellow')
 
     loafer = LoaferManager()
     loafer.start()

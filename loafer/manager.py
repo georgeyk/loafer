@@ -7,6 +7,7 @@ import logging
 import os
 import signal
 
+from . import __version__
 from .conf import settings
 from .dispatcher import LoaferDispatcher
 from .exceptions import ConsumerError
@@ -46,7 +47,8 @@ class LoaferManager(object):
         return routes
 
     def start(self, routes_values=None):
-        logger.info('Starting Loafer (pid={}) ...'.format(os.getpid()))
+        start = 'Starting Loafer - Version: {} (pid={}) ...'
+        logger.info(start.format(__version__, os.getpid()))
 
         routes = self.get_routes(routes_values)
         self._dispatcher = LoaferDispatcher(routes)
