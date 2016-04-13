@@ -8,7 +8,6 @@ import logging
 import boto3
 import botocore.exceptions
 
-from ..conf import settings
 from ..exceptions import ConsumerError
 
 logger = logging.getLogger(__name__)
@@ -16,10 +15,11 @@ logger = logging.getLogger(__name__)
 
 class Consumer(object):
 
-    def __init__(self, source_name, loop=None):
+    def __init__(self, source_name, options=None, loop=None):
         self._source_name = source_name
         self._loop = loop or asyncio.get_event_loop()
         self._client = boto3.client('sqs')
+        self._consumer_options = options
 
     async def get_queue_url(self):
         fn = partial(self._client.get_queue_url, QueueName=self._source_name)
@@ -39,10 +39,8 @@ class Consumer(object):
 
     async def fetch_messages(self):
         queue_url = await self.get_queue_url()
-        fn = partial(self._client.receive_message,
-                     QueueUrl=queue_url,
-                     WaitTimeSeconds=settings.LOAFER_SQS_WAIT_TIME_SECONDS,
-                     MaxNumberOfMessages=settings.LOAFER_SQS_MAX_MESSAGES)
+        options = self._consumer_options or {}
+        fn = partial(self._client.receive_message, QueueUrl=queue_url, **options)
         # XXX: Refactor this when boto support asyncio
         response = await self._loop.run_in_executor(None, fn)
         return response.get('Messages', [])

@@ -33,7 +33,7 @@ def test_queue_name():
 
 def test_get_consumer():
     class CustomConsumer(object):
-        def __init__(self, queue):
+        def __init__(self, queue, options=None):
             self.queue = queue
 
     route = Route('foo-queue', 'invalid_job')

@@ -30,7 +30,7 @@ class Route(object):
 
     def get_consumer(self):
         klass = self.get_consumer_class()
-        return klass(self.queue_name)
+        return klass(self.queue_name, settings.LOAFER_DEFAULT_CONSUMER_OPTIONS)
 
     async def deliver(self, content, loop=None):
         if asyncio.iscoroutinefunction(self.handler):
