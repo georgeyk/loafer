@@ -3,9 +3,11 @@
 
 from setuptools import setup
 
+import loafer
+
 setup(
     name='loafer',
-    version='0.0.1',
+    version=loafer.__version__,
     entry_points='''
     [console_scripts]
     loafer=loafer.cli:cli
