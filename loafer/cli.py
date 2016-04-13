@@ -15,7 +15,8 @@ logger = logging.getLogger(__name__)
 
 
 def _bootstrap():
-    logging.basicConfig(level=settings.LOGLEVEL, format=settings.LOG_FORMAT)
+    logging.basicConfig(level=settings.LOAFER_LOGLEVEL,
+                        format=settings.LOAFER_LOG_FORMAT)
 
 
 def main():
