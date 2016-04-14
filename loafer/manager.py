@@ -39,7 +39,8 @@ class LoaferManager(object):
         if not self._conf.LOAFER_ROUTES:
             msg = 'Missing LOAFER_ROUTES configuration'
             logger.critical(msg)
-            self.stop()
+            if self._loop.is_running():
+                self.stop()
             raise ConfigurationError(msg)
 
         routes = []

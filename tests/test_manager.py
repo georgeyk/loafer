@@ -26,19 +26,28 @@ def test_routes_raise_error_if_not_configured(event_loop):
 
     with pytest.raises(ConfigurationError):
         manager = LoaferManager(settings)
-        # prevent early event loop closing, manager can't control the event
-        # loop in tests (event_loop is a fixture)
-        manager.stop = mock.Mock()
-
         manager.routes
 
     settings.LOAFER_ROUTES = []
 
     with pytest.raises(ConfigurationError):
         manager = LoaferManager(settings)
-        manager.stop = mock.Mock()
 
         manager.routes
+
+
+def test_routes_stop_manager_if_loop_is_running(event_loop):
+    settings = Settings()
+    settings.LOAFER_ROUTES = None
+    manager = LoaferManager(settings)
+    manager.stop = mock.Mock()
+
+    with mock.patch.object(event_loop, 'is_running', return_value=True):
+        with pytest.raises(ConfigurationError):
+            manager.routes
+
+        assert manager.stop.called
+        assert manager.stop.called_once_with()
 
 
 def test_consumers(event_loop):
