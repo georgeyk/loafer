@@ -1,0 +1,11 @@
+language: python
+
+python:
+  - "3.5"
+
+env:
+  - LOAFER_DEFAULT_ROUTE_SOURCE=test-source
+
+install: "pip install -r requirements/test.txt"
+script: "py.test tests --cov loafer"
+after_success: coveralls

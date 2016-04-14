@@ -12,7 +12,7 @@ from cached_property import cached_property
 from . import __version__
 from .conf import settings
 from .dispatcher import LoaferDispatcher
-from .exceptions import ConsumerError
+from .exceptions import ConsumerError, ConfigurationError
 from .route import Route
 from .utils import import_callable
 
@@ -40,7 +40,7 @@ class LoaferManager(object):
             msg = 'Missing LOAFER_ROUTES configuration'
             logger.critical(msg)
             self.stop()
-            raise ValueError(msg)
+            raise ConfigurationError(msg)
 
         routes = []
         for data in self._conf.LOAFER_ROUTES:

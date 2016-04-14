@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 # vi:si:et:sw=4:sts=4:ts=4
 
+from botocore.exceptions import ClientError
+
 import pytest
 
+from loafer.exceptions import ConsumerError
 from loafer.aws.consumer import Consumer
 
 
@@ -66,3 +69,28 @@ async def test_fetch_messages_returns_empty(
             QueueUrl=await consumer.get_queue_url(),
             WaitTimeSeconds=options.get('WaitTimeSeconds'),
             MaxNumberOfMessages=options.get('MaxNumberOfMessages'))
+
+
+@pytest.mark.asyncio
+async def test_consume(
+        mock_boto_client_sqs_with_empty_messages,
+        mock_receive_message_empty):
+
+    with mock_boto_client_sqs_with_empty_messages:
+        consumer = Consumer('queue-name', {})
+        messages = await consumer.consume()
+        assert messages == []
+
+        assert mock_receive_message_empty.called
+
+
+@pytest.mark.asyncio
+async def test_consume_with_client_error(mock_boto_client_sqs):
+    with mock_boto_client_sqs as mock_sqs:
+        error = ClientError(error_response={'Error': {'Message': 'unknown'}},
+                            operation_name='whatever')
+        mock_sqs.side_effect = error
+
+        consumer = Consumer('queue-name', {})
+        with pytest.raises(ConsumerError):
+            await consumer.consume()
