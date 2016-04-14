@@ -12,7 +12,7 @@ from cached_property import cached_property
 from . import __version__
 from .conf import settings
 from .dispatcher import LoaferDispatcher
-from .exceptions import ConsumerError, ConfigurationError
+from .exceptions import ConfigurationError
 from .route import Route
 from .utils import import_callable
 
@@ -94,6 +94,7 @@ class LoaferManager(object):
 
     def on_future__errors(self, future):
         exc = future.exception()
-        if isinstance(exc, ConsumerError):
+        # Unhandled errors crashes the event loop execution
+        if isinstance(exc, Exception):
             logger.critical('Fatal error caught: {!r}'.format(exc))
             self.stop()
