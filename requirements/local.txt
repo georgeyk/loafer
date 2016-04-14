@@ -1,4 +1,4 @@
-pre-commit==0.7.6
-Sphinx==1.4
-sphinx-autobuild==0.6.0
+pre-commit
+Sphinx
+sphinx-autobuild
 -e .
