@@ -27,8 +27,9 @@ class Route(object):
     @cached_property
     def message_translator(self):
         if self._message_translator:
-            return self._message_translator()
-        klass = import_callable(settings.LOAFER_DEFAULT_MESSAGE_TRANSLATOR_CLASS)
+            klass = import_callable(self._message_translator)
+        else:
+            klass = import_callable(settings.LOAFER_DEFAULT_MESSAGE_TRANSLATOR_CLASS)
         return klass()
 
     @cached_property

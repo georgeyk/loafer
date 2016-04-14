@@ -44,7 +44,7 @@ def test_name():
 
 
 def test_message_translator():
-    route = Route('foo', 'invalid', message_translator=mock.Mock)
+    route = Route('foo', 'invalid', message_translator='unittest.mock.Mock')
     assert isinstance(route.message_translator, mock.Mock)
 
 
