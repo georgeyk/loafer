@@ -35,6 +35,10 @@ class Route(object):
     def handler(self):
         return import_callable(self._handler)
 
+    @property
+    def handler_name(self):
+        return self._handler
+
     async def deliver(self, content, loop=None):
         logger.info('Delivering message content to handler={}'.format(self.handler))
 

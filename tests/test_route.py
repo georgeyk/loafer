@@ -28,6 +28,11 @@ def test_handle_property_errors():
         route.handler
 
 
+def test_handler_name_property():
+    route = Route('foo-queue', 'loafer.example.jobs.example_job')
+    assert route.handler_name == 'loafer.example.jobs.example_job'
+
+
 def test_source():
     route = Route(source='foo-queue', handler='invalid_job')
     assert route.source == 'foo-queue'
