@@ -17,7 +17,7 @@ class Settings(object):
     LOAFER_MAX_THREAD_POOL = config('LOAFER_MAX_THREAD_POOL', default=None)
 
     # Translator
-    LOAFER_DEFAULT_MESSAGE_TRANSLATOR_CLASS = 'loafer.message_translator.StringMessageTranslator'
+    LOAFER_DEFAULT_MESSAGE_TRANSLATOR_CLASS = 'loafer.aws.message_translator.SQSMessageTranslator'
 
     # Routes
     LOAFER_ROUTES = [

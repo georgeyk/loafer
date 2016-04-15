@@ -13,7 +13,8 @@ from loafer.dispatcher import LoaferDispatcher
 
 @pytest.fixture
 def route():
-    route = AsyncMock(source='queue', handler='handler', spec=Route)
+    route = AsyncMock(source='queue', handler='handler',
+                      message_translator=Mock(), spec=Route)
     return route
 
 
@@ -65,7 +66,9 @@ async def test_dispatch_message(route):
     route.deliver = CoroutineMock(return_value='receipt')
     routes = [route]
     dispatcher = LoaferDispatcher(routes)
+
     message = 'foobar'
+    route.message_translator.translate = Mock(return_value={'content': message})
 
     confirmation = await dispatcher.dispatch_message(message, route)
 
@@ -81,14 +84,32 @@ async def test_dispatch_message_without_confirmation(route, consumer):
     routes = [route]
     dispatcher = LoaferDispatcher(routes)
     dispatcher.get_consumer = Mock(return_value=consumer)
-    # XXX: refactor this after error handling implementation
-    message = False
+
+    message = None
+    route.message_translator = Mock(return_value={'content': None})
 
     confirmation = await dispatcher.dispatch_message(message, route)
-    assert not confirmation
+    assert confirmation is False
 
-    assert route.deliver.called
-    assert route.deliver.called_once_with('foobar')
+    assert not route.deliver.called
+    assert not dispatcher.get_consumer().called
+    assert not consumer.confirm_message.called
+
+
+@pytest.mark.asyncio
+async def test_dispatch_message_error_on_translation(route, consumer):
+    route.deliver = CoroutineMock(return_value=None)
+    routes = [route]
+    dispatcher = LoaferDispatcher(routes)
+    dispatcher.get_consumer = Mock(return_value=consumer)
+
+    message = 'invalid-message'
+    route.message_translator = Mock(side_effect=Exception)
+
+    confirmation = await dispatcher.dispatch_message(message, route)
+    assert confirmation is False
+
+    assert not route.deliver.called
     assert not dispatcher.get_consumer().called
     assert not consumer.confirm_message.called
 

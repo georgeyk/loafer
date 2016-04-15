@@ -28,12 +28,24 @@ class LoaferDispatcher(object):
         options = settings.LOAFER_DEFAULT_CONSUMER_OPTIONS
         return klass(route.source, options)
 
+    def _translate_message(self, message, route):
+        # in the future, we may change the route depending on message content
+        try:
+            content = route.message_translator.translate(message)['content']
+        except Exception as exc:
+            logger.exception(exc)
+            logger.error('Error translating message content')
+            return None
+
+        return content
+
     async def dispatch_message(self, message, route):
         logger.info('Dispatching message to route={}'.format(route))
-        logger.debug('Dispatching message: {!r}'.format(message))
 
-        # in the future, we may change the route depending on message content
-        content = route.message_translator.translate(message)
+        content = self._translate_message(message, route)
+        if content is None:
+            logger.warning('Message will be ignored:\n{}\n'.format(message))
+            return False
 
         # Since we don't know what will happen on message handler, use semaphore
         # to protect scheduling or executing too many coroutines/threads
