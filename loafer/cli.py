@@ -68,7 +68,6 @@ def show_version(ctx, param, value):
               help='The consumer options (assumes json), overrides LOAFER_DEFAULT_CONSUMER_OPTIONS')
 @click.pass_context
 def cli(context, v, vv, source, handler, translator, consumer, consumer_opts):
-    override_settings = {}
     if v:
         settings.LOAFER_LOGLEVEL = 'INFO'
     if vv:
@@ -86,7 +85,7 @@ def cli(context, v, vv, source, handler, translator, consumer, consumer_opts):
         settings.LOAFER_DEFAULT_CONSUMER_OPTIONS = opts
 
     if context.invoked_subcommand is None:
-        main(**override_settings)
+        main()
 
 
 @cli.command()
