@@ -6,7 +6,7 @@ import logging
 import click
 
 from . import __version__
-from .conf import settings
+from .conf import Settings, settings
 from .manager import LoaferManager
 from .aws.publisher import Publisher
 
@@ -14,20 +14,22 @@ from .aws.publisher import Publisher
 logger = logging.getLogger(__name__)
 
 
-def _bootstrap():
-    logging.basicConfig(level=settings.LOAFER_LOGLEVEL,
-                        format=settings.LOAFER_LOG_FORMAT)
+def _bootstrap(custom_settings=None):
+    configuration = custom_settings or settings
+    logging.basicConfig(level=configuration.LOAFER_LOGLEVEL,
+                        format=configuration.LOAFER_LOG_FORMAT)
 
 
 def main(**kwargs):
     click.secho('>. Starting Loafer (Version={}) ...'.format(__version__),
                 bold=True, fg='green')
 
-    _bootstrap(**kwargs)
+    custom_settings = Settings(**kwargs)
+    _bootstrap(custom_settings)
 
     click.secho('>. Hit CTRL-C to stop', bold=True, fg='yellow')
 
-    loafer = LoaferManager()
+    loafer = LoaferManager(custom_settings)
     loafer.start()
 
 
@@ -40,10 +42,20 @@ CLICK_CONTEXT_SETTINGS = {'help_option_names': ['-h', '--help']}
 
 @click.group(invoke_without_command=True,
              context_settings=CLICK_CONTEXT_SETTINGS)
+@click.option('-v', default=False, is_flag=True,
+              help='Verbose mode (set LOAFER_LOGLEVEL=INFO)')
+@click.option('-vv', default=False, is_flag=True,
+              help='Very verbose mode (set LOAFER_LOGLEVEL=DEBUG)')
 @click.pass_context
-def cli(context):
+def cli(context, v, vv):
+    override_settings = {}
+    if v:
+        override_settings['LOAFER_LOGLEVEL'] = 'INFO'
+    if vv:
+        override_settings['LOAFER_LOGLEVEL'] = 'DEBUG'
+
     if context.invoked_subcommand is None:
-        main()
+        main(**override_settings)
 
 
 @cli.command()
