@@ -1,5 +1,7 @@
 .PHONY: clean-pyc
 
+default: test
+
 clean-pyc:
 	@find . -iname '*.py[co]' -delete
 	@find . -iname '__pycache__' -delete
@@ -8,13 +10,13 @@ clean-pyc:
 clean: clean-pyc
 
 test:
-	py.test -vv
+	py.test -vv tests
 
 test-cov:
-	py.test -vv --cov=loafer
+	py.test -vv --cov=loafer tests
 
 cov:
 	coverage report -m
 
 cov-report:
-	py.test -vv --cov=loafer --cov-report=html
+	py.test -vv --cov=loafer --cov-report=html tests
