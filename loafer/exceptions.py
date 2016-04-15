@@ -8,3 +8,11 @@ class ConsumerError(Exception):
 
 class ConfigurationError(Exception):
     pass
+
+
+class IgnoreMessage(Exception):
+    pass
+
+
+class RejectMessage(Exception):
+    pass

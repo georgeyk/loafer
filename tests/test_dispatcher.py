@@ -7,14 +7,16 @@ from asynctest import CoroutineMock
 from asynctest import Mock as AsyncMock  # flake8: NOQA
 import pytest
 
-from loafer.route import Route
+from loafer.exceptions import RejectMessage, IgnoreMessage
 from loafer.dispatcher import LoaferDispatcher
+from loafer.route import Route
 
 
 @pytest.fixture
 def route():
+    message_translator = Mock(translate=Mock(return_value={'content': 'message'}))
     route = AsyncMock(source='queue', handler='handler',
-                      message_translator=Mock(), spec=Route)
+                      message_translator=message_translator, spec=Route)
     return route
 
 
@@ -64,54 +66,87 @@ def test_get_consumer_default_with_custom(route):
 @pytest.mark.asyncio
 async def test_dispatch_message(route):
     route.deliver = CoroutineMock(return_value='receipt')
-    routes = [route]
-    dispatcher = LoaferDispatcher(routes)
+    dispatcher = LoaferDispatcher([route])
 
     message = 'foobar'
-    route.message_translator.translate = Mock(return_value={'content': message})
-
     confirmation = await dispatcher.dispatch_message(message, route)
+    assert confirmation is True
 
-    assert confirmation
-
+    assert route.message_translator.translate.called
     assert route.deliver.called
-    assert route.deliver.called_once_with('foobar')
+    assert route.deliver.called_once_with(message)
 
 
 @pytest.mark.asyncio
-async def test_dispatch_message_without_confirmation(route, consumer):
+async def test_dispatch_message_without_translation(route):
     route.deliver = CoroutineMock(return_value=None)
-    routes = [route]
-    dispatcher = LoaferDispatcher(routes)
-    dispatcher.get_consumer = Mock(return_value=consumer)
+    dispatcher = LoaferDispatcher([route])
 
     message = None
-    route.message_translator = Mock(return_value={'content': None})
+    route.message_translator.translate = Mock(return_value={'content': None})
 
     confirmation = await dispatcher.dispatch_message(message, route)
     assert confirmation is False
 
+    assert route.message_translator.translate.called
     assert not route.deliver.called
-    assert not dispatcher.get_consumer().called
-    assert not consumer.confirm_message.called
 
 
 @pytest.mark.asyncio
-async def test_dispatch_message_error_on_translation(route, consumer):
+async def test_dispatch_message_error_on_translation(route):
     route.deliver = CoroutineMock(return_value=None)
-    routes = [route]
-    dispatcher = LoaferDispatcher(routes)
-    dispatcher.get_consumer = Mock(return_value=consumer)
+    dispatcher = LoaferDispatcher([route])
 
     message = 'invalid-message'
-    route.message_translator = Mock(side_effect=Exception)
+    route.message_translator.translate = Mock(side_effect=Exception)
 
     confirmation = await dispatcher.dispatch_message(message, route)
     assert confirmation is False
 
+    assert route.message_translator.translate.called
     assert not route.deliver.called
-    assert not dispatcher.get_consumer().called
-    assert not consumer.confirm_message.called
+
+
+@pytest.mark.asyncio
+async def test_dispatch_message_task_reject_message(route):
+    route.deliver = CoroutineMock(side_effect=RejectMessage)
+    dispatcher = LoaferDispatcher([route])
+
+    message = 'rejected-message'
+    confirmation = await dispatcher.dispatch_message(message, route)
+    assert confirmation is True
+
+    assert route.message_translator.translate.called
+    assert route.deliver.called
+    assert route.deliver.called_once_with(message)
+
+
+@pytest.mark.asyncio
+async def test_dispatch_message_task_ignore_message(route):
+    route.deliver = CoroutineMock(side_effect=IgnoreMessage)
+    dispatcher = LoaferDispatcher([route])
+
+    message = 'ignored-message'
+    confirmation = await dispatcher.dispatch_message(message, route)
+    assert confirmation is False
+
+    assert route.message_translator.translate.called
+    assert route.deliver.called
+    assert route.deliver.called_once_with(message)
+
+
+@pytest.mark.asyncio
+async def test_dispatch_message_task_error(route):
+    route.deliver = CoroutineMock(side_effect=Exception)
+    dispatcher = LoaferDispatcher([route])
+
+    message = 'message'
+    confirmation = await dispatcher.dispatch_message(message, route)
+    assert confirmation is False
+
+    assert route.message_translator.translate.called
+    assert route.deliver.called
+    assert route.deliver.called_once_with(message)
 
 
 @pytest.mark.asyncio

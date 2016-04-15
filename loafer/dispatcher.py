@@ -5,6 +5,7 @@ import asyncio
 import logging
 
 from .conf import settings
+from .exceptions import RejectMessage, IgnoreMessage
 from .utils import import_callable
 
 logger = logging.getLogger(__name__)
@@ -16,7 +17,7 @@ class LoaferDispatcher(object):
         self.routes = routes
         self.consumers = consumers or []
         self._semaphore = asyncio.Semaphore(settings.LOAFER_MAX_JOBS)
-        self._stopped_consumers = True
+        self._stop_consumers = True
 
     def get_consumer(self, route):
         for consumer in self.consumers:
@@ -50,15 +51,29 @@ class LoaferDispatcher(object):
         # Since we don't know what will happen on message handler, use semaphore
         # to protect scheduling or executing too many coroutines/threads
         with await self._semaphore:
-            # TODO: handle errors here
-            await route.deliver(content)
+            try:
+                await route.deliver(content)
+            except RejectMessage as exc:
+                logger.exception(exc)
+                logger.warning('Explicit message rejection:\n{}\n'.format(message))
+                # eg, we will return True at the end
+            except IgnoreMessage as exc:
+                logger.exception(exc)
+                logger.warning('Explicit message ignore:\n{}\n'.format(message))
+                return False
+            except Exception as exc:
+                logger.exception(exc)
+                logger.error('Unhandled exception on {}'.format(route.handler_name))
+                return False
 
-        return message
+        return True
 
-    async def dispatch_consumers(self, stopper=None):
-        if stopper is None:
-            self._stopped_consumers = False
-            stopper = self._stopper
+    async def dispatch_consumers(self, sentinel=None):
+        if sentinel is None or not callable(sentinel):
+            self._stop_consumers = False
+            stopper = self._default_sentinel
+        else:
+            stopper = sentinel
 
         while not stopper():
             for route in self.routes:
@@ -69,9 +84,9 @@ class LoaferDispatcher(object):
                     if confirmation:
                         await consumer.confirm_message(message)
 
-    def _stopper(self):
-        return self._stopped_consumers
+    def _default_sentinel(self):
+        return self._stop_consumers
 
     def stop_consumers(self):
         logger.info('Stopping consumers')
-        self._stopped_consumers = True
+        self._stop_consumers = True
