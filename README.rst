@@ -1,6 +1,7 @@
 Loafer
 ======
 
+|Docs|
 |TravisCI Build Status| |Coverage Status| |Requirements Status|
 |Scrutinizer Code Quality| |Code Climate|
 
@@ -25,9 +26,13 @@ of changes until the first major version.
 Documentation
 ~~~~~~~~~~~~~
 
-TODO: add documentation link
+Check out the latest ``Loafer`` documentation at `Read the Docs`_ website.
 
 
+.. _`Read the Docs`: http://loafer.readthedocs.org/
+
+.. |Docs| image:: https://readthedocs.org/projects/loafer/badge/?version=latest
+   :target: http://loafer.readthedocs.org/en/latest/?badge=latest
 .. |TravisCI Build Status| image:: https://travis-ci.org/georgeyk/loafer.svg?branch=master
    :target: https://travis-ci.org/georgeyk/loafer
 .. |Coverage Status| image:: https://coveralls.io/repos/github/georgeyk/loafer/badge.svg?branch=master
