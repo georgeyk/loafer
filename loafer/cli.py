@@ -19,10 +19,20 @@ def _bootstrap():
     logging.basicConfig(level=settings.LOAFER_LOGLEVEL,
                         format=settings.LOAFER_LOG_FORMAT)
 
+    click.echo('>. Version: {}'.format(__version__))
+    click.echo('>. Maximum concurrent jobs: {}'.format(settings.LOAFER_MAX_JOBS))
+    click.echo('>. Routes:')
+    for route in settings.LOAFER_ROUTES:
+        click.echo('>.\t{}:'.format(route['name']))
+        click.echo('>.\t\tSource: {}'.format(route['source']))
+        click.echo('>.\t\tHandler: {}'.format(route['handler']))
+        click.echo('>.\t\tMessage Translator: {}'.format(route['message_translator']))
+        click.echo('>.\t\tConsumer: {}'.format(settings.LOAFER_DEFAULT_CONSUMER_CLASS))
+        click.echo('>.\t\tConsumer Options: {}'.format(settings.LOAFER_DEFAULT_CONSUMER_OPTIONS))
+
 
 def main(**kwargs):
-    click.secho('>. Starting Loafer (Version={}) ...'.format(__version__),
-                bold=True, fg='green')
+    click.secho('>. Starting Loafer ...', bold=True, fg='green')
 
     _bootstrap()
 
