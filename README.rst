@@ -6,17 +6,24 @@ Loafer
 
 ----
 
-Asynchronous Consumer
+Loafer is an asynchronous message dispatcher for concurrent tasks processing.
 
-Currently, supporting only Amazon SQS and using asyncio library.
+It uses asyncio library and provides a friendly CLI.
+
+Features:
+
+* Encourages decoupling from message producers and consumers
+* Highly configurable
+* Easy to extend
+* Amazon SQS integration
 
 
-Requirements
-~~~~~~~~~~~~
+It requires Python 3.5+ and is very experimental at the moment, expect a lot
+of changes until the first major version.
 
-Python 3.5+
 
-\*\* REALLY EXPERIMENTAL - CONCEPT-PROOF\*\*
+Documentation
+~~~~~~~~~~~~~
 
 TODO: add documentation link
 
