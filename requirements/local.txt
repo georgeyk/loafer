@@ -1,3 +1,4 @@
+-r production.txt
 pre-commit
 Sphinx
 sphinx-autobuild
