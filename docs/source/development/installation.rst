@@ -29,3 +29,5 @@ To configure AWS access, check `boto3 configuration`_ or export::
 
 
 .. _boto3 configuration: https://boto3.readthedocs.org/en/latest/guide/quickstart.html#configuration
+
+Check the :doc:`../settings` section to see specific configurations.
