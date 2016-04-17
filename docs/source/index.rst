@@ -29,6 +29,7 @@ User Guide
     overview.rst
     settings.rst
     exceptions.rst
+    message_translators.rst
     publisher.rst
 
 
