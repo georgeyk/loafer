@@ -17,7 +17,9 @@ class Settings(object):
     LOAFER_MAX_THREAD_POOL = config('LOAFER_MAX_THREAD_POOL', default=None)
 
     # Translator
-    LOAFER_DEFAULT_MESSAGE_TRANSLATOR_CLASS = 'loafer.aws.message_translator.SQSMessageTranslator'
+    LOAFER_DEFAULT_MESSAGE_TRANSLATOR_CLASS = config(
+        'LOAFER_DEFAULT_MESSAGE_TRANSLATOR_CLASS',
+        default='loafer.aws.message_translator.SQSMessageTranslator')
 
     # Routes
     LOAFER_ROUTES = [
@@ -33,11 +35,15 @@ class Settings(object):
     # Currently, only AWS is supported, references:
     # http://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-long-polling.html
     # http://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_ReceiveMessage.html
+
     # By default, SQS does not set long-polling (WaitTimeSeconds) and the MaxNumberOfMessages is 1
     # TODO: tweak default values for acceptable performance
-    LOAFER_DEFAULT_CONSUMER_CLASS = 'loafer.aws.consumer.Consumer'
-    LOAFER_DEFAULT_CONSUMER_OPTIONS = {'WaitTimeSeconds': 5,  # from 1-20
-                                       'MaxNumberOfMessages': 5}  # from 1-10
+    LOAFER_DEFAULT_CONSUMER_CLASS = config('LOAFER_DEFAULT_CONSUMER_CLASS',
+                                           default='loafer.aws.consumer.Consumer')
+    LOAFER_DEFAULT_CONSUMER_OPTIONS = config(
+        'LOAFER_DEFAULT_CONSUMER_OPTIONS',
+        default={'WaitTimeSeconds': 5,  # from 1-20
+                 'MaxNumberOfMessages': 5})  # from 1-10
 
     # Setting LOAFER_CONSUMERS is only needed when there's more than one consumer.
     # Otherwise, all routes will use the LOAFER_DEFAULT_CONSUMER_CLASS
