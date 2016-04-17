@@ -56,6 +56,10 @@ def show_version(ctx, param, value):
               help='Very verbose mode (set LOAFER_LOGLEVEL=DEBUG)')
 @click.option('--version', is_flag=True, is_eager=True, expose_value=False,
               callback=show_version, help="Show Loafer's version and exit")
+@click.option('--max-jobs', default=None, type=int,
+              help='Maximum concurrent jobs, overrides LOAFER_MAX_JOBS')
+@click.option('--max-threads', default=None, type=int,
+              help='Maximum threads, overrides LOAFER_MAX_THREAD_POOL')
 @click.option('--source', default=None,
               help='The route source, updates the default route source')
 @click.option('--handler', default=None,
@@ -67,11 +71,16 @@ def show_version(ctx, param, value):
 @click.option('--consumer-opts', default=None,
               help='The consumer options (assumes json), overrides LOAFER_DEFAULT_CONSUMER_OPTIONS')
 @click.pass_context
-def cli(context, v, vv, source, handler, translator, consumer, consumer_opts):
+def cli(context, v, vv, max_jobs, max_threads, source, handler, translator,
+        consumer, consumer_opts):
     if v:
         settings.LOAFER_LOGLEVEL = 'INFO'
     if vv:
         settings.LOAFER_LOGLEVEL = 'DEBUG'
+    if max_jobs and max_jobs >= 1:
+        settings.LOAFER_MAX_JOBS = max_jobs
+    if max_threads and max_threads >= 1:
+        settings.LOAFER_MAX_THREAD_POOL = max_threads
     if source:
         settings.LOAFER_ROUTES[0]['source'] = source
     if handler:

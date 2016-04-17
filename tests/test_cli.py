@@ -41,6 +41,38 @@ def test_very_verbose(runner, local_settings):
         assert settings.LOAFER_LOGLEVEL == 'DEBUG'
 
 
+def test_max_jobs(runner, local_settings):
+    with mock.patch('loafer.cli.settings', local_settings) as settings:
+        runner.invoke(cli, ['--max-jobs', '20'])
+        assert settings.LOAFER_MAX_JOBS == 20
+
+
+def test_max_jobs_error(runner, local_settings):
+    result = runner.invoke(cli, ['--max-jobs', 'a'])
+    assert isinstance(result.exception, SystemExit)
+
+    with mock.patch('loafer.cli.settings', local_settings) as settings:
+        result = runner.invoke(cli, ['--max-jobs', '0'])
+        # preserves default value
+        assert settings.LOAFER_MAX_JOBS == 10
+
+
+def test_max_threads(runner, local_settings):
+    with mock.patch('loafer.cli.settings', local_settings) as settings:
+        runner.invoke(cli, ['--max-threads', '20'])
+        assert settings.LOAFER_MAX_THREAD_POOL == 20
+
+
+def test_max_threads_error(runner, local_settings):
+    result = runner.invoke(cli, ['--max-threads', 'a'])
+    assert isinstance(result.exception, SystemExit)
+
+    with mock.patch('loafer.cli.settings', local_settings) as settings:
+        result = runner.invoke(cli, ['--max-threads', '0'])
+        # preserves default value
+        assert settings.LOAFER_MAX_THREAD_POOL is None
+
+
 def test_source(runner, local_settings):
     with mock.patch('loafer.cli.settings', local_settings) as settings:
         runner.invoke(cli, ['--source', 'foobar'])
