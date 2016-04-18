@@ -17,9 +17,20 @@ Development install
 After forking or checking out::
 
     $ cd loafer/
-    $ pip install -r requirements.txt
+    $ python setup.py develop
     $ pip install -r requirements/local.txt
     $ pip install -r requirements/test.txt
+    $ pre-commit install
+
+
+Running tests::
+
+    $ make test
+
+Generating documentation::
+
+    $ cd docs/
+    $ make html
 
 
 To configure AWS access, check `boto3 configuration`_ or export::
