@@ -39,8 +39,8 @@ with codecs.open(os.path.join(here, 'CHANGES.rst'), encoding='utf-8') as f:
 
 # Requirements
 
-tests_requirements = ['pytest', 'pytest-asyncio', 'pytest-cov', 'asynctest',
-                      'coveralls', 'pytest-env']
+with codecs.open(os.path.join(here, 'requirements/test.txt'), encoding='utf-8') as f:
+    tests_requirements = [req for req in f.read().split('\n') if req]
 
 install_requirements = ['boto3==1.3.0',
                         'prettyconf==1.2.3',
