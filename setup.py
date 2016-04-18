@@ -34,7 +34,7 @@ with codecs.open(os.path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 with codecs.open(os.path.join(here, 'CHANGES.rst'), encoding='utf-8') as f:
     changes = f.read()
-    long_description += '\n\nChangelog:\n=========\n{}'.format(changes)
+    long_description += '\n\nChangelog:\n==========\n\n{}'.format(changes)
 
 
 # Requirements
@@ -60,7 +60,7 @@ setup(
     license='MIT',
     author='George Y. Kussumoto',
     author_email='contato at georgeyk dot com dot br',
-    packages=find_packages(exclude=['docs', 'tests', 'requirements']),
+    packages=find_packages(exclude=['docs', 'tests', 'tests.*', 'requirements']),
     entry_points='''
     [console_scripts]
     loafer=loafer.cli:cli
