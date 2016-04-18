@@ -9,6 +9,8 @@ Loafer
 
 Loafer is an asynchronous message dispatcher for concurrent tasks processing.
 
+**Currently, only AWS SQS is supported**
+
 It uses asyncio library and provides a friendly CLI.
 
 Features:
