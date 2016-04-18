@@ -41,6 +41,7 @@ Development
     :maxdepth: 1
 
     development/installation.rst
+    development/release.rst
 
 
 Other

@@ -58,6 +58,7 @@ setup(
     description='Asynchronous message dispatcher for concurrent tasks processing',
     long_description=long_description,
     url='https://github.com/georgeyk/loafer/',
+    download_url='https://github.com/georgeyk/loafer/releases',
     license='MIT',
     author='George Y. Kussumoto',
     author_email='contato at georgeyk dot com dot br',
