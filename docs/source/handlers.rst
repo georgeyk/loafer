@@ -15,7 +15,7 @@ Usually, it will be similar to this::
 Where ``message`` will contain some expected message format.
 
 The ``async def`` is the python coroutine syntax, but regular functions
-can also be used, but will run in a thread.
+can also be used, but will run in a thread, outside the event loop.
 
 The ``handler`` does not need to return anything, but any unhandled error
 will cause the message to be ignored.
