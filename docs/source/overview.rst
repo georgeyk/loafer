@@ -1,6 +1,25 @@
 Overview
 --------
 
+Loafer is an asynchronous message dispatcher for concurrent tasks processing.
+
+To take full advantage, your tasks:
+
+1. Should use asyncio
+2. Should be I/O bounded
+3. Should be decoupled from the message producer
+
+If your task are CPU bounded, you should look for projects that use
+``multiprocessing`` python module or similar.
+
+We don't require the use of asyncio, but any code that's not a coroutine
+will run in thread. Performance and error handling might be compromised
+in this scenarios, you might want to look for other alternatives.
+
+If your code are too tied to the message producer, you might end writing too
+much boilerplate code in order to use ``Loafer``.
+
+
 Components
 ~~~~~~~~~~
 
