@@ -1,6 +1,7 @@
 Loafer
 ======
 
+|PyPI latest| |PyPI Version| |PyPI License| |PyPI Downloads|
 |Docs|
 |TravisCI Build Status| |Coverage Status| |Requirements Status|
 |Scrutinizer Code Quality| |Code Climate|
@@ -45,3 +46,11 @@ Check out the latest ``Loafer`` documentation at `Read the Docs`_ website.
    :target: https://scrutinizer-ci.com/g/georgeyk/loafer/?branch=master
 .. |Code Climate| image:: https://codeclimate.com/github/georgeyk/loafer/badges/gpa.svg
    :target: https://codeclimate.com/github/georgeyk/loafer
+.. |PyPI Version| image:: https://img.shields.io/pypi/pyversions/loafer.svg?maxAge=2592000
+   :target: https://pypi.python.org/pypi/loafer
+.. |PyPI License| image:: https://img.shields.io/pypi/l/loafer.svg?maxAge=2592000
+   :target: https://pypi.python.org/pypi/loafer
+.. |PyPI Downloads| image:: https://img.shields.io/pypi/dm/loafer.svg?maxAge=2592000
+   :target: https://pypi.python.org/pypi/loafer
+.. |PyPI latest| image:: https://img.shields.io/pypi/v/loafer.svg?maxAge=2592000
+   :target: https://pypi.python.org/pypi/loafer
