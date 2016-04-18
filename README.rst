@@ -1,8 +1,8 @@
 Loafer
 ======
 
-|PyPI latest| |PyPI Version| |PyPI License| |PyPI Downloads|
-|Docs|
+|PyPI latest| |PyPI Version| |PyPI License| |PyPI Downloads| |Docs|
+
 |TravisCI Build Status| |Coverage Status| |Requirements Status|
 |Scrutinizer Code Quality| |Code Climate|
 
