@@ -1,4 +1,5 @@
 pre-commit
 Sphinx
 sphinx-autobuild
--e .
+twine
+wheel
