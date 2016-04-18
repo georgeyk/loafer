@@ -6,7 +6,7 @@
 Welcome to Loafer's documentation!
 ==================================
 
-Loafer is an asynchronous consumer
+Loafer is an asynchronous message dispatcher for concurrent tasks processing.
 
 
 Quickstart
@@ -15,25 +15,32 @@ Quickstart
 .. toctree::
     :maxdepth: 1
 
-    installation.rst
-    usage.rst
+    quickstart/installation.rst
+    quickstart/usage.rst
 
 
 
-Components
+User Guide
 ----------
 
 .. toctree::
     :maxdepth: 1
 
+    overview.rst
     settings.rst
-    manager.rst
-    dispatcher.rst
-    route.rst
-    message-translator.rst
-    consumer.rst
-    publisher.rst
     exceptions.rst
+    message_translators.rst
+    handlers.rst
+    publisher.rst
+
+
+Development
+-----------
+
+.. toctree::
+    :maxdepth: 1
+
+    development/installation.rst
 
 
 Other
@@ -42,8 +49,8 @@ Other
 .. toctree::
     :maxdepth: 2
 
-    faq.rst
     tutorial.rst
+    faq.rst
 
 
 Indices and tables

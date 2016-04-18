@@ -8,7 +8,8 @@ will be loaded automatically.
 
 Here is a sample ``.env`` file::
 
-    LOAFER_DEFAULT_QUEUE_NAME=test-images
+    LOAFER_DEFAULT_ROUTE_SOURCE=my-queue-name
+    LOAFER_DEFAULT_ROUTE_HANDLER=loafer.example.jobs.async_example_job
 
 
 All the possible configuration keys and its default values are listed below
@@ -20,7 +21,33 @@ All the possible configuration keys and its default values are listed below
     * - Key
       - Default value
     * - LOAFER_LOG_FORMAT
-      - '%(format)s'
+      - '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    * - LOAFER_MAX_JOBS
+      - 10
+    * - LOAFER_MAX_THREAD_POOL
+      - None
+    * - LOAFER_DEFAULT_MESSAGE_TRANSLATOR_CLASS
+      - 'loafer.aws.message_translator.SQSMessageTranslator'
+    * - LOAFER_DEFAULT_ROUTE_NAME
+      - 'default'
+    * - LOAFER_DEFAULT_ROUTE_SOURCE
+      - **required**
+    * - LOAFER_DEFAULT_ROUTE_HANDLER
+      - 'loafer.example.jobs.async_example_job'
+    * - LOAFER_DEFAULT_CONSUMER_CLASS
+      - 'loafer.aws.consumer.Consumer'
+    * - LOAFER_DEFAULT_CONSUMER_OPTIONS
+      - {'WaitTimeSeconds: 5, 'MaxNumberOfMessages': 5}
+
+
+The ``LOAFER_MAX_JOBS`` is the number of concurrent ``handler`` executions.
+
+The ``LOAFER_MAX_THREAD_POOL`` if not set, are determined automatically by
+the number of cores in the machine. Threads are used to execute ``non-asyncio``
+code.
+
+All variables that requires a ``class`` or ``callable`` must be a full name, e.g.,
+we must be able to import it.
 
 
 AWS
