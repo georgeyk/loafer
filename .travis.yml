@@ -6,6 +6,6 @@ python:
 env:
   - LOAFER_DEFAULT_ROUTE_SOURCE=test-source
 
-install: "pip install -r requirements/test.txt"
+install: "python setup.py install && pip install -r requirements/test.txt"
 script: "py.test tests --cov loafer"
 after_success: coveralls
