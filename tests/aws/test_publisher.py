@@ -21,6 +21,21 @@ def test_sqs_publish(mock_boto_client_sqs):
             QueueUrl=queue_url)
 
 
+def test_sqs_publish_with_queue_url(mock_boto_client_sqs):
+    with mock_boto_client_sqs as mock_sqs:
+        message = '{"test": "hey"}'
+        response = sqs_publish('https://blabla/queue-name', message)
+        assert response
+        assert mock_sqs.called
+
+        client = mock_sqs()
+        assert client.send_message.called
+        queue_url = client.get_queue_url()['QueueUrl']
+        assert client.send_message.called_once_with(
+            MessageBody='{}'.format(message),
+            QueueUrl=queue_url)
+
+
 def test_sns_publisher(mock_boto_client_sns):
     with mock_boto_client_sns as mock_sns:
         message = '{"test": "hey"}'
