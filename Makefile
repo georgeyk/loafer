@@ -6,6 +6,7 @@ clean-pyc:
 	@find . -iname '*.py[co]' -delete
 	@find . -iname '__pycache__' -delete
 	@find . -iname '.coverage' -delete
+	@rm -rf htmlcov/
 
 clean-dist:
 	@rm -rf dist/
