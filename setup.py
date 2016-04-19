@@ -43,10 +43,10 @@ with codecs.open(os.path.join(here, 'CHANGES.rst'), encoding='utf-8') as f:
 tests_requirements = ['pytest', 'pytest-asyncio', 'pytest-cov', 'pytest-env',
                       'coveralls', 'asynctest']
 
-install_requirements = ['boto3==1.3.0',
-                        'prettyconf==1.2.3',
-                        'click==6.6',
-                        'cached-property==1.3.0',
+install_requirements = ['boto3>=1.3.0',
+                        'prettyconf>=1.2.3',
+                        'click>=6.6',
+                        'cached-property>=1.3.0',
                         ]
 
 
