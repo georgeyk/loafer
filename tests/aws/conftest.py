@@ -37,7 +37,27 @@ def mock_delete_message():
     return mock.Mock()
 
 
+@pytest.fixture
+def mock_sns_list_topics():
+    topics = {'Topics': [{'TopicArn': 'arn:aws:sns:region:id:topic-name'}]}
+    return mock.Mock(return_value=topics)
+
+
+@pytest.fixture
+def mock_sns_publish():
+    response = {'ResponseMetadata': {'HTTPStatusCode': 200, 'RequestId': 'uuid'},
+                'MessageId': 'uuid'}
+    return mock.Mock(return_value=response)
+
+
 # boto client mock
+
+@pytest.fixture
+def mock_boto_client_sns(mock_sns_publish, mock_sns_list_topics):
+    mock_client = mock.Mock(publish=mock_sns_publish,
+                            list_topics=mock_sns_list_topics)
+    return mock.patch('boto3.client', return_value=mock_client)
+
 
 @pytest.fixture
 def mock_boto_client_sqs(mock_get_queue_url, mock_send_message):
