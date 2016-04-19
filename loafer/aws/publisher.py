@@ -6,7 +6,7 @@ import json
 import boto3
 
 
-def sqs_publish(queue, message, is_json=True):
+def sqs_publish(queue, message):
     _client = boto3.client('sqs')
 
     if queue.startswith('https://'):
