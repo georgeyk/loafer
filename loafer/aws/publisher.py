@@ -6,7 +6,7 @@ import json
 import boto3
 
 
-def sqs_publish(queue, message, is_json=True):
+def sqs_publish(queue, message):
     _client = boto3.client('sqs')
 
     if queue.startswith('https://'):
@@ -18,7 +18,7 @@ def sqs_publish(queue, message, is_json=True):
     return _client.send_message(QueueUrl=queue_url, MessageBody=message)
 
 
-def sns_publish(topic, message, is_json=True):
+def sns_publish(topic, message):
     _client = boto3.client('sns')
     if topic.startswith('arn:'):
         arn = topic
@@ -31,18 +31,3 @@ def sns_publish(topic, message, is_json=True):
 
     msg = json.dumps({'default': message})
     return _client.publish(TopicArn=arn, MessageStructure='json', Message=msg)
-
-
-class Publisher(object):
-    publishers = {'sqs': sqs_publish,
-                  'sns': sns_publish}
-
-    def publish(self, service, destination, message, loop=None, **kwargs):
-        try:
-            publisher = self.publishers[service]
-        except KeyError:
-            print('Service publisher "{}" not found, available are {}'.format(
-                  service, self.publisher.keys()))
-            return
-
-        return publisher(destination, message, **kwargs)
