@@ -95,6 +95,6 @@ class LoaferManager(object):
     def on_future__errors(self, future):
         exc = future.exception()
         # Unhandled errors crashes the event loop execution
-        if isinstance(exc, Exception):
+        if isinstance(exc, BaseException):
             logger.critical('Fatal error caught: {!r}'.format(exc))
             self.stop()

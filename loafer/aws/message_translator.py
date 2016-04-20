@@ -4,12 +4,10 @@
 import json
 import logging
 
-from ..message_translator import StringMessageTranslator
-
 logger = logging.getLogger(__name__)
 
 
-class SQSMessageTranslator(StringMessageTranslator):
+class SQSMessageTranslator(object):
 
     def translate(self, message):
         try:
@@ -21,5 +19,21 @@ class SQSMessageTranslator(StringMessageTranslator):
         try:
             return {'content': json.loads(body)}
         except json.decoder.JSONDecodeError as exc:
+            logger.exception(exc)
+            return {'content': None}
+
+
+class SNSMessageTranslator(object):
+    def translate(self, message):
+        try:
+            body = json.loads(message['Body'])
+            message = body['Message']
+        except (KeyError, TypeError):
+            logger.error('Missing Body or Message key in SQS message. It really came from SNS ?')
+            return {'content': None}
+
+        try:
+            return {'content': json.loads(message)}
+        except (json.decoder.JSONDecodeError, TypeError) as exc:
             logger.exception(exc)
             return {'content': None}
