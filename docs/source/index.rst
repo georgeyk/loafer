@@ -52,11 +52,3 @@ Other
 
     tutorial.rst
     faq.rst
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`

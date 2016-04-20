@@ -3,3 +3,4 @@ Sphinx
 sphinx-autobuild
 twine
 wheel
+sphinx-rtd-theme
