@@ -23,3 +23,19 @@ class SQSMessageTranslator(StringMessageTranslator):
         except json.decoder.JSONDecodeError as exc:
             logger.exception(exc)
             return {'content': None}
+
+
+class SNSMessageTranslator(StringMessageTranslator):
+    def translate(self, message):
+        try:
+            body = json.loads(message['Body'])
+            message = body['Message']
+        except (KeyError, TypeError):
+            logger.error('Missing Body or Message key in SQS message. It really came from SNS ?')
+            return {'content': None}
+
+        try:
+            return {'content': json.loads(message)}
+        except (json.decoder.JSONDecodeError, TypeError) as exc:
+            logger.exception(exc)
+            return {'content': None}
