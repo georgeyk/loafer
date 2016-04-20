@@ -4,12 +4,10 @@
 import json
 import logging
 
-from ..message_translator import StringMessageTranslator
-
 logger = logging.getLogger(__name__)
 
 
-class SQSMessageTranslator(StringMessageTranslator):
+class SQSMessageTranslator(object):
 
     def translate(self, message):
         try:
@@ -25,7 +23,7 @@ class SQSMessageTranslator(StringMessageTranslator):
             return {'content': None}
 
 
-class SNSMessageTranslator(StringMessageTranslator):
+class SNSMessageTranslator(object):
     def translate(self, message):
         try:
             body = json.loads(message['Body'])
