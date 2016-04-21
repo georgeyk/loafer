@@ -35,3 +35,6 @@ release: dist
 	git tag `python setup.py -q version`
 	git push origin `python setup.py -q version`
 	twine upload dist/*
+
+changelog-preview:
+	@git log $$(python setup.py -q version)...master --oneline --reverse
