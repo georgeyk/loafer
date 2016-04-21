@@ -1,9 +1,33 @@
 # -*- coding: utf-8 -*-
 # vi:si:et:sw=4:sts=4:ts=4
 
+from functools import wraps
 import importlib
+import os
+import sys
 
 
+def add_current_dir_to_syspath(f):
+
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        current = os.getcwd()
+        changed = False
+        if current not in sys.path:
+            sys.path.append(current)
+            changed = True
+
+        try:
+            return f(*args, **kwargs)
+        finally:
+            # restore sys.path
+            if changed is True:
+                sys.path.remove(current)
+
+    return wrapper
+
+
+@add_current_dir_to_syspath
 def import_callable(full_name):
     package, *name = full_name.rsplit('.', 1)
     try:
