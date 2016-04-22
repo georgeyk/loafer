@@ -41,7 +41,7 @@ Check out the latest ``Loafer`` documentation at `Read the Docs`_ website.
 .. |Coverage Status| image:: https://coveralls.io/repos/github/georgeyk/loafer/badge.svg?branch=master
    :target: https://coveralls.io/github/georgeyk/loafer?branch=master
 .. |Requirements Status| image:: https://requires.io/github/georgeyk/loafer/requirements.svg?branch=master
-   :target: https://requires.io/github/georgeyk/loafer/requirements/?branch=maste%20r
+   :target: https://requires.io/github/georgeyk/loafer/requirements/?branch=master
 .. |Scrutinizer Code Quality| image:: https://scrutinizer-ci.com/g/georgeyk/loafer/badges/quality-score.png?b=master
    :target: https://scrutinizer-ci.com/g/georgeyk/loafer/?branch=master
 .. |Code Climate| image:: https://codeclimate.com/github/georgeyk/loafer/badges/gpa.svg

@@ -30,11 +30,11 @@ class VersionCommand(Command):
 
 
 with codecs.open(os.path.join(here, 'README.rst'), encoding='utf-8') as f:
-    long_description = f.read()
+    long_description = '\n{}'.format(f.read())
 
 with codecs.open(os.path.join(here, 'CHANGES.rst'), encoding='utf-8') as f:
     changes = f.read()
-    long_description += '\n\nChangelog:\n==========\n\n{}'.format(changes)
+    long_description += '\n\nChangelog:\n----------\n\n{}'.format(changes)
 
 
 # Requirements
