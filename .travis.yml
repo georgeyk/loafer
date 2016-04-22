@@ -7,5 +7,6 @@ env:
   - LOAFER_DEFAULT_ROUTE_SOURCE=test-source
 
 install: "python setup.py install && pip install -r requirements/test.txt"
+before_script: "flake8 --ignore=E501 loafer"
 script: "py.test tests --cov loafer"
 after_success: coveralls
