@@ -1,16 +1,8 @@
 FAQ
 ---
 
-1. Loafer raises ImportError on my handler.
 
-   Check for typos and validate that your module can be imported in python
-   interpreter.
-
-   Also, you might need to add your project to ``PYTHONPATH`` envrironment
-   variable or ``sys.path``.
-
-
-2. How do I run I/O blocking code that's not a coroutine ?
+**1. How do I run I/O blocking code that's not a coroutine ?**
 
    Any code that is blocking and not a coroutine could run in a separate thread.
 

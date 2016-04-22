@@ -13,7 +13,7 @@ Examples
 
     $ loafer
 
-* Add ``source`` and ``handler`` parameters::
+* Add ``source`` and ``handler`` parameters (all parameters are optional)::
 
   $ loafer --source my-queue-name --handler loafer.example.jobs.async_example_job
 
@@ -21,7 +21,7 @@ Examples
 * Publishing a message to SNS/SQS (you should see some logging messages)::
 
     # To SQS
-    $ loafer publish --queue a-queue-name --msg 'foobar'
+    $ loafer publish_sqs --queue a-queue-name --msg 'foobar'
 
     # To SNS (considering, the queue we consume are subscribed to topic)
-    $ loafer publish --topic a-topic-name --msg 'foobar'
+    $ loafer publish_sns --topic a-topic-name --msg 'foobar'

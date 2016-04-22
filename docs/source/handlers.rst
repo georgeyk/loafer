@@ -20,7 +20,18 @@ can also be used, but will run in a thread, outside the event loop.
 The ``handler`` does not need to return anything, but any unhandled error
 will cause the message to be ignored.
 
-You can specify the message to be rejected (and acknowledged) by explicity raising
-``RejectMessage``, see :doc:`exceptions` for details.
+Note that, if the ``handler`` silently failed, for example, if you do::
+
+    async def my_handler(message):
+        try:
+            ... some code ...
+        except Exception:
+            pass
+
+This will cause the message to be always acknowledged.
+
+You can specify the message to be ignored by explicity raising ``IgnoreMessage``,
+then the message will not be deleted, see :doc:`exceptions` for details.
+
 
 Successfull executions of ``handler`` will acknowledge (delete) the message.

@@ -50,5 +50,6 @@ Other
 .. toctree::
     :maxdepth: 2
 
-    tutorial.rst
+    ..tutorial.rst
     faq.rst
+    changelog.rst
