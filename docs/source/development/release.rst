@@ -3,14 +3,16 @@ Release
 
 To release a new version, a few steps are required:
 
-1. Update version number at ``loafer/__init__.py``
+* Update version number at ``loafer/__init__.py`` and ``docs/source/conf.py``
 
-2. Add entry to ``CHANGES.rst`` and documentation
+* Add entry to ``CHANGES.rst`` and documentation
 
-3. Test with ``python setup.py test`` and ``make test-cov``
+* Review changes in test requirements (``requirements/test.txt`` and ``setup.py``)
 
-4. Test build with ``make dist``
+* Test with ``python setup.py test`` and ``make test-cov``
 
-5. Commit changes
+* Test build with ``make dist``
 
-6. Release with ``make release``
+* Commit changes
+
+* Release with ``make release``

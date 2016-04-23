@@ -1,5 +1,5 @@
-Installation
-============
+Development Installation
+========================
 
 Requirements
 ------------
@@ -21,6 +21,17 @@ After forking or checking out::
     $ pip install -r requirements/local.txt
     $ pip install -r requirements/test.txt
     $ pre-commit install
+
+
+The requirements folder are only used for development, so we can easily
+install/track dependencies required to run the tests using continuous
+integration platforms.
+
+The official entrypoint for distritubution is the ``setup.py`` which also
+contains the minimum requirements to execute the tests.
+
+It's important to execute ``setup.py develop`` not only to install the main
+dependencies, but also to include ``loafer`` CLI in our environment.
 
 
 Running tests::
