@@ -37,4 +37,6 @@ release: dist
 	twine upload dist/*
 
 changelog-preview:
+	@echo "\nmaster ("$$(date '+%Y-%m-%d')")"
+	@echo "-------------------\n"
 	@git log $$(python setup.py -q version)...master --oneline --reverse
