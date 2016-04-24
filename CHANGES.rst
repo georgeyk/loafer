@@ -1,3 +1,12 @@
+0.0.3 (2016-04-24)
+------------------
+
+* Improve documentation
+* Improve package metadata and dependencies
+* Add loafer.aws.message_translator.SNSMessageTranslator class
+* Fix ImportError exceptions for configuration that uses loafer.utils.import_callable
+
+
 0.0.2 (2016-04-18)
 ------------------
 
