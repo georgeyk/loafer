@@ -16,16 +16,12 @@ logger = logging.getLogger(__name__)
 def example_job(*args, **kwargs):
     message = 'Called example_job with args={} kwargs={}'.format(args, kwargs)
     logger.warning(message)
-    msg2 = 'args type is {} kwargs type is'.format(type(args), type(kwargs))
-    logger.warning(msg2)
 
 
 # The coroutine will be scheduled in the event loop
 async def async_example_job(*args, **kwargs):
     message = 'Called async_example_job with args={} kwargs={}'.format(args, kwargs)
     logger.warning(message)
-    msg2 = 'args type is {} kwargs type is'.format(type(args), type(kwargs))
-    logger.warning(msg2)
 
 
 async def reject_message_job(*args, **kwargs):
