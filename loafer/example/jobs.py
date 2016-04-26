@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # vi:si:et:sw=4:sts=4:ts=4
 
+import asyncio
 import logging
 
 from ..exceptions import RejectMessage, IgnoreMessage
@@ -16,16 +17,12 @@ logger = logging.getLogger(__name__)
 def example_job(*args, **kwargs):
     message = 'Called example_job with args={} kwargs={}'.format(args, kwargs)
     logger.warning(message)
-    msg2 = 'args type is {} kwargs type is'.format(type(args), type(kwargs))
-    logger.warning(msg2)
 
 
 # The coroutine will be scheduled in the event loop
 async def async_example_job(*args, **kwargs):
     message = 'Called async_example_job with args={} kwargs={}'.format(args, kwargs)
     logger.warning(message)
-    msg2 = 'args type is {} kwargs type is'.format(type(args), type(kwargs))
-    logger.warning(msg2)
 
 
 async def reject_message_job(*args, **kwargs):
@@ -34,3 +31,9 @@ async def reject_message_job(*args, **kwargs):
 
 async def ignore_message_job(*args, **kwargs):
     raise IgnoreMessage()
+
+
+async def random_int_job(number):
+    logger.info('Handling: {}'.format(number))
+    # mimic i/o  operation
+    await asyncio.sleep(0.5)
