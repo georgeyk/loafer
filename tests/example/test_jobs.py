@@ -7,7 +7,8 @@ import pytest
 
 from loafer.exceptions import RejectMessage, IgnoreMessage
 from loafer.example.jobs import (example_job, async_example_job,
-                                 reject_message_job, ignore_message_job)
+                                 reject_message_job, ignore_message_job,
+                                 random_int_job)
 
 
 def test_example_job():
@@ -33,3 +34,10 @@ async def test_reject_message_job():
 async def test_ignore_message_job():
     with pytest.raises(IgnoreMessage):
         await ignore_message_job()
+
+
+@pytest.mark.asyncio
+async def test_random_int_job():
+    with mock.patch('loafer.example.jobs.logger') as mock_logger:
+        await random_int_job(10)
+        assert mock_logger.info.called

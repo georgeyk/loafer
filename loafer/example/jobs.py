@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # vi:si:et:sw=4:sts=4:ts=4
 
+import asyncio
 import logging
 
 from ..exceptions import RejectMessage, IgnoreMessage
@@ -30,3 +31,9 @@ async def reject_message_job(*args, **kwargs):
 
 async def ignore_message_job(*args, **kwargs):
     raise IgnoreMessage()
+
+
+async def random_int_job(number):
+    logger.info('Handling: {}'.format(number))
+    # mimic i/o  operation
+    await asyncio.sleep(0.5)
