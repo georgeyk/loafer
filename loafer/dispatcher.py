@@ -61,6 +61,10 @@ class LoaferDispatcher(object):
                 logger.exception(exc)
                 logger.warning('Explicit message ignore:\n{}\n'.format(message))
                 return False
+            except asyncio.CancelledError as exc:
+                msg = '"{}" was cancelled, the message will be ignored:\n{}\n'
+                logger.warning(msg.format(route.handler_name, message))
+                return False
             except Exception as exc:
                 logger.exception(exc)
                 logger.error('Unhandled exception on {}'.format(route.handler_name))

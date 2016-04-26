@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # vi:si:et:sw=4:sts=4:ts=4
 
+import asyncio
 from unittest.mock import Mock
 
 from asynctest import CoroutineMock
@@ -148,6 +149,19 @@ async def test_dispatch_message_task_error(route):
     assert route.deliver.called
     assert route.deliver.called_once_with(message)
 
+
+@pytest.mark.asyncio
+async def test_dispatch_message_task_cancel(route):
+    route.deliver = CoroutineMock(side_effect=asyncio.CancelledError)
+    dispatcher = LoaferDispatcher([route])
+
+    message = 'message'
+    confirmation = await dispatcher.dispatch_message(message, route)
+    assert confirmation is False
+
+    assert route.message_translator.translate.called
+    assert route.deliver.called
+    assert route.deliver.called_once_with(message)
 
 @pytest.mark.asyncio
 async def test_dispatch_consumers(route, consumer):
