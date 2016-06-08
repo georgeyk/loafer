@@ -4,33 +4,27 @@
 import asyncio
 import logging
 
-from .conf import settings
 from .exceptions import RejectMessage, IgnoreMessage
-from .utils import import_callable
 
 logger = logging.getLogger(__name__)
 
 
 class LoaferDispatcher(object):
-
-    def __init__(self, routes, consumers=None):
+    def __init__(self, routes, consumers=None, max_jobs=10):
         self.routes = routes
         self.consumers = consumers or []
-        self._semaphore = asyncio.Semaphore(settings.LOAFER_MAX_JOBS)
+        self.max_jobs = max_jobs
+        self._semaphore = asyncio.Semaphore(self.max_jobs)
         self._stop_consumers = True
 
+        self.consumers_sources = dict((x.source, x) for x in self.consumers)
+
     def get_consumer(self, route):
-        for consumer in self.consumers:
-            if consumer.source == route.source:
-                return consumer
+        consumer = self.consumers_sources.get(route.source)
+        print('get_consumer {} = {}:'.format(route, consumer))
+        return consumer
 
-        # no consumer for given route, return default
-        klass = import_callable(settings.LOAFER_DEFAULT_CONSUMER_CLASS)
-        options = settings.LOAFER_DEFAULT_CONSUMER_OPTIONS
-        return klass(route.source, options)
-
-    def _translate_message(self, message, route):
-        # in the future, we may change the route depending on message content
+    def translate_message(self, message, route):
         try:
             content = route.message_translator.translate(message)['content']
         except Exception as exc:
@@ -40,10 +34,10 @@ class LoaferDispatcher(object):
 
         return content
 
-    async def dispatch_message(self, message, route):
+    async def dispatch_message(self, message, route):  # NOQA
         logger.info('Dispatching message to route={}'.format(route))
 
-        content = self._translate_message(message, route)
+        content = self.translate_message(message, route)
         if content is None:
             logger.warning('Message will be ignored:\n{}\n'.format(message))
             return False
@@ -79,8 +73,10 @@ class LoaferDispatcher(object):
         else:
             stopper = sentinel
 
+        print("stopper: {}".format(stopper()))
         while not stopper():
             for route in self.routes:
+                print('route:', route)
                 consumer = self.get_consumer(route)
                 messages = await consumer.consume()
                 for message in messages:
