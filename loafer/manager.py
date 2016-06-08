@@ -44,8 +44,6 @@ class LoaferManager(object):
         self._future = asyncio.gather(self._dispatcher.dispatch_consumers())
         self._future.add_done_callback(self.on_future__errors)
 
-        print('Loop: running forever')
-
         try:
             self._loop.run_forever()
         finally:

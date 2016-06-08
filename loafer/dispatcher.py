@@ -21,7 +21,6 @@ class LoaferDispatcher(object):
 
     def get_consumer(self, route):
         consumer = self.consumers_sources.get(route.source)
-        print('get_consumer {} = {}:'.format(route, consumer))
         return consumer
 
     def translate_message(self, message, route):
@@ -73,10 +72,8 @@ class LoaferDispatcher(object):
         else:
             stopper = sentinel
 
-        print("stopper: {}".format(stopper()))
         while not stopper():
             for route in self.routes:
-                print('route:', route)
                 consumer = self.get_consumer(route)
                 messages = await consumer.consume()
                 for message in messages:
