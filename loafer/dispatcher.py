@@ -33,7 +33,7 @@ class LoaferDispatcher(object):
 
         return content
 
-    async def dispatch_message(self, message, route):  # NOQA
+    async def dispatch_message(self, message, route):
         logger.info('Dispatching message to route={}'.format(route))
 
         content = self.translate_message(message, route)

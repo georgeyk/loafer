@@ -22,7 +22,7 @@ class Route(object):
         return '<Route(name={} queue={} message_handler={})>'.format(
             self.name, self.source, self.message_handler)
 
-    async def deliver(self, content, loop=None):  # NOQA
+    async def deliver(self, content, loop=None):
         logger.info('Delivering message content to message_handler={}'.format(self.message_handler))
 
         if asyncio.iscoroutinefunction(self.message_handler):
