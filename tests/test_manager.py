@@ -4,9 +4,7 @@
 import asyncio
 from unittest import mock
 
-import pytest
-
-from loafer.exceptions import ConfigurationError, ConsumerError
+from loafer.exceptions import ConsumerError
 from loafer.dispatcher import LoaferDispatcher
 from loafer.manager import LoaferManager
 from loafer.route import Route
@@ -27,18 +25,6 @@ def test_manager_one_route(event_loop):
     assert len(manager.routes) == 1
 
 
-def test_routes_stop_manager_if_loop_is_running(event_loop):
-    manager = LoaferManager('test-queue', event_loop=event_loop)
-    manager.stop = mock.Mock()
-
-    with mock.patch.object(event_loop, 'is_running', return_value=True):
-        with pytest.raises(ConfigurationError):
-            manager.routes
-
-        assert manager.stop.called
-        assert manager.stop.called_once_with()
-
-
 def test_consumers(event_loop):
     manager = LoaferManager('test-queue', event_loop=event_loop)
     assert manager.consumers
@@ -52,9 +38,7 @@ def test_consumers_returns_default_if_not_manually_set(event_loop):
 
 def test_dispatcher(event_loop):
     manager = LoaferManager('test-queue', event_loop=event_loop)
-    manager.get_dispatcher()
-    assert manager._dispatcher
-    assert isinstance(manager._dispatcher, LoaferDispatcher)
+    assert isinstance(manager.get_dispatcher(), LoaferDispatcher)
 
 
 def test_on_future_errors(event_loop):

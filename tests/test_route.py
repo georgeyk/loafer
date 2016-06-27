@@ -6,52 +6,38 @@ from unittest import mock
 
 import pytest
 
-from loafer.message_translator import StringMessageTranslator
+from loafer.aws.message_translator import SQSMessageTranslator
 from loafer.route import Route
+from loafer.example.jobs import example_job, async_example_job
 
 
 def test_handler_property():
-    route = Route('foo-queue', 'loafer.example.jobs.example_job')
-    assert callable(route.handler)
+    route = Route('foo-queue', example_job)
+    assert callable(route.message_handler)
 
-    route = Route('foo-queue', 'loafer.example.jobs.async_example_job')
-    assert callable(route.handler)
-
-
-def test_handle_property_errors():
-    route = Route('foo-queue', 'invalid_job')
-    with pytest.raises(ImportError):
-        route.handler
-
-    route = Route('foo-queue', 'loafer.example')
-    with pytest.raises(ImportError):
-        route.handler
-
-
-def test_handler_name_property():
-    route = Route('foo-queue', 'loafer.example.jobs.example_job')
-    assert route.handler_name == 'loafer.example.jobs.example_job'
+    route = Route('foo-queue', async_example_job)
+    assert callable(route.message_handler)
 
 
 def test_source():
-    route = Route(source='foo-queue', handler='invalid_job')
+    route = Route('foo-queue', example_job)
     assert route.source == 'foo-queue'
 
 
 def test_name():
-    route = Route(source='foo-queue', handler='invalid_job', name='foo')
+    route = Route('foo-queue', example_job, name='foo')
     assert route.name == 'foo'
 
 
 def test_message_translator():
-    route = Route('foo', 'invalid', message_translator='unittest.mock.Mock')
+    route = Route('foo', example_job, message_translator=mock.Mock())
     assert isinstance(route.message_translator, mock.Mock)
 
 
 def test_default_message_translator():
-    route = Route('foo', 'invalid')
+    route = Route('foo', example_job)
     translator = route.message_translator
-    assert isinstance(translator, StringMessageTranslator)
+    assert isinstance(translator, SQSMessageTranslator)
 
 
 # FIXME: Improve all test_deliver* tests
@@ -59,21 +45,16 @@ def test_default_message_translator():
 @pytest.mark.asyncio
 async def test_deliver():
 
-    attrs = {}
+    mock_handler = mock.Mock()
+    async def test_handler(*args, **kwargs):
+        mock_handler(*args, **kwargs)
 
-    def test_handler(*args, **kwargs):
-        attrs['args'] = args
-        attrs['kwargs'] = kwargs
+    route = Route('foo-queue', test_handler)
 
-    route = Route('foo-queue', 'will.be.patched')
-    # monkey-patch
-    route.handler = test_handler
+    await route.deliver('test')
 
-    message = 'test'
-    await route.deliver(message)
-
-    assert message in attrs['args']
-    assert not asyncio.iscoroutinefunction(route.handler)
+    mock_handler.assert_called_once_with('test')
+    assert asyncio.iscoroutinefunction(route.message_handler)
 
 
 @pytest.mark.asyncio
@@ -87,10 +68,10 @@ async def test_deliver_with_coroutine():
 
     route = Route('foo-queue', 'will.be.patched')
     # monkey-patch
-    route.handler = test_handler
+    route.message_handler = test_handler
 
     message = 'test'
     await route.deliver(message)
 
     assert message in attrs['args']
-    assert asyncio.iscoroutinefunction(route.handler)
+    assert asyncio.iscoroutinefunction(route.message_handler)

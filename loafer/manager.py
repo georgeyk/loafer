@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 class LoaferManager(object):
 
-    def __init__(self, source, thread_pool_size=4, event_loop=None):
+    def __init__(self, source, thread_pool_size=4, event_loop=None, consumers=None):
 
         if event_loop is None:
             self._loop = asyncio.get_event_loop()
@@ -34,7 +34,12 @@ class LoaferManager(object):
         self._loop.set_default_executor(self._executor)
 
         self.routes = []
-        self.consumers = [AWSConsumer(source, {'WaitTimeSeconds': 5, 'MaxNumberOfMessages': 5}, loop=self._loop)]
+
+        if consumers is None:
+            self.consumers = [AWSConsumer(source, {'WaitTimeSeconds': 5, 'MaxNumberOfMessages': 5}, loop=self._loop)]
+        else:
+            self.consumers = consumers
+
         self._dispatcher = None
 
     def get_dispatcher(self):

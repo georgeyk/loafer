@@ -7,12 +7,10 @@ logger = logging.getLogger(__name__)
 
 
 class Route(object):
-
     def __init__(self, source, message_handler, name='default', message_translator=None):
         self.name = name
         self.source = source
         self.message_handler = message_handler
-        self.message_handler_name = self.message_handler.__class__.__name__
 
         if message_translator is None:
             self.message_translator = SQSMessageTranslator()
