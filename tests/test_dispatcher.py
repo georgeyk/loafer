@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # vi:si:et:sw=4:sts=4:ts=4
 
 import asyncio
@@ -10,21 +9,6 @@ import pytest
 
 from loafer.exceptions import RejectMessage, IgnoreMessage
 from loafer.dispatcher import LoaferDispatcher
-from loafer.route import Route
-
-
-@pytest.fixture
-def route():
-    message_translator = Mock(translate=Mock(return_value={'content': 'message'}))
-    route = AsyncMock(source='queue', handler='handler',
-                      message_translator=message_translator, spec=Route)
-    return route
-
-
-@pytest.fixture
-def consumer():
-    return CoroutineMock(consume=CoroutineMock(return_value=['message']),
-                         confirm_message=CoroutineMock())
 
 
 def test_without_consumers(route):
@@ -43,7 +27,8 @@ def test_with_consumers(route):
 def test_get_consumer_default(route):
     dispatcher = LoaferDispatcher(routes=[route])
     consumer = dispatcher.get_consumer(route)
-    assert consumer
+    print(dispatcher.consumers)
+    assert consumer is None
 
 
 def test_get_consumer_custom(route):
@@ -60,7 +45,6 @@ def test_get_consumer_default_with_custom(route):
     dispatcher = LoaferDispatcher(routes=[route], consumers=[consumer])
     returned_consumer = dispatcher.get_consumer(route)
 
-    assert returned_consumer
     assert returned_consumer is not consumer
 
 

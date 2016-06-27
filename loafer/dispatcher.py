@@ -56,11 +56,11 @@ class LoaferDispatcher(object):
                 return False
             except asyncio.CancelledError as exc:
                 msg = '"{}" was cancelled, the message will be ignored:\n{}\n'
-                logger.warning(msg.format(route.handler_name, message))
+                logger.warning(msg.format(route.message_handler_name, message))
                 return False
             except Exception as exc:
                 logger.exception(exc)
-                logger.error('Unhandled exception on {}'.format(route.handler_name))
+                logger.error('Unhandled exception on {}'.format(route.message_handler_name))
                 return False
 
         return True

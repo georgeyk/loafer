@@ -1,10 +1,7 @@
-# -*- coding: utf-8 -*-
-
 import asyncio
 import logging
 
-from cached_property import cached_property
-
+from .aws.message_translator import SQSMessageTranslator
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +13,11 @@ class Route(object):
         self.source = source
         self.message_handler = message_handler
         self.message_handler_name = self.message_handler.__class__.__name__
-        self.message_translator = message_translator
+
+        if message_translator is None:
+            self.message_translator = SQSMessageTranslator()
+        else:
+            self.message_translator = message_translator
 
     def __str__(self):
         return '<Route(name={} queue={} message_handler={})>'.format(
