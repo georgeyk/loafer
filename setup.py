@@ -44,7 +44,6 @@ tests_requirements = ['pytest', 'pytest-asyncio', 'pytest-cov', 'pytest-env',
                       'coveralls', 'asynctest']
 
 install_requirements = ['boto3>=1.3.0',
-                        'prettyconf>=1.2.3',
                         'click>=6.6',
                         'cached-property>=1.3.0',
                         ]
@@ -63,10 +62,6 @@ setup(
     author='George Y. Kussumoto',
     author_email='contato at georgeyk dot com dot br',
     packages=find_packages(exclude=['docs', 'tests', 'tests.*', 'requirements']),
-    entry_points='''
-    [console_scripts]
-    loafer=loafer.cli:cli
-    ''',
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Console',
