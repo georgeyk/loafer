@@ -27,7 +27,6 @@ def test_with_consumers(route):
 def test_get_consumer_default(route):
     dispatcher = LoaferDispatcher(routes=[route])
     consumer = dispatcher.get_consumer(route)
-    print(dispatcher.consumers)
     assert consumer is None
 
 
