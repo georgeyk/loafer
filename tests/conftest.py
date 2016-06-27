@@ -10,7 +10,7 @@ from loafer.route import Route
 @pytest.fixture
 def route():
     message_translator = Mock(translate=Mock(return_value={'content': 'message'}))
-    route = AsyncMock(source='queue', message_handler='handler', message_handler_name='handler',
+    route = AsyncMock(source='queue', message_handler='handler',
                       message_translator=message_translator, spec=Route)
     return route
 
