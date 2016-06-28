@@ -11,6 +11,7 @@ class Route(object):
         self.name = name
         self.source = source
         self.message_handler = message_handler
+        self.message_handler_name = type(message_handler).__name__
 
         if message_translator is None:
             self.message_translator = SQSMessageTranslator()
@@ -22,12 +23,12 @@ class Route(object):
             self.name, self.source, self.message_handler)
 
     async def deliver(self, content, loop=None):
-        logger.info('Delivering message content to message_handler={}'.format(self.message_handler))
+        logger.info('Delivering message content to message_handler={}'.format(self.message_handler_name))
 
         if asyncio.iscoroutinefunction(self.message_handler):
-            logger.debug('Handler is coroutine! {!r}'.format(self.message_handler))
+            logger.debug('Handler is coroutine! {!r}'.format(self.message_handler_name))
             return await self.message_handler(content)
         else:
-            logger.debug('Handler will run in a separate thread: {!r}'.format(self.message_handler))
+            logger.debug('Handler will run in a separate thread: {!r}'.format(self.message_handler_name))
             loop = loop or asyncio.get_event_loop()
             return await loop.run_in_executor(None, self.message_handler, content)

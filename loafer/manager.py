@@ -17,12 +17,9 @@ logger = logging.getLogger(__name__)
 
 class LoaferManager(object):
 
-    def __init__(self, source, thread_pool_size=4, event_loop=None, consumers=None):
+    def __init__(self, source, thread_pool_size=None, event_loop=None, consumers=None):
 
-        if event_loop is None:
-            self._loop = asyncio.get_event_loop()
-        else:
-            self._loop = event_loop
+        self._loop = event_loop or asyncio.get_event_loop()
         self._loop.add_signal_handler(signal.SIGINT, self.stop)
         self._loop.add_signal_handler(signal.SIGTERM, self.stop)
 

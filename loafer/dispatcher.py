@@ -10,10 +10,9 @@ logger = logging.getLogger(__name__)
 
 
 class LoaferDispatcher(object):
-    def __init__(self, routes, consumers=None, max_jobs=10):
+    def __init__(self, routes, consumers, max_jobs=10):
         self.routes = routes
         self.consumers = consumers or []
-        self.max_jobs = max_jobs
         self._semaphore = asyncio.Semaphore(self.max_jobs)
         self._stop_consumers = True
 
