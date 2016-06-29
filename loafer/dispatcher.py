@@ -13,7 +13,7 @@ class LoaferDispatcher(object):
     def __init__(self, routes, consumers, max_jobs=10):
         self.routes = routes
         self.consumers = consumers or []
-        self._semaphore = asyncio.Semaphore(self.max_jobs)
+        self._semaphore = asyncio.Semaphore(max_jobs)
         self._stop_consumers = True
 
         self.consumers_sources = dict((x.source, x) for x in self.consumers)
