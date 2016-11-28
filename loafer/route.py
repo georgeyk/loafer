@@ -1,52 +1,34 @@
-# -*- coding: utf-8 -*-
-
 import asyncio
 import logging
 
-from cached_property import cached_property
-
-from .conf import settings
-from .utils import import_callable
-
+from .aws.message_translator import SQSMessageTranslator
 
 logger = logging.getLogger(__name__)
 
 
 class Route(object):
-
-    def __init__(self, source, handler, name='default', message_translator=None):
+    def __init__(self, source, message_handler, name='default', message_translator=None):
         self.name = name
         self.source = source
-        self._handler = handler
-        self._message_translator = message_translator
+        self.message_handler = message_handler
+        self.message_handler_name = type(message_handler).__name__
+
+        if message_translator is None:
+            self.message_translator = SQSMessageTranslator()
+        else:
+            self.message_translator = message_translator
 
     def __str__(self):
-        return '<Route(name={} queue={} handler={})>'.format(
-            self.name, self.source, self._handler)
-
-    @cached_property
-    def message_translator(self):
-        if self._message_translator:
-            klass = import_callable(self._message_translator)
-        else:
-            klass = import_callable(settings.LOAFER_DEFAULT_MESSAGE_TRANSLATOR_CLASS)
-        return klass()
-
-    @cached_property
-    def handler(self):
-        return import_callable(self._handler)
-
-    @property
-    def handler_name(self):
-        return self._handler
+        return '<Route(name={} queue={} message_handler={})>'.format(
+            self.name, self.source, self.message_handler)
 
     async def deliver(self, content, loop=None):
-        logger.info('Delivering message content to handler={}'.format(self.handler))
+        logger.info('Delivering message content to message_handler={}'.format(self.message_handler_name))
 
-        if asyncio.iscoroutinefunction(self.handler):
-            logger.debug('Handler is coroutine! {!r}'.format(self.handler))
-            return await self.handler(content)
+        if asyncio.iscoroutinefunction(self.message_handler):
+            logger.debug('Handler is coroutine! {!r}'.format(self.message_handler_name))
+            return await self.message_handler(content)
         else:
-            logger.debug('Handler will run in a separate thread: {!r}'.format(self.handler))
+            logger.debug('Handler will run in a separate thread: {!r}'.format(self.message_handler_name))
             loop = loop or asyncio.get_event_loop()
-            return await loop.run_in_executor(None, self.handler, content)
+            return await loop.run_in_executor(None, self.message_handler, content)
