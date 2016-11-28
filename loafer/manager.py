@@ -65,7 +65,8 @@ class LoaferManager(object):
 
     @cached_property
     def dispatcher(self):
-        return LoaferDispatcher(self.routes, self.consumers)
+        if self._conf.LOAFER_ROUTES:
+            return LoaferDispatcher(self.routes, self.consumers)
 
     def start(self):
         start = 'Starting Loafer - Version: {} (pid={}) ...'
@@ -83,10 +84,11 @@ class LoaferManager(object):
         logger.info('Stopping Loafer ...')
 
         logger.debug('Stopping consumers ...')
-        self.dispatcher.stop_consumers()
+        if self.dispatcher:
+            self.dispatcher.stop_consumers()
 
-        logger.debug('Cancel schedulled operations ...')
-        self._future.cancel()
+            logger.debug('Cancel schedulled operations ...')
+            self._future.cancel()
 
         logger.debug('Waiting to shutdown ...')
         self._executor.shutdown(wait=True)
