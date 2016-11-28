@@ -53,3 +53,4 @@ Other
     ..tutorial.rst
     faq.rst
     changelog.rst
+    contributors.rst
