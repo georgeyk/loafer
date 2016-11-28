@@ -12,7 +12,8 @@ from loafer.dispatcher import LoaferDispatcher
 from loafer.manager import LoaferManager
 
 
-def test_routes(event_loop):
+@pytest.mark.asyncio
+async def test_routes():
     manager = LoaferManager()
     assert manager.routes
     assert len(manager.routes) == 1
@@ -20,7 +21,8 @@ def test_routes(event_loop):
     assert manager.routes[0].name == 'test'
 
 
-def test_routes_raise_error_if_not_configured(event_loop):
+@pytest.mark.asyncio
+async def test_routes_raise_error_if_not_configured():
     settings = Settings()
     settings.LOAFER_ROUTES = None
 
@@ -36,13 +38,14 @@ def test_routes_raise_error_if_not_configured(event_loop):
         manager.routes
 
 
-def test_routes_stop_manager_if_loop_is_running(event_loop):
+@pytest.mark.asyncio
+async def test_routes_stop_manager_if_loop_is_running():
     settings = Settings()
     settings.LOAFER_ROUTES = None
     manager = LoaferManager(settings)
     manager.stop = mock.Mock()
 
-    with mock.patch.object(event_loop, 'is_running', return_value=True):
+    with mock.patch.object(manager._loop, 'is_running', return_value=True):
         with pytest.raises(ConfigurationError):
             manager.routes
 
@@ -50,26 +53,30 @@ def test_routes_stop_manager_if_loop_is_running(event_loop):
         assert manager.stop.called_once_with()
 
 
-def test_consumers(event_loop):
+@pytest.mark.asyncio
+async def test_consumers():
     manager = LoaferManager()
     assert manager.consumers
     assert len(manager.consumers) == 1
 
 
-def test_consumers_returns_empty_if_not_configure(event_loop):
+@pytest.mark.asyncio
+async def test_consumers_returns_empty_if_not_configure():
     settings = Settings()
     settings.LOAFER_CONSUMERS = None
     manager = LoaferManager(settings)
     assert manager.consumers == []
 
 
-def test_dispatcher(event_loop):
+@pytest.mark.asyncio
+async def test_dispatcher():
     manager = LoaferManager()
     assert manager.dispatcher
     assert isinstance(manager.dispatcher, LoaferDispatcher)
 
 
-def test_on_future_errors(event_loop):
+@pytest.mark.asyncio
+async def test_on_future_errors():
     manager = LoaferManager()
     manager.stop = mock.Mock()
     future = asyncio.Future()
