@@ -15,15 +15,17 @@ logger = logging.getLogger(__name__)
 
 class Consumer(object):
 
-    def __init__(self, source, options=None, loop=None):
+    def __init__(self, source, endpoint_url=None, use_ssl=True, options=None, loop=None):
         self.source = source
+        self.endpoint_url = endpoint_url
+        self.use_ssl = use_ssl
         self._loop = loop or asyncio.get_event_loop()
         self._client = None
         self._consumer_options = options
 
     def get_client(self):
         if self._client is None:
-            self._client = boto3.client('sqs')
+            self._client = boto3.client('sqs', endpoint_url=self.endpoint_url, use_ssl=self.use_ssl)
         return self._client
 
     async def get_queue_url(self):
