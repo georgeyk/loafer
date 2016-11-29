@@ -1,11 +1,8 @@
-# -*- coding: utf-8 -*-
-# vi:si:et:sw=4:sts=4:ts=4
-
 import asyncio
 import logging
 
 from .conf import settings
-from .exceptions import RejectMessage, IgnoreMessage
+from .exceptions import RejectMessage, IgnoreMessage, DeleteMessage
 from .utils import import_callable
 
 logger = logging.getLogger(__name__)
@@ -53,7 +50,7 @@ class LoaferDispatcher(object):
         with await self._semaphore:
             try:
                 await route.deliver(content)
-            except RejectMessage as exc:
+            except (DeleteMessage, RejectMessage) as exc:
                 logger.exception(exc)
                 logger.warning('Explicit message rejection:\n{}\n'.format(message))
                 # eg, we will return True at the end

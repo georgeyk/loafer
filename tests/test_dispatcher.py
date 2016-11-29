@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-# vi:si:et:sw=4:sts=4:ts=4
-
 import asyncio
 from unittest.mock import Mock
 
@@ -8,7 +5,7 @@ from asynctest import CoroutineMock
 from asynctest import Mock as AsyncMock  # flake8: NOQA
 import pytest
 
-from loafer.exceptions import RejectMessage, IgnoreMessage
+from loafer.exceptions import DeleteMessage, RejectMessage, IgnoreMessage
 from loafer.dispatcher import LoaferDispatcher
 from loafer.route import Route
 
@@ -108,9 +105,10 @@ async def test_dispatch_message_error_on_translation(route):
     assert not route.deliver.called
 
 
+@pytest.mark.parametrize('side_effect', [RejectMessage, DeleteMessage])
 @pytest.mark.asyncio
-async def test_dispatch_message_task_reject_message(route):
-    route.deliver = CoroutineMock(side_effect=RejectMessage)
+async def test_dispatch_message_task_reject_message(side_effect, route):
+    route.deliver = CoroutineMock(side_effect=side_effect)
     dispatcher = LoaferDispatcher([route])
 
     message = 'rejected-message'
@@ -162,6 +160,7 @@ async def test_dispatch_message_task_cancel(route):
     assert route.message_translator.translate.called
     assert route.deliver.called
     assert route.deliver.called_once_with(message)
+
 
 @pytest.mark.asyncio
 async def test_dispatch_consumers(route, consumer):
