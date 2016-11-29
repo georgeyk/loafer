@@ -18,6 +18,11 @@ A description of all the exceptions:
 * ``RejectMessage``: if the handler raises this exception, the message will
   be rejected and acknowledged (e.g., the message will be deleted).
 
+* ``DeleteMessage``: alias to ``RejectMessage``.
+
+* ``LoaferException``: the base exception for ``IgnoreMessage``, ``RejectMessage`` and
+  ``DeleteMessage``.
+
 
 At the message translation phase
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -32,7 +37,7 @@ exception:
 At the handler processing phase
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The ``handler`` can use ``IgnoreMessage`` or ``RejectMessage`` to explicity
+The ``handler`` can use ``IgnoreMessage`` or ``RejectMessage``/``DeleteMessage`` to explicity
 determine how the message will be handled.
 
 Any unhandled exceptions will have the same effect of ``IgnoreMessage``, but
@@ -45,5 +50,5 @@ Message deletion
 
 The message will be deleted (acknowledged):
 
-1. When the ``handler`` raises ``RejectMessage``
+1. When the ``handler`` raises ``RejectMessage``/``DeleteMessage``
 2. Succesfull executions of ``handler``
