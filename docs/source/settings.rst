@@ -27,7 +27,7 @@ All the possible configuration keys and its default values are listed below
     * - LOAFER_MAX_THREAD_POOL
       - None
     * - LOAFER_DEFAULT_MESSAGE_TRANSLATOR_CLASS
-      - 'loafer.aws.message_translator.SQSMessageTranslator'
+      - 'loafer.ext.aws.message_translator.SQSMessageTranslator'
     * - LOAFER_DEFAULT_ROUTE_NAME
       - 'default'
     * - LOAFER_DEFAULT_ROUTE_SOURCE
@@ -35,7 +35,7 @@ All the possible configuration keys and its default values are listed below
     * - LOAFER_DEFAULT_ROUTE_HANDLER
       - 'loafer.example.jobs.async_example_job'
     * - LOAFER_DEFAULT_CONSUMER_CLASS
-      - 'loafer.aws.consumer.Consumer'
+      - 'loafer.ext.aws.consumer.Consumer'
     * - LOAFER_DEFAULT_CONSUMER_OPTIONS
       - {'WaitTimeSeconds: 5, 'MaxNumberOfMessages': 5}
 

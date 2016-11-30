@@ -16,7 +16,7 @@ class Settings:
     # Translator
     LOAFER_DEFAULT_MESSAGE_TRANSLATOR_CLASS = config(
         'LOAFER_DEFAULT_MESSAGE_TRANSLATOR_CLASS',
-        default='loafer.aws.message_translator.SQSMessageTranslator')
+        default='loafer.ext.aws.message_translator.SQSMessageTranslator')
 
     # Routes
     LOAFER_ROUTES = [
@@ -36,7 +36,7 @@ class Settings:
     # By default, SQS does not set long-polling (WaitTimeSeconds) and the MaxNumberOfMessages is 1
     # TODO: tweak default values for acceptable performance
     LOAFER_DEFAULT_CONSUMER_CLASS = config('LOAFER_DEFAULT_CONSUMER_CLASS',
-                                           default='loafer.aws.consumer.Consumer')
+                                           default='loafer.ext.aws.consumer.Consumer')
     LOAFER_DEFAULT_CONSUMER_OPTIONS = config(
         'LOAFER_DEFAULT_CONSUMER_OPTIONS',
         default={'WaitTimeSeconds': 5,  # from 1-20

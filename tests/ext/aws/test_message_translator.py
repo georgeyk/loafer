@@ -1,12 +1,9 @@
-# -*- coding: utf-8 -*-
-# vi:si:et:sw=4:sts=4:ts=4
-
 import json
 
 import pytest
 
-from loafer.aws.message_translator import (SQSMessageTranslator,
-                                           SNSMessageTranslator)
+from loafer.ext.aws.message_translator import (SQSMessageTranslator,
+                                               SNSMessageTranslator)
 
 # sqs
 

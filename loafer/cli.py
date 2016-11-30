@@ -5,7 +5,7 @@ import click
 
 from .conf import settings
 from .manager import LoaferManager
-from .aws.publisher import sqs_publish, sns_publish
+from .ext.aws.publisher import sqs_publish, sns_publish
 
 
 def _bootstrap():

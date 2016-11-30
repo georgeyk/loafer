@@ -1,9 +1,6 @@
-# -*- coding: utf-8 -*-
-# vi:si:et:sw=4:sts=4:ts=4
-
 import json
 
-from loafer.aws.publisher import sqs_publish, sns_publish
+from loafer.ext.aws.publisher import sqs_publish, sns_publish
 
 
 def test_sqs_publish(mock_boto_client_sqs):

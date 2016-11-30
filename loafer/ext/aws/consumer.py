@@ -5,7 +5,7 @@ import logging
 import boto3
 import botocore.exceptions
 
-from ..exceptions import ConsumerError
+from loafer.exceptions import ConsumerError
 
 logger = logging.getLogger(__name__)
 

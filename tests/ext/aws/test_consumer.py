@@ -1,12 +1,9 @@
-# -*- coding: utf-8 -*-
-# vi:si:et:sw=4:sts=4:ts=4
-
 from botocore.exceptions import ClientError
 
 import pytest
 
 from loafer.exceptions import ConsumerError
-from loafer.aws.consumer import Consumer
+from loafer.ext.aws.consumer import Consumer
 
 
 @pytest.mark.asyncio
