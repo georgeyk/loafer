@@ -6,7 +6,6 @@ import signal
 
 from cached_property import cached_property
 
-from . import __version__
 from .conf import settings
 from .dispatcher import LoaferDispatcher
 from .exceptions import ConfigurationError
@@ -66,8 +65,8 @@ class LoaferManager:
             return LoaferDispatcher(self.routes, self.consumers)
 
     def start(self):
-        start = 'Starting Loafer - Version: {} (pid={}) ...'
-        logger.info(start.format(__version__, os.getpid()))
+        start = 'Starting Loafer - (pid={}) ...'
+        logger.info(start.format(os.getpid()))
 
         self._future = asyncio.gather(self.dispatcher.dispatch_consumers())
         self._future.add_done_callback(self.on_future__errors)

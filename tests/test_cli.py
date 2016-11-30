@@ -8,7 +8,6 @@ from click.testing import CliRunner
 
 import pytest
 
-from loafer import __version__
 from loafer import conf
 from loafer.cli import cli
 
@@ -21,12 +20,6 @@ def runner():
 @pytest.fixture
 def local_settings():
     return conf.Settings()
-
-
-def test_version(runner):
-    result = runner.invoke(cli, ['--version'])
-    assert result.exit_code == 0
-    assert __version__ in result.output
 
 
 def test_verbose(runner, local_settings):

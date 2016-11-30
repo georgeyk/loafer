@@ -3,7 +3,6 @@ import logging
 
 import click
 
-from . import __version__
 from .conf import settings
 from .manager import LoaferManager
 from .aws.publisher import sqs_publish, sns_publish
@@ -13,7 +12,6 @@ def _bootstrap():
     logging.basicConfig(level=settings.LOAFER_LOGLEVEL,
                         format=settings.LOAFER_LOG_FORMAT)
 
-    click.echo('>. Version: {}'.format(__version__))
     click.echo('>. Maximum concurrent jobs: {}'.format(settings.LOAFER_MAX_JOBS))
     click.echo('>. Routes:')
     for route in settings.LOAFER_ROUTES:
@@ -43,23 +41,12 @@ def main(**kwargs):
 CLICK_CONTEXT_SETTINGS = {'help_option_names': ['-h', '--help']}
 
 
-def show_version(ctx, param, value):
-    """Show Loafer version"""
-    if not value or ctx.resilient_parsing:
-        return
-
-    click.echo(__version__)
-    ctx.exit()
-
-
 @click.group(invoke_without_command=True,
              context_settings=CLICK_CONTEXT_SETTINGS)
 @click.option('-v', default=False, is_flag=True,
               help='Verbose mode (set LOAFER_LOGLEVEL=INFO)')
 @click.option('-vv', default=False, is_flag=True,
               help='Very verbose mode (set LOAFER_LOGLEVEL=DEBUG)')
-@click.option('--version', is_flag=True, is_eager=True, expose_value=False,
-              callback=show_version, help="Show Loafer's version and exit")
 @click.option('--max-jobs', default=None, type=int,
               help='Maximum concurrent jobs, overrides LOAFER_MAX_JOBS')
 @click.option('--max-threads', default=None, type=int,
