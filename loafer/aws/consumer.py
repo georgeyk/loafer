@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-# vi:si:et:sw=4:sts=4:ts=4
-
 import asyncio
 from functools import partial
 import logging
@@ -13,7 +10,7 @@ from ..exceptions import ConsumerError
 logger = logging.getLogger(__name__)
 
 
-class Consumer(object):
+class Consumer:
 
     def __init__(self, source, endpoint_url=None, use_ssl=True, options=None, loop=None):
         self.source = source
@@ -35,7 +32,7 @@ class Consumer(object):
         return response['QueueUrl']
 
     async def confirm_message(self, message):
-        logger.info('Confirm message (ACK/Deletion)')
+        logger.info('confirm message (ACK/deletion)')
 
         receipt = message['ReceiptHandle']
         logger.debug('receipt={}'.format(receipt))
@@ -47,7 +44,7 @@ class Consumer(object):
 
     async def fetch_messages(self):
         queue_url = await self.get_queue_url()
-        logger.info('Fetching messages on {}'.format(queue_url))
+        logger.debug('fetching messages on {}'.format(queue_url))
 
         options = self._consumer_options or {}
         fn = partial(self.get_client().receive_message, QueueUrl=queue_url, **options)
@@ -59,7 +56,6 @@ class Consumer(object):
         try:
             messages = await self.fetch_messages()
         except botocore.exceptions.ClientError as exc:
-            logger.exception(exc)
             raise ConsumerError('Error when fetching messages') from exc
 
         return messages

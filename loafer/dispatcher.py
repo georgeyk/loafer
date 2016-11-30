@@ -8,7 +8,7 @@ from .utils import import_callable
 logger = logging.getLogger(__name__)
 
 
-class LoaferDispatcher(object):
+class LoaferDispatcher:
 
     def __init__(self, routes, consumers=None):
         self.routes = routes
@@ -31,18 +31,17 @@ class LoaferDispatcher(object):
         try:
             content = route.message_translator.translate(message)['content']
         except Exception as exc:
-            logger.exception(exc)
-            logger.error('Error translating message content')
+            logger.error('error translating message content: {!r}'.format(exc))
             return None
 
         return content
 
     async def dispatch_message(self, message, route):
-        logger.info('Dispatching message to route={}'.format(route))
+        logger.info('dispatching message to route={}'.format(route))
 
         content = self._translate_message(message, route)
         if content is None:
-            logger.warning('Message will be ignored:\n{}\n'.format(message))
+            logger.warning('message will be ignored:\n{}\n'.format(message))
             return False
 
         # Since we don't know what will happen on message handler, use semaphore
@@ -51,20 +50,18 @@ class LoaferDispatcher(object):
             try:
                 await route.deliver(content)
             except (DeleteMessage, RejectMessage) as exc:
-                logger.exception(exc)
-                logger.warning('Explicit message rejection:\n{}\n'.format(message))
+                logger.info('explicit message rejection:\n{}\n'.format(message))
                 # eg, we will return True at the end
             except IgnoreMessage as exc:
-                logger.exception(exc)
-                logger.warning('Explicit message ignore:\n{}\n'.format(message))
+                logger.info('explicit message ignore:\n{}\n'.format(message))
                 return False
             except asyncio.CancelledError as exc:
                 msg = '"{}" was cancelled, the message will be ignored:\n{}\n'
                 logger.warning(msg.format(route.handler_name, message))
                 return False
             except Exception as exc:
-                logger.exception(exc)
-                logger.error('Unhandled exception on {}'.format(route.handler_name))
+                logger.error('unhandled exception {!r} on {}'.format(
+                    exc, route.handler_name))
                 return False
 
         return True

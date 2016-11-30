@@ -1,10 +1,7 @@
-# -*- coding: utf-8 -*-
-# vi:si:et:sw=4:sts=4:ts=4
-
 from prettyconf import config
 
 
-class Settings(object):
+class Settings:
     # Logging
     LOAFER_LOGLEVEL = config('LOAFER_LOGLEVEL', default='WARNING')
     LOAFER_LOG_FORMAT = config('LOAFER_LOG_FORMAT',

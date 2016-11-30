@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-# vi:si:et:sw=4:sts=4:ts=4
-
 import json
 import logging
 
@@ -10,8 +7,6 @@ from . import __version__
 from .conf import settings
 from .manager import LoaferManager
 from .aws.publisher import sqs_publish, sns_publish
-
-logger = logging.getLogger(__name__)
 
 
 def _bootstrap():

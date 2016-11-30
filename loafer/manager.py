@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-# vi:si:et:sw=4:sts=4:ts=4
-
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
 import logging
@@ -19,7 +16,7 @@ from .utils import import_callable
 logger = logging.getLogger(__name__)
 
 
-class LoaferManager(object):
+class LoaferManager:
 
     def __init__(self, configuration=None):
         self._conf = configuration or settings
