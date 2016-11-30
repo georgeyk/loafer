@@ -1,9 +1,6 @@
-# -*- coding: utf-8 -*-
-# vi:si:et:sw=4:sts=4:ts=4
-
 import pytest
 
-from loafer.example.consumer import RandomIntConsumer
+from examples.consumer import RandomIntConsumer
 
 
 @pytest.fixture

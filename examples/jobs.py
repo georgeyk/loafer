@@ -4,7 +4,7 @@
 import asyncio
 import logging
 
-from ..exceptions import RejectMessage, IgnoreMessage
+from loafer.exceptions import RejectMessage, IgnoreMessage
 
 logger = logging.getLogger(__name__)
 

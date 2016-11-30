@@ -1,9 +1,6 @@
-# -*- coding: utf-8 -*-
-# vi:si:et:sw=4:sts=4:ts=4
-
 import pytest
 
-from loafer.example.message_translator import IntMessageTranslator
+from examples.message_translator import IntMessageTranslator
 
 
 @pytest.fixture

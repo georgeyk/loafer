@@ -37,7 +37,7 @@ def test_error_on_invalid_name():
 
 def test_error_on_module():
     with pytest.raises(ImportError):
-        import_callable('loafer.example')
+        import_callable('examples')
 
 
 def test_error_on_non_callable():

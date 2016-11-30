@@ -62,7 +62,7 @@ setup(
     license='MIT',
     author='George Y. Kussumoto',
     author_email='contato at georgeyk dot com dot br',
-    packages=find_packages(exclude=['docs', 'tests', 'tests.*', 'requirements']),
+    packages=find_packages(exclude=['docs', 'tests', 'tests.*', 'requirements', 'examples']),
     entry_points='''
     [console_scripts]
     loafer=loafer.cli:cli
