@@ -7,7 +7,7 @@ import pytest
 
 from loafer.exceptions import DeleteMessage, RejectMessage, IgnoreMessage
 from loafer.dispatcher import LoaferDispatcher
-from loafer.route import Route
+from loafer.routes import Route
 
 
 @pytest.fixture

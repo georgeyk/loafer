@@ -9,7 +9,7 @@ from cached_property import cached_property
 from .conf import settings
 from .dispatcher import LoaferDispatcher
 from .exceptions import ConfigurationError
-from .route import Route
+from .routes import Route
 from .utils import import_callable
 
 logger = logging.getLogger(__name__)

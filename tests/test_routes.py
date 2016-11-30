@@ -7,7 +7,7 @@ from unittest import mock
 import pytest
 
 from loafer.message_translator import StringMessageTranslator
-from loafer.route import Route
+from loafer.routes import Route
 
 
 def test_handler_property():
