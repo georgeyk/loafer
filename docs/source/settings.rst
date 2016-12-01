@@ -26,8 +26,6 @@ All the possible configuration keys and its default values are listed below
       - 10
     * - LOAFER_MAX_THREAD_POOL
       - None
-    * - LOAFER_DEFAULT_MESSAGE_TRANSLATOR_CLASS
-      - 'loafer.ext.aws.message_translator.SQSMessageTranslator'
     * - LOAFER_DEFAULT_ROUTE_NAME
       - 'default'
     * - LOAFER_DEFAULT_ROUTE_SOURCE

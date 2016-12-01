@@ -4,9 +4,9 @@ Message Translators
 The message translator receives a "raw message" and process it to a suitable
 format expected by the ``handler``.
 
-The "raw message" is the message received by the ``consumer`` "as-is".
-
-It could be defined via ``LOAFER_DEFAULT_MESSAGE_TRANSLATOR_CLASS`` setting.
+The "raw message" is the message received by the ``consumer`` "as-is" and
+it might be delivered without any processing if the message translator was
+not set.
 
 
 Implementation
