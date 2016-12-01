@@ -27,6 +27,10 @@ class LoaferDispatcher:
         return klass(route.source, options)
 
     def _translate_message(self, message, route):
+        if not route.message_translator:
+            logger.debug('route={} without message_translator set'.format(route))
+            return message
+
         # in the future, we may change the route depending on message content
         try:
             content = route.message_translator.translate(message)['content']

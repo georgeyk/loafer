@@ -13,18 +13,12 @@ class Settings:
     # Default value are determined from the number of machine cores
     LOAFER_MAX_THREAD_POOL = config('LOAFER_MAX_THREAD_POOL', default=None)
 
-    # Translator
-    LOAFER_DEFAULT_MESSAGE_TRANSLATOR_CLASS = config(
-        'LOAFER_DEFAULT_MESSAGE_TRANSLATOR_CLASS',
-        default='loafer.ext.aws.message_translator.SQSMessageTranslator')
-
     # Routes
     LOAFER_ROUTES = [
         {'name': config('LOAFER_DEFAULT_ROUTE_NAME', default='default'),
          'source': config('LOAFER_DEFAULT_ROUTE_SOURCE'),
          'handler': config('LOAFER_DEFAULT_ROUTE_HANDLER',
-                           default='loafer.example.jobs.async_example_job'),
-         'message_translator': LOAFER_DEFAULT_MESSAGE_TRANSLATOR_CLASS},
+                           default='loafer.example.jobs.async_example_job')},
     ]
 
     # Consumer
@@ -43,8 +37,7 @@ class Settings:
                  'MaxNumberOfMessages': 5})  # from 1-10
 
     # Setting LOAFER_CONSUMERS is only needed when there's more than one consumer.
-    # Otherwise, all routes will use the LOAFER_DEFAULT_CONSUMER_CLASS
-    # and LOAFER_DEFAULT_MESSAGE_TRANSLATOR_CLASS automatically.
+    # Otherwise, all routes will use the LOAFER_DEFAULT_CONSUMER_CLASS automatically.
     # This is an example configuration that will be available in the future:
     LOAFER_CONSUMERS = [
         {'route_source': {'consumer_class': LOAFER_DEFAULT_CONSUMER_CLASS,

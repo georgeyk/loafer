@@ -3,7 +3,6 @@ import logging
 
 from cached_property import cached_property
 
-from .conf import settings
 from .utils import import_callable
 
 
@@ -26,9 +25,7 @@ class Route:
     def message_translator(self):
         if self._message_translator:
             klass = import_callable(self._message_translator)
-        else:
-            klass = import_callable(settings.LOAFER_DEFAULT_MESSAGE_TRANSLATOR_CLASS)
-        return klass()
+            return klass()
 
     @cached_property
     def handler(self):

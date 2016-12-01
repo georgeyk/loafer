@@ -1,12 +1,8 @@
-# -*- coding: utf-8 -*-
-# vi:si:et:sw=4:sts=4:ts=4
-
 import asyncio
 from unittest import mock
 
 import pytest
 
-from loafer.message_translator import StringMessageTranslator
 from loafer.routes import Route
 
 
@@ -50,8 +46,7 @@ def test_message_translator():
 
 def test_default_message_translator():
     route = Route('foo', 'invalid')
-    translator = route.message_translator
-    assert isinstance(translator, StringMessageTranslator)
+    assert route.message_translator is None
 
 
 # FIXME: Improve all test_deliver* tests
