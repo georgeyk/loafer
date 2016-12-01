@@ -12,14 +12,12 @@ def _bootstrap():
     logging.basicConfig(level=settings.LOAFER_LOGLEVEL,
                         format=settings.LOAFER_LOG_FORMAT)
 
-    click.echo('>. Maximum concurrent jobs: {}'.format(settings.LOAFER_MAX_JOBS))
     click.echo('>. Routes:')
     for route in settings.LOAFER_ROUTES:
         click.echo('>.\t{}:'.format(route['name']))
         click.echo('>.\t\tSource: {}'.format(route['source']))
         click.echo('>.\t\tHandler: {}'.format(route['handler']))
         click.echo('>.\t\tMessage Translator: {}'.format(route['message_translator']))
-        click.echo('>.\t\tConsumer: {}'.format(settings.LOAFER_DEFAULT_CONSUMER_CLASS))
         click.echo('>.\t\tConsumer Options: {}'.format(settings.LOAFER_DEFAULT_CONSUMER_OPTIONS))
 
 
@@ -47,8 +45,6 @@ CLICK_CONTEXT_SETTINGS = {'help_option_names': ['-h', '--help']}
               help='Verbose mode (set LOAFER_LOGLEVEL=INFO)')
 @click.option('-vv', default=False, is_flag=True,
               help='Very verbose mode (set LOAFER_LOGLEVEL=DEBUG)')
-@click.option('--max-jobs', default=None, type=int,
-              help='Maximum concurrent jobs, overrides LOAFER_MAX_JOBS')
 @click.option('--max-threads', default=None, type=int,
               help='Maximum threads, overrides LOAFER_MAX_THREAD_POOL')
 @click.option('--source', default=None,
@@ -57,19 +53,14 @@ CLICK_CONTEXT_SETTINGS = {'help_option_names': ['-h', '--help']}
               help='The route handler, updates the default route handler')
 @click.option('--translator', default=None,
               help='The message translator class, updates the default route message translator')
-@click.option('--consumer', default=None,
-              help='The consumer class, overrides LOAFER_DEFAULT_CONSUMER_CLASS')
 @click.option('--consumer-opts', default=None,
               help='The consumer options (assumes json), overrides LOAFER_DEFAULT_CONSUMER_OPTIONS')
 @click.pass_context
-def cli(context, v, vv, max_jobs, max_threads, source, handler, translator,
-        consumer, consumer_opts):
+def cli(context, v, vv, max_threads, source, handler, translator, consumer_opts):
     if v:
         settings.LOAFER_LOGLEVEL = 'INFO'
     if vv:
         settings.LOAFER_LOGLEVEL = 'DEBUG'
-    if max_jobs and max_jobs >= 1:
-        settings.LOAFER_MAX_JOBS = max_jobs
     if max_threads and max_threads >= 1:
         settings.LOAFER_MAX_THREAD_POOL = max_threads
     if source:
@@ -78,8 +69,6 @@ def cli(context, v, vv, max_jobs, max_threads, source, handler, translator,
         settings.LOAFER_ROUTES[0]['handler'] = handler
     if translator:
         settings.LOAFER_ROUTES[0]['message_translator'] = translator
-    if consumer:
-        settings.LOAFER_DEFAULT_CONSUMER_CLASS = consumer
     if consumer_opts:
         opts = json.loads(consumer_opts)
         settings.LOAFER_DEFAULT_CONSUMER_OPTIONS = opts

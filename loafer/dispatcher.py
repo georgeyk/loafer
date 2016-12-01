@@ -1,19 +1,18 @@
 import asyncio
 import logging
 
-from .conf import settings
 from .exceptions import RejectMessage, IgnoreMessage, DeleteMessage
-from .utils import import_callable
 
 logger = logging.getLogger(__name__)
 
 
 class LoaferDispatcher:
 
-    def __init__(self, routes, consumers=None):
+    def __init__(self, routes, consumers=None, max_jobs=None):
         self.routes = routes
         self.consumers = consumers or []
-        self._semaphore = asyncio.Semaphore(settings.LOAFER_MAX_JOBS)
+        jobs = max_jobs or len(routes) * 2
+        self._semaphore = asyncio.Semaphore(jobs)
         self._stop_consumers = True
 
     def get_consumer(self, route):
@@ -21,10 +20,9 @@ class LoaferDispatcher:
             if consumer.source == route.source:
                 return consumer
 
-        # no consumer for given route, return default
-        klass = import_callable(settings.LOAFER_DEFAULT_CONSUMER_CLASS)
-        options = settings.LOAFER_DEFAULT_CONSUMER_OPTIONS
-        return klass(route.source, options)
+        # TODO: refactor code, so this is not possible.
+        logger.error('Consumer not found for route={}'.format(route))
+        raise ValueError('Consumer not found for route={}'.format(route))
 
     def _translate_message(self, message, route):
         if not route.message_translator:
@@ -80,6 +78,9 @@ class LoaferDispatcher:
         while not stopper():
             for route in self.routes:
                 consumer = self.get_consumer(route)
+                if not consumer:
+                    continue
+
                 messages = await consumer.consume()
                 for message in messages:
                     confirmation = await self.dispatch_message(message, route)

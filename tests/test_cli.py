@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-# vi:si:et:sw=4:sts=4:ts=4
-
 import json
 from unittest import mock
 
@@ -32,22 +29,6 @@ def test_very_verbose(runner, local_settings):
     with mock.patch('loafer.cli.settings', local_settings) as settings:
         runner.invoke(cli, ['-vv'])
         assert settings.LOAFER_LOGLEVEL == 'DEBUG'
-
-
-def test_max_jobs(runner, local_settings):
-    with mock.patch('loafer.cli.settings', local_settings) as settings:
-        runner.invoke(cli, ['--max-jobs', '20'])
-        assert settings.LOAFER_MAX_JOBS == 20
-
-
-def test_max_jobs_error(runner, local_settings):
-    result = runner.invoke(cli, ['--max-jobs', 'a'])
-    assert isinstance(result.exception, SystemExit)
-
-    with mock.patch('loafer.cli.settings', local_settings) as settings:
-        result = runner.invoke(cli, ['--max-jobs', '0'])
-        # preserves default value
-        assert settings.LOAFER_MAX_JOBS == 10
 
 
 def test_max_threads(runner, local_settings):
@@ -85,12 +66,6 @@ def test_translator(runner, local_settings):
         runner.invoke(cli, ['--translator', 'foobar'])
         routes = settings.LOAFER_ROUTES
         assert routes[0]['message_translator'] == 'foobar'
-
-
-def test_consumer(runner, local_settings):
-    with mock.patch('loafer.cli.settings', local_settings) as settings:
-        runner.invoke(cli, ['--consumer', 'foobar'])
-        assert settings.LOAFER_DEFAULT_CONSUMER_CLASS == 'foobar'
 
 
 def test_consumer_opts(runner, local_settings):

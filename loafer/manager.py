@@ -10,7 +10,6 @@ from .conf import settings
 from .dispatcher import LoaferDispatcher
 from .exceptions import ConfigurationError
 from .routes import Route
-from .utils import import_callable
 
 logger = logging.getLogger(__name__)
 
@@ -48,16 +47,7 @@ class LoaferManager:
 
     @cached_property
     def consumers(self):
-        if not self._conf.LOAFER_CONSUMERS:
-            return []
-
-        consumers = []
-        for consumer_settings in self._conf.LOAFER_CONSUMERS:
-            for source, consumer_data in consumer_settings.items():
-                klass = import_callable(consumer_data.get('consumer_class'))
-                options = consumer_data.get('consumer_options')
-                consumers.append(klass(source, options))
-        return consumers
+        return self._conf.LOAFER_CONSUMERS or []
 
     @cached_property
     def dispatcher(self):

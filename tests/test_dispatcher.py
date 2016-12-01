@@ -21,6 +21,7 @@ def route():
 @pytest.fixture
 def consumer():
     return CoroutineMock(consume=CoroutineMock(return_value=['message']),
+                         source='queue',
                          confirm_message=CoroutineMock())
 
 
@@ -39,8 +40,8 @@ def test_with_consumers(route):
 
 def test_get_consumer_default(route):
     dispatcher = LoaferDispatcher(routes=[route])
-    consumer = dispatcher.get_consumer(route)
-    assert consumer
+    with pytest.raises(ValueError):
+        dispatcher.get_consumer(route)
 
 
 def test_get_consumer_custom(route):
@@ -55,10 +56,8 @@ def test_get_consumer_custom(route):
 def test_get_consumer_default_with_custom(route):
     consumer = Mock(source='other-source')
     dispatcher = LoaferDispatcher(routes=[route], consumers=[consumer])
-    returned_consumer = dispatcher.get_consumer(route)
-
-    assert returned_consumer
-    assert returned_consumer is not consumer
+    with pytest.raises(ValueError):
+        dispatcher.get_consumer(route)
 
 
 @pytest.mark.asyncio
