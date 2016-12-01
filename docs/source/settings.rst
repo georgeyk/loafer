@@ -22,8 +22,6 @@ All the possible configuration keys and its default values are listed below
       - Default value
     * - LOAFER_LOG_FORMAT
       - '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-    * - LOAFER_MAX_JOBS
-      - 10
     * - LOAFER_MAX_THREAD_POOL
       - None
     * - LOAFER_DEFAULT_ROUTE_NAME
@@ -32,13 +30,9 @@ All the possible configuration keys and its default values are listed below
       - **required**
     * - LOAFER_DEFAULT_ROUTE_HANDLER
       - 'loafer.example.jobs.async_example_job'
-    * - LOAFER_DEFAULT_CONSUMER_CLASS
-      - 'loafer.ext.aws.consumer.Consumer'
     * - LOAFER_DEFAULT_CONSUMER_OPTIONS
       - {'WaitTimeSeconds: 5, 'MaxNumberOfMessages': 5}
 
-
-The ``LOAFER_MAX_JOBS`` is the number of concurrent ``handler`` executions.
 
 The ``LOAFER_MAX_THREAD_POOL`` if not set, are determined automatically by
 the number of cores in the machine. Threads are used to execute ``non-asyncio``
