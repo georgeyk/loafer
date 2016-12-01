@@ -1,9 +1,9 @@
 import asyncio
-from functools import partial
 import logging
 
-import boto3
+import aiobotocore
 import botocore.exceptions
+from cached_property import cached_property
 
 from loafer.exceptions import ConsumerError
 
@@ -20,15 +20,16 @@ class Consumer:
         self._client = None
         self._consumer_options = options
 
-    def get_client(self):
-        if self._client is None:
-            self._client = boto3.client('sqs', endpoint_url=self.endpoint_url, use_ssl=self.use_ssl)
+    @cached_property
+    def client(self):
+        if not self._client:
+            session = aiobotocore.get_session(loop=self._loop)
+            self._client = session.create_client('sqs', endpoint_url=self.endpoint_url,
+                                                 use_ssl=self.use_ssl)
         return self._client
 
     async def get_queue_url(self):
-        fn = partial(self.get_client().get_queue_url, QueueName=self.source)
-        # XXX: Refactor this when boto support asyncio
-        response = await self._loop.run_in_executor(None, fn)
+        response = await self.client.get_queue_url(QueueName=self.source)
         return response['QueueUrl']
 
     async def confirm_message(self, message):
@@ -38,18 +39,14 @@ class Consumer:
         logger.debug('receipt={}'.format(receipt))
 
         queue_url = await self.get_queue_url()
-        fn = partial(self.get_client().delete_message, QueueUrl=queue_url, ReceiptHandle=receipt)
-        # XXX: Refactor this when boto support asyncio
-        return await self._loop.run_in_executor(None, fn)
+        return await self.client.delete_message(QueueUrl=queue_url, ReceiptHandle=receipt)
 
     async def fetch_messages(self):
         queue_url = await self.get_queue_url()
         logger.debug('fetching messages on {}'.format(queue_url))
 
         options = self._consumer_options or {}
-        fn = partial(self.get_client().receive_message, QueueUrl=queue_url, **options)
-        # XXX: Refactor this when boto support asyncio
-        response = await self._loop.run_in_executor(None, fn)
+        response = await self.client.receive_message(QueueUrl=queue_url, **options)
         return response.get('Messages', [])
 
     async def consume(self):
