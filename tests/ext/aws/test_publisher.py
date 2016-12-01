@@ -3,8 +3,8 @@ import json
 from loafer.ext.aws.publisher import sqs_publish, sns_publish
 
 
-def test_sqs_publish(mock_boto_client_sqs):
-    with mock_boto_client_sqs as mock_sqs:
+def test_sqs_publish(mock_boto_sync_client_sqs):
+    with mock_boto_sync_client_sqs as mock_sqs:
         message = '{"test": "hey"}'
         response = sqs_publish('queue-name', message)
         assert response
@@ -18,8 +18,8 @@ def test_sqs_publish(mock_boto_client_sqs):
             QueueUrl=queue_url)
 
 
-def test_sqs_publish_with_queue_url(mock_boto_client_sqs):
-    with mock_boto_client_sqs as mock_sqs:
+def test_sqs_publish_with_queue_url(mock_boto_sync_client_sqs):
+    with mock_boto_sync_client_sqs as mock_sqs:
         message = '{"test": "hey"}'
         response = sqs_publish('https://blabla/queue-name', message)
         assert response
@@ -33,8 +33,8 @@ def test_sqs_publish_with_queue_url(mock_boto_client_sqs):
             QueueUrl=queue_url)
 
 
-def test_sns_publisher(mock_boto_client_sns):
-    with mock_boto_client_sns as mock_sns:
+def test_sns_publisher(mock_boto_sync_client_sns):
+    with mock_boto_sync_client_sns as mock_sns:
         message = '{"test": "hey"}'
         topic = 'arn:blabla:topic-name'
         response = sns_publish(topic, message)
@@ -50,8 +50,8 @@ def test_sns_publisher(mock_boto_client_sns):
             Message=message_sent)
 
 
-def test_sns_publisher_with_topic_name(mock_boto_client_sns):
-    with mock_boto_client_sns as mock_sns:
+def test_sns_publisher_with_topic_name(mock_boto_sync_client_sns):
+    with mock_boto_sync_client_sns as mock_sns:
         message = '{"test": "hey"}'
         topic = 'topic-name'
         response = sns_publish(topic, message)
