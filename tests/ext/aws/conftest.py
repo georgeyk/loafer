@@ -17,7 +17,7 @@ def queue_url():
 
 @pytest.fixture
 def mock_get_queue_url(queue_url):
-    return mock.Mock(return_value={'QueueUrl': queue_url})
+    return mock.Mock(return_value=queue_url)
 
 
 @pytest.fixture
