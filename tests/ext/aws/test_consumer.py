@@ -54,7 +54,7 @@ async def test_fetch_messages(mock_boto_session_sqs, boto_client_sqs):
 @pytest.mark.asyncio
 async def test_fetch_messages_returns_empty(mock_boto_session_sqs, boto_client_sqs):
     options = {'WaitTimeSeconds': 5, 'MaxNumberOfMessages': 10}
-    boto_client_sqs.receive_message.async_return_value = {'Messages': []}
+    boto_client_sqs.receive_message.return_value = {'Messages': []}
     with mock_boto_session_sqs:
         consumer = Consumer('queue-name', options=options)
         messages = await consumer.fetch_messages()
@@ -69,7 +69,7 @@ async def test_fetch_messages_returns_empty(mock_boto_session_sqs, boto_client_s
 
 @pytest.mark.asyncio
 async def test_consume(mock_boto_session_sqs, boto_client_sqs):
-    boto_client_sqs.receive_message.async_return_value = {'Messages': []}
+    boto_client_sqs.receive_message.return_value = {'Messages': []}
     with mock_boto_session_sqs:
         consumer = Consumer('queue-name')
         messages = await consumer.consume()

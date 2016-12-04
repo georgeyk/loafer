@@ -3,7 +3,7 @@
 
 from unittest import mock
 
-from aiomock import AIOMock
+from asynctest import CoroutineMock
 import pytest
 
 
@@ -56,10 +56,10 @@ def mock_sns_publish():
 
 @pytest.fixture
 def boto_client_sqs(queue_url, mock_message):
-    mock_client = AIOMock()
-    mock_client.get_queue_url.async_return_value = queue_url
-    mock_client.delete_message.async_return_value = mock.Mock()
-    mock_client.receive_message.async_return_value = mock_message
+    mock_client = CoroutineMock()
+    mock_client.get_queue_url.return_value = queue_url
+    mock_client.delete_message.return_value = mock.Mock()
+    mock_client.receive_message.return_value = mock_message
     return mock_client
 
 
