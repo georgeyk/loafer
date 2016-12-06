@@ -5,4 +5,3 @@ pytest-env
 coveralls
 asynctest
 flake8
-aiomock
