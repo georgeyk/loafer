@@ -11,15 +11,28 @@ logger = logging.getLogger(__name__)
 
 class Route:
 
-    def __init__(self, source, handler, name='default', message_translator=None):
+    def __init__(self, source, handler, name='default',
+                 message_translator=None, error_handler=None):
         self.name = name
         self.source = source
         self._handler = handler
         self._message_translator = message_translator
+        self._error_handler = error_handler
 
     def __str__(self):
         return '<{}(name={} queue={} handler={})>'.format(
             type(self).__name__, self.name, self.source, self._handler)
+
+    async def error_handler(self, exc_type, exc, message, loop=None):
+        if self._error_handler is not None:
+            if asyncio.iscoroutinefunction(self._error_handler):
+                return await self._error_handler(exc_type, exc, message)
+            else:
+                loop = loop or asyncio.get_event_loop()
+                return await loop.run_in_executor(None, self._error_handler, exc_type, exc, message)
+
+        logger.error('unhandled exception {!r} on {} with {}'.format(exc, self, message))
+        return False
 
     @cached_property
     def message_translator(self):

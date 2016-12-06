@@ -135,16 +135,20 @@ async def test_dispatch_message_task_ignore_message(route):
 
 @pytest.mark.asyncio
 async def test_dispatch_message_task_error(route):
-    route.deliver = CoroutineMock(side_effect=Exception)
+    exc = Exception()
+    route.deliver = CoroutineMock(side_effect=exc)
+    route.error_handler = CoroutineMock(return_value=False)
     dispatcher = LoaferDispatcher([route])
 
     message = 'message'
     confirmation = await dispatcher.dispatch_message(message, route)
     assert confirmation is False
 
-    assert route.message_translator.translate.called
-    assert route.deliver.called
-    assert route.deliver.called_once_with(message)
+    assert route.message_translator.translate.called is True
+    assert route.deliver.called is True
+    route.deliver.assert_called_once_with(message)
+    assert route.error_handler.called is True
+    route.error_handler.assert_called_once_with(type(exc), exc, message)
 
 
 @pytest.mark.asyncio
