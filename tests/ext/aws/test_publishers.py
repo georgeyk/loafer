@@ -1,6 +1,6 @@
 import json
 
-from loafer.ext.aws.publisher import sqs_publish, sns_publish
+from loafer.ext.aws.publishers import sqs_publish, sns_publish
 
 
 def test_sqs_publish(mock_boto_sync_client_sqs):
