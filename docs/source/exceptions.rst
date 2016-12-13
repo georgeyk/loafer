@@ -6,7 +6,7 @@ All exceptions are defined at ``loafer.exceptions`` module.
 A description of all the exceptions:
 
 
-* ``ConsumerError``: a fatal error from a consumer instance.
+* ``ProviderError``: a fatal error from a provider instance.
   Loafer will stop all operations and shutdown.
 
 * ``ConfigurationError``: a configuration error. Loafer will

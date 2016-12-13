@@ -36,21 +36,21 @@ It prepares everything needed to run and starts the dispatcher.
 
 * **Dispatcher**
 
-The dispatcher starts the consumers, schedules the message routing and message acknowledgment.
+The dispatcher starts the providers, schedules the message routing and message acknowledgment.
 
 
-* **Consumer**
+* **Provider**
 
-The consumer is responsible for retrieving messages and delete it when requested.
+The provider is responsible for retrieving messages and delete it when requested.
 
 The act is deleting a message is also known as message acknowledgment.
 
-At the moment, we only have consumer for AWS SQS service.
+At the moment, we only have provider for AWS SQS service.
 
 
 * **Message Translator**
 
-The message translator is the contract between consumer and handler.
+The message translator is the contract between provider and handler.
 
 In the future it will also help the dispatcher choose a message destination
 handler.
@@ -61,7 +61,7 @@ transform it to an appropriate format that is expected by the handler.
 
 * **Route**
 
-The route is the link between the consumer and handler. It is responsible
+The route is the link between the provider and handler. It is responsible
 to deliver the message to handler and receive its confirmation.
 
 

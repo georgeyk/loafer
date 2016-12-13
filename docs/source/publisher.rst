@@ -4,7 +4,7 @@ Publisher
 The publisher is only used for testing purposes, so we can have an easy way
 to validate some message translation process or handler execution.
 
-It is responsible to publish a message in a consumer source (queue).
+It is responsible to publish a message in a provider source (queue).
 
 It can be usefull to emulates the behavior of a given handler without the
 real message producer.
