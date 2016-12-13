@@ -8,21 +8,21 @@ logger = logging.getLogger(__name__)
 
 class LoaferDispatcher:
 
-    def __init__(self, routes, consumers=None, max_jobs=None):
+    def __init__(self, routes, providers=None, max_jobs=None):
         self.routes = routes
-        self.consumers = consumers or []
+        self.providers = providers or []
         jobs = max_jobs or len(routes) * 2
         self._semaphore = asyncio.Semaphore(jobs)
-        self._stop_consumers = True
+        self._stop_providers = True
 
-    def get_consumer(self, route):
-        for consumer in self.consumers:
-            if consumer.source == route.source:
-                return consumer
+    def get_provider(self, route):
+        for provider in self.providers:
+            if provider.source == route.source:
+                return provider
 
         # TODO: refactor code, so this is not possible.
-        logger.error('Consumer not found for route={}'.format(route))
-        raise ValueError('Consumer not found for route={}'.format(route))
+        logger.error('Provider not found for route={}'.format(route))
+        raise ValueError('Provider not found for route={}'.format(route))
 
     def _translate_message(self, message, route):
         if not route.message_translator:
@@ -66,28 +66,28 @@ class LoaferDispatcher:
 
         return True
 
-    async def dispatch_consumers(self, sentinel=None):
+    async def dispatch_providers(self, sentinel=None):
         if sentinel is None or not callable(sentinel):
-            self._stop_consumers = False
+            self._stop_providers = False
             stopper = self._default_sentinel
         else:
             stopper = sentinel
 
         while not stopper():
             for route in self.routes:
-                consumer = self.get_consumer(route)
-                if not consumer:
+                provider = self.get_provider(route)
+                if not provider:
                     continue
 
-                messages = await consumer.consume()
+                messages = await provider.fetch_messages()
                 for message in messages:
                     confirmation = await self.dispatch_message(message, route)
                     if confirmation:
-                        await consumer.confirm_message(message)
+                        await provider.confirm_message(message)
 
     def _default_sentinel(self):
-        return self._stop_consumers
+        return self._stop_providers
 
-    def stop_consumers(self):
-        logger.info('Stopping consumers')
-        self._stop_consumers = True
+    def stop_providers(self):
+        logger.info('Stopping providers')
+        self._stop_providers = True

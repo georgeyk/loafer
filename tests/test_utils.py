@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-# vi:si:et:sw=4:sts=4:ts=4
-
 import inspect
 import os
 import sys
@@ -17,8 +14,8 @@ def test_import_function():
 
 
 def test_import_class():
-    klass = import_callable('loafer.exceptions.ConsumerError')
-    assert klass.__name__ == 'ConsumerError'
+    klass = import_callable('loafer.exceptions.ProviderError')
+    assert klass.__name__ == 'ProviderError'
     assert inspect.isclass(klass)
 
 

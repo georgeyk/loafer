@@ -19,45 +19,45 @@ def route():
 
 
 @pytest.fixture
-def consumer():
-    return CoroutineMock(consume=CoroutineMock(return_value=['message']),
+def provider():
+    return CoroutineMock(fetch_messages=CoroutineMock(return_value=['message']),
                          source='queue',
                          confirm_message=CoroutineMock())
 
 
-def test_without_consumers(route):
+def test_without_providers(route):
     dispatcher = LoaferDispatcher(routes=[route])
-    assert dispatcher.consumers == []
-    assert len(dispatcher.consumers) == 0
+    assert dispatcher.providers == []
+    assert len(dispatcher.providers) == 0
 
 
-def test_with_consumers(route):
-    consumer = Mock()
-    dispatcher = LoaferDispatcher(routes=[route], consumers=[consumer])
-    assert len(dispatcher.consumers) == 1
-    assert dispatcher.consumers[0] is consumer
+def test_with_providers(route):
+    provider = Mock()
+    dispatcher = LoaferDispatcher(routes=[route], providers=[provider])
+    assert len(dispatcher.providers) == 1
+    assert dispatcher.providers[0] is provider
 
 
-def test_get_consumer_default(route):
+def test_get_provider_default(route):
     dispatcher = LoaferDispatcher(routes=[route])
     with pytest.raises(ValueError):
-        dispatcher.get_consumer(route)
+        dispatcher.get_provider(route)
 
 
-def test_get_consumer_custom(route):
-    consumer = Mock(source=route.source)
-    dispatcher = LoaferDispatcher(routes=[route], consumers=[consumer])
-    returned_consumer = dispatcher.get_consumer(route)
+def test_get_provider_custom(route):
+    provider = Mock(source=route.source)
+    dispatcher = LoaferDispatcher(routes=[route], providers=[provider])
+    returned_provider = dispatcher.get_provider(route)
 
-    assert returned_consumer
-    assert returned_consumer is consumer
+    assert returned_provider
+    assert returned_provider is provider
 
 
-def test_get_consumer_default_with_custom(route):
-    consumer = Mock(source='other-source')
-    dispatcher = LoaferDispatcher(routes=[route], consumers=[consumer])
+def test_get_provider_default_with_custom(route):
+    provider = Mock(source='other-source')
+    dispatcher = LoaferDispatcher(routes=[route], providers=[provider])
     with pytest.raises(ValueError):
-        dispatcher.get_consumer(route)
+        dispatcher.get_provider(route)
 
 
 @pytest.mark.asyncio
@@ -166,26 +166,26 @@ async def test_dispatch_message_task_cancel(route):
 
 
 @pytest.mark.asyncio
-async def test_dispatch_consumers(route, consumer):
+async def test_dispatch_providers(route, provider):
     routes = [route]
     dispatcher = LoaferDispatcher(routes)
     dispatcher.dispatch_message = CoroutineMock()
-    dispatcher.get_consumer = Mock(return_value=consumer)
+    dispatcher.get_provider = Mock(return_value=provider)
 
-    # consumers will stop after the first iteration
+    # providers will stop after the first iteration
     running_values = [False, True]
 
     def stopper():
         return running_values.pop(0)
 
-    await dispatcher.dispatch_consumers(stopper)
+    await dispatcher.dispatch_providers(stopper)
 
-    assert dispatcher.get_consumer.called
-    assert dispatcher.get_consumer.called_once_with(route)
-    assert consumer.consume.called
+    assert dispatcher.get_provider.called
+    assert dispatcher.get_provider.called_once_with(route)
+    assert provider.fetch_messages.called
 
     assert dispatcher.dispatch_message.called
     assert dispatcher.dispatch_message.called_called_once_with('message', route)
 
-    assert consumer.confirm_message.called
-    assert consumer.confirm_message.called_once_with('message')
+    assert provider.confirm_message.called
+    assert provider.confirm_message.called_once_with('message')

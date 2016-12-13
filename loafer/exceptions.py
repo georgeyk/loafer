@@ -1,5 +1,5 @@
 
-class ConsumerError(Exception):
+class ProviderError(Exception):
     pass
 
 

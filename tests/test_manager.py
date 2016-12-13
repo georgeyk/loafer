@@ -4,7 +4,7 @@ from unittest import mock
 import pytest
 
 from loafer.conf import Settings
-from loafer.exceptions import ConfigurationError, ConsumerError
+from loafer.exceptions import ConfigurationError, ProviderError
 from loafer.dispatcher import LoaferDispatcher
 from loafer.manager import LoaferManager
 
@@ -77,7 +77,7 @@ async def test_on_future_errors():
     manager = LoaferManager()
     manager.stop = mock.Mock()
     future = asyncio.Future()
-    future.set_exception(ConsumerError)
+    future.set_exception(ProviderError)
     manager.on_future__errors(future)
 
     assert manager.stop.called

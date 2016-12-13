@@ -5,12 +5,12 @@ import aiobotocore
 import botocore.exceptions
 from cached_property import cached_property
 
-from loafer.exceptions import ConsumerError
+from loafer.exceptions import ProviderError
 
 logger = logging.getLogger(__name__)
 
 
-class Consumer:
+class SQSProvider:
 
     def __init__(self, source, endpoint_url=None, use_ssl=True, options=None, loop=None):
         self.source = source
@@ -18,7 +18,7 @@ class Consumer:
         self.use_ssl = use_ssl
         self._loop = loop or asyncio.get_event_loop()
         self._client = None
-        self._consumer_options = options
+        self._options = options
 
     @cached_property
     def client(self):
@@ -45,14 +45,10 @@ class Consumer:
         queue_url = await self.get_queue_url()
         logger.debug('fetching messages on {}'.format(queue_url))
 
-        options = self._consumer_options or {}
-        response = await self.client.receive_message(QueueUrl=queue_url, **options)
-        return response.get('Messages', [])
-
-    async def consume(self):
+        options = self._options or {}
         try:
-            messages = await self.fetch_messages()
+            response = await self.client.receive_message(QueueUrl=queue_url, **options)
         except botocore.exceptions.ClientError as exc:
-            raise ConsumerError('Error when fetching messages') from exc
+            raise ProviderError('Error when fetching messages') from exc
 
-        return messages
+        return response.get('Messages', [])
