@@ -3,7 +3,7 @@ from unittest import mock
 
 from loafer.dispatcher import LoaferDispatcher
 from loafer.exceptions import ProviderError
-from loafer.manager import LoaferManager
+from loafer.managers import LoaferManager
 from loafer.runners import LoaferRunner
 
 
