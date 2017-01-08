@@ -17,16 +17,13 @@ class SQSProvider:
         self.endpoint_url = endpoint_url
         self.use_ssl = use_ssl
         self._loop = loop or asyncio.get_event_loop()
-        self._client = None
-        self._options = options
+        self._options = options or {}
 
     @cached_property
     def client(self):
-        if not self._client:
-            session = aiobotocore.get_session(loop=self._loop)
-            self._client = session.create_client('sqs', endpoint_url=self.endpoint_url,
-                                                 use_ssl=self.use_ssl)
-        return self._client
+        session = aiobotocore.get_session(loop=self._loop)
+        return session.create_client('sqs', endpoint_url=self.endpoint_url,
+                                     use_ssl=self.use_ssl)
 
     async def get_queue_url(self):
         response = await self.client.get_queue_url(QueueName=self.source)
@@ -45,9 +42,8 @@ class SQSProvider:
         queue_url = await self.get_queue_url()
         logger.debug('fetching messages on {}'.format(queue_url))
 
-        options = self._options or {}
         try:
-            response = await self.client.receive_message(QueueUrl=queue_url, **options)
+            response = await self.client.receive_message(QueueUrl=queue_url, **self._options)
         except botocore.exceptions.ClientError as exc:
             raise ProviderError('Error when fetching messages') from exc
 
