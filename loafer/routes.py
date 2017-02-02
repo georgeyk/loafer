@@ -20,7 +20,7 @@ class Route:
         self._error_handler = error_handler
 
     def __str__(self):
-        return '<{}(name={} provider={} handler={})>'.format(
+        return '<{}(name={} provider={!r} handler={!r})>'.format(
             type(self).__name__, self.name, self.provider, self._handler)
 
     async def error_handler(self, exc_type, exc, message, loop=None):
@@ -31,7 +31,7 @@ class Route:
                 loop = loop or asyncio.get_event_loop()
                 return await loop.run_in_executor(None, self._error_handler, exc_type, exc, message)
 
-        logger.error('unhandled exception {!r} on {} with {}'.format(exc, self, message))
+        logger.error('unhandled exception {!r} on {!r} with {!r}'.format(exc, self, message))
         return False
 
     @cached_property
@@ -49,7 +49,7 @@ class Route:
         return self._handler
 
     async def deliver(self, content, loop=None):
-        logger.info('delivering message content to handler={}'.format(self.handler))
+        logger.info('delivering message content to handler={!r}'.format(self.handler))
 
         if asyncio.iscoroutinefunction(self.handler):
             logger.debug('handler is coroutine! {!r}'.format(self.handler))

@@ -16,7 +16,7 @@ class LoaferDispatcher:
 
     def _translate_message(self, message, route):
         if not route.message_translator:
-            logger.debug('route={} without message_translator set'.format(route))
+            logger.debug('route={!r} without message_translator set'.format(route))
             return message
 
         # in the future, we may change the route depending on message content
@@ -29,11 +29,11 @@ class LoaferDispatcher:
         return content
 
     async def dispatch_message(self, message, route):
-        logger.info('dispatching message to route={}'.format(route))
+        logger.info('dispatching message to route={!r}'.format(route))
 
         content = self._translate_message(message, route)
         if content is None:
-            logger.warning('message will be ignored:\n{}\n'.format(message))
+            logger.warning('message will be ignored:\n{!r}\n'.format(message))
             return False
 
         # Since we don't know what will happen on message handler, use semaphore
@@ -42,13 +42,13 @@ class LoaferDispatcher:
             try:
                 await route.deliver(content)
             except (DeleteMessage) as exc:
-                logger.info('message acknowledged:\n{}\n'.format(message))
+                logger.info('message acknowledged:\n{!r}\n'.format(message))
                 # eg, we will return True at the end
             except KeepMessage as exc:
-                logger.info('message not acknowledged:\n{}\n'.format(message))
+                logger.info('message not acknowledged:\n{!r}\n'.format(message))
                 return False
             except asyncio.CancelledError as exc:
-                msg = '"{}" was cancelled, the message will not be acknowledged:\n{}\n'
+                msg = '"{}" was cancelled, the message will not be acknowledged:\n{!r}\n'
                 logger.warning(msg.format(route.handler_name, message))
                 return False
             except Exception as exc:
