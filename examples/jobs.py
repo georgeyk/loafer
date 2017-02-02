@@ -1,10 +1,7 @@
-# -*- coding: utf-8 -*-
-# vi:si:et:sw=4:sts=4:ts=4
-
 import asyncio
 import logging
 
-from loafer.exceptions import RejectMessage, IgnoreMessage
+from loafer.exceptions import DeleteMessage, KeepMessage
 
 logger = logging.getLogger(__name__)
 
@@ -26,11 +23,11 @@ async def async_example_job(*args, **kwargs):
 
 
 async def reject_message_job(*args, **kwargs):
-    raise RejectMessage()
+    raise DeleteMessage()
 
 
 async def ignore_message_job(*args, **kwargs):
-    raise IgnoreMessage()
+    raise KeepMessage()
 
 
 async def random_int_job(number):

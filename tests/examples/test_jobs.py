@@ -2,7 +2,7 @@ from unittest import mock
 
 import pytest
 
-from loafer.exceptions import RejectMessage, IgnoreMessage
+from loafer.exceptions import DeleteMessage, KeepMessage
 from examples.jobs import (example_job, async_example_job,
                            reject_message_job, ignore_message_job,
                            random_int_job)
@@ -23,13 +23,13 @@ async def test_async_example_job():
 
 @pytest.mark.asyncio
 async def test_reject_message_job():
-    with pytest.raises(RejectMessage):
+    with pytest.raises(DeleteMessage):
         await reject_message_job()
 
 
 @pytest.mark.asyncio
 async def test_ignore_message_job():
-    with pytest.raises(IgnoreMessage):
+    with pytest.raises(KeepMessage):
         await ignore_message_job()
 
 

@@ -5,7 +5,7 @@ from asynctest import CoroutineMock
 from asynctest import Mock as AsyncMock  # flake8: NOQA
 import pytest
 
-from loafer.exceptions import DeleteMessage, RejectMessage, IgnoreMessage
+from loafer.exceptions import DeleteMessage, KeepMessage
 from loafer.dispatcher import LoaferDispatcher
 from loafer.routes import Route
 
@@ -69,10 +69,9 @@ async def test_dispatch_message_error_on_translation(route):
     assert not route.deliver.called
 
 
-@pytest.mark.parametrize('side_effect', [RejectMessage, DeleteMessage])
 @pytest.mark.asyncio
-async def test_dispatch_message_task_reject_message(side_effect, route):
-    route.deliver = CoroutineMock(side_effect=side_effect)
+async def test_dispatch_message_task_delete_message(route):
+    route.deliver = CoroutineMock(side_effect=DeleteMessage)
     dispatcher = LoaferDispatcher([route])
 
     message = 'rejected-message'
@@ -86,7 +85,7 @@ async def test_dispatch_message_task_reject_message(side_effect, route):
 
 @pytest.mark.asyncio
 async def test_dispatch_message_task_ignore_message(route):
-    route.deliver = CoroutineMock(side_effect=IgnoreMessage)
+    route.deliver = CoroutineMock(side_effect=KeepMessage)
     dispatcher = LoaferDispatcher([route])
 
     message = 'ignored-message'

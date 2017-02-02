@@ -11,14 +11,9 @@ class LoaferException(Exception):
     pass
 
 
-class IgnoreMessage(LoaferException):
+class KeepMessage(LoaferException):
     pass
 
 
-class RejectMessage(LoaferException):
+class DeleteMessage(LoaferException):
     pass
-
-
-# Alias
-
-DeleteMessage = RejectMessage
