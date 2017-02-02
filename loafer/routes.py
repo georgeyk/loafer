@@ -11,17 +11,17 @@ logger = logging.getLogger(__name__)
 
 class Route:
 
-    def __init__(self, source, handler, name='default',
+    def __init__(self, provider, handler, name='default',
                  message_translator=None, error_handler=None):
         self.name = name
-        self.source = source
+        self.provider = provider
         self._handler = handler
         self._message_translator = message_translator
         self._error_handler = error_handler
 
     def __str__(self):
-        return '<{}(name={} queue={} handler={})>'.format(
-            type(self).__name__, self.name, self.source, self._handler)
+        return '<{}(name={} provider={} handler={})>'.format(
+            type(self).__name__, self.name, self.provider, self._handler)
 
     async def error_handler(self, exc_type, exc, message, loop=None):
         if self._error_handler is not None:

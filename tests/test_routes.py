@@ -29,13 +29,14 @@ def test_handler_name_property():
     assert route.handler_name == 'examples.jobs.example_job'
 
 
-def test_source():
-    route = Route(source='foo-queue', handler='invalid_job')
-    assert route.source == 'foo-queue'
+def test_provider():
+    provider = mock.Mock()
+    route = Route(provider, handler='invalid_job')
+    assert route.provider is provider
 
 
 def test_name():
-    route = Route(source='foo-queue', handler='invalid_job', name='foo')
+    route = Route('whatever', handler='invalid_job', name='foo')
     assert route.name == 'foo'
 
 
