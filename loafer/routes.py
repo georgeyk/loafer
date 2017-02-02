@@ -10,7 +10,6 @@ logger = logging.getLogger(__name__)
 
 
 class Route:
-
     def __init__(self, provider, handler, name='default',
                  message_translator=None, error_handler=None):
         self.name = name

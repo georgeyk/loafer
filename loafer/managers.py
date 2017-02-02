@@ -10,7 +10,6 @@ logger = logging.getLogger(__name__)
 
 
 class LoaferManager:
-
     def __init__(self, routes, runner=None):
         self.runner = runner or LoaferRunner(on_stop_callback=self.on_loop__stop)
         self.routes = routes
@@ -21,8 +20,7 @@ class LoaferManager:
         return LoaferDispatcher(self.routes)
 
     def run(self, forever=True):
-        self._future = asyncio.gather(self.dispatcher.dispatch_providers(),
-                                      loop=self.runner.loop)
+        self._future = asyncio.gather(self.dispatcher.dispatch_providers(), loop=self.runner.loop)
         self._future.add_done_callback(self.on_future__errors)
         self.runner.start(self._future, run_forever=forever)
 

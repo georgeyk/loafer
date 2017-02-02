@@ -8,7 +8,6 @@ logger = logging.getLogger(__name__)
 
 
 class LoaferRunner:
-
     def __init__(self, loop=None, max_workers=None, on_stop_callback=None):
         self._on_stop_callback = on_stop_callback
         self.loop = loop or asyncio.get_event_loop()

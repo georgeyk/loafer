@@ -7,7 +7,6 @@ logger = logging.getLogger(__name__)
 
 
 class LoaferDispatcher:
-
     def __init__(self, routes, max_jobs=None):
         self.routes = routes
         jobs = max_jobs or len(routes) * 2
@@ -36,14 +35,12 @@ class LoaferDispatcher:
             logger.warning('message will be ignored:\n{!r}\n'.format(message))
             return False
 
-        # Since we don't know what will happen on message handler, use semaphore
-        # to protect scheduling or executing too many coroutines/threads
         with await self._semaphore:
             try:
                 await route.deliver(content)
-            except (DeleteMessage) as exc:
+            except DeleteMessage as exc:
                 logger.info('message acknowledged:\n{!r}\n'.format(message))
-                # eg, we will return True at the end
+                # We will return True at the end to acknowledge it
             except KeepMessage as exc:
                 logger.info('message not acknowledged:\n{!r}\n'.format(message))
                 return False

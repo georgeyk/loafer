@@ -11,7 +11,6 @@ logger = logging.getLogger(__name__)
 
 
 class SQSProvider:
-
     def __init__(self, source, endpoint_url=None, use_ssl=True, options=None, loop=None):
         self.source = source
         self.endpoint_url = endpoint_url
@@ -22,8 +21,7 @@ class SQSProvider:
     @cached_property
     def client(self):
         session = aiobotocore.get_session(loop=self._loop)
-        return session.create_client('sqs', endpoint_url=self.endpoint_url,
-                                     use_ssl=self.use_ssl)
+        return session.create_client('sqs', endpoint_url=self.endpoint_url, use_ssl=self.use_ssl)
 
     async def get_queue_url(self):
         response = await self.client.get_queue_url(QueueName=self.source)
@@ -33,7 +31,7 @@ class SQSProvider:
         logger.info('confirm message (ACK/deletion)')
 
         receipt = message['ReceiptHandle']
-        logger.debug('receipt={}'.format(receipt))
+        logger.debug('receipt={!r}'.format(receipt))
 
         queue_url = await self.get_queue_url()
         return await self.client.delete_message(QueueUrl=queue_url, ReceiptHandle=receipt)
