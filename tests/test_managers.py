@@ -8,14 +8,26 @@ from loafer.runners import LoaferRunner
 
 
 def test_dispatcher():
-    runner = LoaferRunner(loop=mock.Mock())
-    manager = LoaferManager(routes=[], consumers=[], runner=runner)
+    manager = LoaferManager(routes=[])
     assert manager.dispatcher
     assert isinstance(manager.dispatcher, LoaferDispatcher)
 
 
+def test_default_runner():
+    manager = LoaferManager(routes=[])
+    assert manager.runner
+    assert isinstance(manager.runner, LoaferRunner)
+
+
+def test_custom_runner():
+    runner = mock.Mock()
+    manager = LoaferManager(routes=[], runner=runner)
+    assert manager.runner
+    assert isinstance(manager.runner, mock.Mock)
+
+
 def test_on_future_errors():
-    manager = LoaferManager(routes=[], consumers=[])
+    manager = LoaferManager(routes=[])
     manager.runner = mock.Mock()
     future = asyncio.Future()
     future.set_exception(ProviderError)
@@ -26,7 +38,7 @@ def test_on_future_errors():
 
 
 def test_on_loop__stop():
-    manager = LoaferManager(routes=[], consumers=[])
+    manager = LoaferManager(routes=[])
     manager.dispatcher = mock.Mock()
     manager._future = mock.Mock()
     manager.on_loop__stop()
