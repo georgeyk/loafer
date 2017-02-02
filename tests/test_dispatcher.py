@@ -11,53 +11,18 @@ from loafer.routes import Route
 
 
 @pytest.fixture
-def route():
-    message_translator = Mock(translate=Mock(return_value={'content': 'message'}))
-    route = AsyncMock(source='queue', handler='handler',
-                      message_translator=message_translator, spec=Route)
-    return route
-
-
-@pytest.fixture
 def provider():
     return CoroutineMock(fetch_messages=CoroutineMock(return_value=['message']),
                          source='queue',
                          confirm_message=CoroutineMock())
 
 
-def test_without_providers(route):
-    dispatcher = LoaferDispatcher(routes=[route])
-    assert dispatcher.providers == []
-    assert len(dispatcher.providers) == 0
-
-
-def test_with_providers(route):
-    provider = Mock()
-    dispatcher = LoaferDispatcher(routes=[route], providers=[provider])
-    assert len(dispatcher.providers) == 1
-    assert dispatcher.providers[0] is provider
-
-
-def test_get_provider_default(route):
-    dispatcher = LoaferDispatcher(routes=[route])
-    with pytest.raises(ValueError):
-        dispatcher.get_provider(route)
-
-
-def test_get_provider_custom(route):
-    provider = Mock(source=route.source)
-    dispatcher = LoaferDispatcher(routes=[route], providers=[provider])
-    returned_provider = dispatcher.get_provider(route)
-
-    assert returned_provider
-    assert returned_provider is provider
-
-
-def test_get_provider_default_with_custom(route):
-    provider = Mock(source='other-source')
-    dispatcher = LoaferDispatcher(routes=[route], providers=[provider])
-    with pytest.raises(ValueError):
-        dispatcher.get_provider(route)
+@pytest.fixture
+def route(provider):
+    message_translator = Mock(translate=Mock(return_value={'content': 'message'}))
+    route = AsyncMock(provider=provider, handler='handler',
+                      message_translator=message_translator, spec=Route)
+    return route
 
 
 @pytest.mark.asyncio
@@ -166,26 +131,13 @@ async def test_dispatch_message_task_cancel(route):
 
 
 @pytest.mark.asyncio
-async def test_dispatch_providers(route, provider):
-    routes = [route]
-    dispatcher = LoaferDispatcher(routes)
+async def test_process_route(route):
+    dispatcher = LoaferDispatcher([route])
     dispatcher.dispatch_message = CoroutineMock()
-    dispatcher.get_provider = Mock(return_value=provider)
+    await dispatcher.process_route(route)
 
-    # providers will stop after the first iteration
-    running_values = [False, True]
-
-    def stopper():
-        return running_values.pop(0)
-
-    await dispatcher.dispatch_providers(stopper)
-
-    assert dispatcher.get_provider.called
-    assert dispatcher.get_provider.called_once_with(route)
-    assert provider.fetch_messages.called
-
+    assert route.provider.fetch_messages.called
     assert dispatcher.dispatch_message.called
     assert dispatcher.dispatch_message.called_called_once_with('message', route)
-
-    assert provider.confirm_message.called
-    assert provider.confirm_message.called_once_with('message')
+    assert route.provider.confirm_message.called
+    assert route.provider.confirm_message.called_once_with('message')
