@@ -11,13 +11,13 @@ class SQSMessageTranslator:
         except (KeyError, TypeError):
             logger.error('missing Body key in SQS message. It really came from SQS ?'
                          '\nmessage={!r}'.format(message))
-            return {'content': None}
+            return {'content': None, 'metadata': {}}
 
         try:
-            return {'content': json.loads(body)}
+            return {'content': json.loads(body), 'metadata': {}}
         except json.decoder.JSONDecodeError as exc:
             logger.error('error={!r} message={!r}'.format(exc, message))
-            return {'content': None}
+            return {'content': None, 'metadata': {}}
 
 
 class SNSMessageTranslator:
@@ -29,10 +29,10 @@ class SNSMessageTranslator:
             logger.error(
                 'Missing Body or Message key in SQS message. It really came from SNS ?'
                 '\nmessage={!r}'.format(message))
-            return {'content': None}
+            return {'content': None, 'metadata': {}}
 
         try:
-            return {'content': json.loads(message)}
+            return {'content': json.loads(message), 'metadata': {}}
         except (json.decoder.JSONDecodeError, TypeError) as exc:
             logger.error('error={!r} message={!r}'.format(exc, message))
-            return {'content': None}
+            return {'content': None, 'metadata': {}}
