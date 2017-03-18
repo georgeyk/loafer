@@ -11,9 +11,5 @@ class LoaferException(Exception):
     pass
 
 
-class KeepMessage(LoaferException):
-    pass
-
-
 class DeleteMessage(LoaferException):
     pass

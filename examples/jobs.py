@@ -1,7 +1,7 @@
 import asyncio
 import logging
 
-from loafer.exceptions import DeleteMessage, KeepMessage
+from loafer.exceptions import DeleteMessage
 
 logger = logging.getLogger(__name__)
 
@@ -24,10 +24,6 @@ async def async_example_job(*args, **kwargs):
 
 async def reject_message_job(*args, **kwargs):
     raise DeleteMessage()
-
-
-async def ignore_message_job(*args, **kwargs):
-    raise KeepMessage()
 
 
 async def random_int_job(number):

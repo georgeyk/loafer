@@ -1,7 +1,7 @@
 import asyncio
 import logging
 
-from .exceptions import KeepMessage, DeleteMessage
+from .exceptions import DeleteMessage
 
 logger = logging.getLogger(__name__)
 
@@ -29,29 +29,25 @@ class LoaferDispatcher:
 
     async def dispatch_message(self, message, route):
         logger.info('dispatching message to route={!r}'.format(route))
-
+        confirm_message = False
         content = self._translate_message(message, route)
         if content is None:
             logger.warning('message will be ignored:\n{!r}\n'.format(message))
-            return False
+            return confirm_message
 
         with await self._semaphore:
             try:
-                await route.deliver(content)
+                confirm_message = await route.deliver(content)
             except DeleteMessage as exc:
                 logger.info('message acknowledged:\n{!r}\n'.format(message))
-                # We will return True at the end to acknowledge it
-            except KeepMessage as exc:
-                logger.info('message not acknowledged:\n{!r}\n'.format(message))
-                return False
+                confirm_message = True
             except asyncio.CancelledError as exc:
                 msg = '"{}" was cancelled, the message will not be acknowledged:\n{!r}\n'
                 logger.warning(msg.format(route.handler_name, message))
-                return False
             except Exception as exc:
-                return await route.error_handler(type(exc), exc, message)
+                confirm_message = await route.error_handler(type(exc), exc, message)
 
-        return True
+        return confirm_message
 
     async def process_route(self, route):
         provider = route.provider
