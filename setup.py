@@ -47,7 +47,7 @@ tests_requirements = ['pytest', 'pytest-asyncio', 'pytest-cov', 'pytest-env',
                       'coveralls', 'asynctest']
 
 install_requirements = ['boto3>=1.3.0',
-                        'aiobotocore>=0.0.6',
+                        'aiobotocore>=0.2.2',
                         'prettyconf>=1.2.3',
                         'cached-property>=1.3.0']
 
