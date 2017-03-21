@@ -2,7 +2,7 @@
 # https://github.com/getsentry/raven-aiohttp
 
 
-def sentry_handler(client, delete_message=True):
+def sentry_handler(client, delete_message=False):
 
     def send_to_sentry(exc_type, exc, message):
         client.captureException(
