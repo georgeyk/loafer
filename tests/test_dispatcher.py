@@ -13,7 +13,6 @@ from loafer.routes import Route
 @pytest.fixture
 def provider():
     return CoroutineMock(fetch_messages=CoroutineMock(return_value=['message']),
-                         source='queue',
                          confirm_message=CoroutineMock())
 
 
@@ -27,46 +26,26 @@ def route(provider):
 
 @pytest.mark.asyncio
 async def test_dispatch_message(route):
-    route.deliver = CoroutineMock(return_value='receipt')
+    route.deliver = CoroutineMock(return_value='confirmation')
     dispatcher = LoaferDispatcher([route])
 
     message = 'foobar'
     confirmation = await dispatcher.dispatch_message(message, route)
-    assert bool(confirmation) is True
+    assert confirmation == 'confirmation'
 
-    assert route.message_translator.translate.called
     assert route.deliver.called
     assert route.deliver.called_once_with(message)
 
 
 @pytest.mark.asyncio
-async def test_dispatch_message_without_translation(route):
-    route.deliver = CoroutineMock(return_value=None)
+@pytest.mark.parametrize('message', [None, ''])
+async def test_dispatch_invalid_message(route, message):
+    route.deliver = CoroutineMock()
     dispatcher = LoaferDispatcher([route])
-
-    message = None
-    route.message_translator.translate = Mock(return_value={'content': None})
 
     confirmation = await dispatcher.dispatch_message(message, route)
     assert confirmation is False
-
-    assert route.message_translator.translate.called
-    assert not route.deliver.called
-
-
-@pytest.mark.asyncio
-async def test_dispatch_message_error_on_translation(route):
-    route.deliver = CoroutineMock(return_value=None)
-    dispatcher = LoaferDispatcher([route])
-
-    message = 'invalid-message'
-    route.message_translator.translate = Mock(side_effect=Exception)
-
-    confirmation = await dispatcher.dispatch_message(message, route)
-    assert confirmation is False
-
-    assert route.message_translator.translate.called
-    assert not route.deliver.called
+    assert route.deliver.called is False
 
 
 @pytest.mark.asyncio
@@ -78,7 +57,6 @@ async def test_dispatch_message_task_delete_message(route):
     confirmation = await dispatcher.dispatch_message(message, route)
     assert confirmation is True
 
-    assert route.message_translator.translate.called
     assert route.deliver.called
     assert route.deliver.called_once_with(message)
 
@@ -87,14 +65,13 @@ async def test_dispatch_message_task_delete_message(route):
 async def test_dispatch_message_task_error(route):
     exc = Exception()
     route.deliver = CoroutineMock(side_effect=exc)
-    route.error_handler = CoroutineMock(return_value=False)
+    route.error_handler = CoroutineMock(return_value='confirmation')
     dispatcher = LoaferDispatcher([route])
 
     message = 'message'
     confirmation = await dispatcher.dispatch_message(message, route)
-    assert confirmation is False
+    assert confirmation == 'confirmation'
 
-    assert route.message_translator.translate.called is True
     assert route.deliver.called is True
     route.deliver.assert_called_once_with(message)
     assert route.error_handler.called is True
@@ -110,7 +87,6 @@ async def test_dispatch_message_task_cancel(route):
     confirmation = await dispatcher.dispatch_message(message, route)
     assert confirmation is False
 
-    assert route.message_translator.translate.called
     assert route.deliver.called
     assert route.deliver.called_once_with(message)
 

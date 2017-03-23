@@ -24,6 +24,15 @@ def test_translate_sqs(sqs_translator):
     assert content['content'] == {'key': 'value'}
 
 
+def test_sqs_metadata_extract(sqs_translator):
+    original = {'Body': json.dumps('some-content'), 'whatever': 'whatever'}
+    content = sqs_translator.translate(original)
+    metadata = content['metadata']
+    assert metadata
+    assert 'whatever' in metadata
+    assert metadata['whatever'] == 'whatever'
+
+
 @pytest.fixture(params=[{'invalid': 'format'}, 'invalid format',
                         42, {}, [], (), ''])
 def parametrize_invalid_messages(request):
@@ -60,6 +69,19 @@ def test_translate_sns(sns_translator):
     original = {'Body': message}
     content = sns_translator.translate(original)
     assert content['content'] == message_content
+
+
+def test_sns_metadata_extract(sns_translator):
+    message_content = 'here I am'
+    message = json.dumps({'Message': json.dumps(message_content), 'foo': 'nested'})
+    original = {'Body': message, 'bar': 'not nested'}
+    content = sns_translator.translate(original)
+    metadata = content['metadata']
+    assert metadata
+    assert 'foo' in metadata
+    assert metadata['foo'] == 'nested'
+    assert 'bar' in metadata
+    assert metadata['bar'] == 'not nested'
 
 
 def test_translate_sns_handles_invalid_content(sns_translator, parametrize_invalid_messages):
