@@ -27,8 +27,8 @@ class LoaferDispatcher:
                 logger.info('message acknowledged:\n{!r}\n'.format(message))
                 confirm_message = True
             except asyncio.CancelledError as exc:
-                msg = '"{}" was cancelled, the message will not be acknowledged:\n{!r}\n'
-                logger.warning(msg.format(route.handler_name, message))
+                msg = '"{!r}" was cancelled, the message will not be acknowledged:\n{!r}\n'
+                logger.warning(msg.format(route.handler, message))
             except Exception as exc:
                 logger.exception('{!r}'.format(exc))
                 confirm_message = await route.error_handler(type(exc), exc, message)
