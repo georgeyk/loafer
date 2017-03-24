@@ -11,7 +11,6 @@ class LoaferDispatcher:
         self.routes = routes
         jobs = max_jobs or len(routes) * 2
         self._semaphore = asyncio.Semaphore(jobs)
-        self._stop_providers = True
 
     async def dispatch_message(self, message, route):
         logger.info('dispatching message to route={!r}'.format(route))
@@ -43,23 +42,20 @@ class LoaferDispatcher:
             if confirmation:
                 await provider.confirm_message(message)
 
-    async def dispatch_providers(self, sentinel=None):
-        if sentinel is None or not callable(sentinel):
-            self._stop_providers = False
-            stopper = self._default_sentinel
-        else:
-            stopper = sentinel
+    async def _dispatch_tasks(self, loop):
+        tasks = [loop.create_task(self.process_route(route))
+                 for route in self.routes]
+        await asyncio.wait(tasks, loop=loop)
 
-        while not stopper():
-            tasks = [self._loop.create_task(self.process_route(route))
-                     for route in self.routes]
-            await asyncio.wait(tasks, loop=self._loop)
+    async def dispatch_providers(self, loop, forever=True):
+        if not forever:
+            await self._dispatch_tasks(loop)
+            return self.stop_providers()
 
-    def _default_sentinel(self):
-        return self._stop_providers
+        while True:
+            await self._dispatch_tasks(loop)
 
     def stop_providers(self):
         logger.info('Stopping providers')
         for route in self.routes:
             route.provider.stop()
-        self._stop_providers = True

@@ -104,6 +104,18 @@ async def test_process_route(route):
     assert route.provider.confirm_message.called_once_with('message')
 
 
+@pytest.mark.asyncio
+async def test_dispatch_providers(route, event_loop):
+    dispatcher = LoaferDispatcher([route])
+    dispatcher.process_route = CoroutineMock()
+    dispatcher.stop_providers = Mock()
+    await dispatcher.dispatch_providers(event_loop, forever=False)
+
+    assert dispatcher.process_route.called
+    dispatcher.process_route.assert_called_once_with(route)
+    assert dispatcher.stop_providers.called
+
+
 def test_stop_providers(route):
     route.provider.stop = Mock()
     dispatcher = LoaferDispatcher([route])

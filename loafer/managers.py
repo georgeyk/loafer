@@ -20,7 +20,11 @@ class LoaferManager:
         return LoaferDispatcher(self.routes)
 
     def run(self, forever=True):
-        self._future = asyncio.gather(self.dispatcher.dispatch_providers(), loop=self.runner.loop)
+        loop = self.runner.loop
+        self._future = asyncio.gather(
+            self.dispatcher.dispatch_providers(loop, forever=forever),
+            loop=loop,
+        )
         self._future.add_done_callback(self.on_future__errors)
         self.runner.start(self._future, run_forever=forever)
 
