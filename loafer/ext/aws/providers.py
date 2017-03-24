@@ -17,6 +17,7 @@ class SQSProvider:
         self.use_ssl = use_ssl
         self._loop = loop or asyncio.get_event_loop()
         self._options = options or {}
+        self._queue_url = None
 
     @cached_property
     def client(self):
@@ -24,8 +25,10 @@ class SQSProvider:
         return session.create_client('sqs', endpoint_url=self.endpoint_url, use_ssl=self.use_ssl)
 
     async def get_queue_url(self):
-        response = await self.client.get_queue_url(QueueName=self.source)
-        return response['QueueUrl']
+        if not self._queue_url:
+            response = await self.client.get_queue_url(QueueName=self.source)
+            self._queue_url = response['QueueUrl']
+        return self._queue_url
 
     async def confirm_message(self, message):
         logger.info('confirm message (ACK/deletion)')
@@ -46,3 +49,6 @@ class SQSProvider:
             raise ProviderError('Error when fetching messages') from exc
 
         return response.get('Messages', [])
+
+    def stop(self):
+        self.client.close()

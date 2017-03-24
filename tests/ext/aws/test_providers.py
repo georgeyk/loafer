@@ -23,6 +23,17 @@ async def test_get_queue_url(mock_boto_session_sqs, boto_client_sqs):
 
 
 @pytest.mark.asyncio
+async def test_cache_get_queue_url(mock_boto_session_sqs, boto_client_sqs):
+    with mock_boto_session_sqs:
+        consumer = SQSProvider('queue-name')
+        await consumer.get_queue_url()
+        queue_url = await consumer.get_queue_url()
+        assert queue_url.startswith('https://')
+        assert queue_url.endswith('queue-name')
+        assert boto_client_sqs.get_queue_url.call_count == 1
+
+
+@pytest.mark.asyncio
 async def test_confirm_message(mock_boto_session_sqs, boto_client_sqs):
     with mock_boto_session_sqs:
         consumer = SQSProvider('queue-name')
@@ -77,3 +88,10 @@ async def test_fetch_messages_with_client_error(mock_boto_session_sqs, boto_clie
         provider = SQSProvider('queue-name')
         with pytest.raises(ProviderError):
             await provider.fetch_messages()
+
+
+def test_stop():
+    consumer = SQSProvider('queue-name')
+    consumer.client = mock.Mock()
+    consumer.stop()
+    assert consumer.client.close.called
