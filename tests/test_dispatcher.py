@@ -102,3 +102,10 @@ async def test_process_route(route):
     assert dispatcher.dispatch_message.called_called_once_with('message', route)
     assert route.provider.confirm_message.called
     assert route.provider.confirm_message.called_once_with('message')
+
+
+def test_stop_providers(route):
+    route.provider.stop = Mock()
+    dispatcher = LoaferDispatcher([route])
+    dispatcher.stop_providers()
+    assert route.provider.stop.called

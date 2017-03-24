@@ -24,7 +24,7 @@ class LoaferDispatcher:
             try:
                 confirm_message = await route.deliver(message)
             except DeleteMessage as exc:
-                logger.info('message acknowledged:\n{!r}\n'.format(message))
+                logger.info('explicit message deletion\n{!r}\n'.format(message))
                 confirm_message = True
             except asyncio.CancelledError as exc:
                 msg = '"{!r}" was cancelled, the message will not be acknowledged:\n{!r}\n'
@@ -60,4 +60,6 @@ class LoaferDispatcher:
 
     def stop_providers(self):
         logger.info('Stopping providers')
+        for route in self.routes:
+            route.provider.stop()
         self._stop_providers = True
