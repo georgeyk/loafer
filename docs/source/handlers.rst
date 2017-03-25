@@ -21,7 +21,6 @@ By returning ``True`` the message will be acknowledged (deleted).
 
 Another way to acknowledge messages inside a handler is to raise
 ``DeleteMessage`` exception.
-Check :doc:`exceptions` for more information.
 
 Any other exception will be redirected to an ``error_handler``, see :doc:`error_handlers`.
 

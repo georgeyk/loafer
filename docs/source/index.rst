@@ -27,9 +27,12 @@ User Guide
     overview.rst
     settings.rst
     exceptions.rst
-    message_translators.rst
     handlers.rst
     error_handlers.rst
+    message_translators.rst
+    providers.rst
+    routes.rst
+    managers.rst
     publisher.rst
 
 
@@ -49,7 +52,7 @@ Other
 .. toctree::
     :maxdepth: 2
 
-    ..tutorial.rst
+    tutorial.rst
     faq.rst
     changelog.rst
     contributors.rst
