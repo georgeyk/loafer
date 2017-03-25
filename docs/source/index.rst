@@ -16,8 +16,6 @@ Quickstart
     :maxdepth: 1
 
     quickstart/installation.rst
-    quickstart/usage.rst
-
 
 
 User Guide
