@@ -31,6 +31,7 @@ User Guide
     exceptions.rst
     message_translators.rst
     handlers.rst
+    error_handlers.rst
     publisher.rst
 
 
