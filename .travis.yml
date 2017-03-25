@@ -3,9 +3,6 @@ language: python
 python:
   - "3.5"
 
-env:
-  - LOAFER_DEFAULT_ROUTE_SOURCE=test-source
-
 before_install: "pip install -r requirements/test.txt --upgrade"
 install: "python setup.py install"
 before_script: "flake8 --ignore=E501 loafer"
