@@ -8,6 +8,3 @@ It is responsible to publish a message in a provider source (queue).
 
 It can be usefull to emulates the behavior of a given handler without the
 real message producer.
-
-At the moment we provide publishers for Amazon SQS and SNS. Check the
-:doc:`quickstart/usage` for examples.

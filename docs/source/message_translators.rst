@@ -14,24 +14,23 @@ Implementation
 
 The message translator class should implement the method ``translate`` like::
 
-    class MyMessageTranslator(object):
+    class MyMessageTranslator:
 
         def translate(self, message):
-            return {'content': int(message)}
+            return {'content': int(message), 'metadata': {}}
 
 And it should return a dictionary in the format::
 
-    return {'content': processed_message}
+    return {'content': processed_message, 'metadata': {}}
 
-The ``processed_message`` is the message delivered to ``handler``.
+The ``processed_message`` and ``metadata`` (optional) will be delivered to
+``handler``.
 
 In the example above, message is supposed to be an integer and will be
 delivered as integer too.
 
-The ``message`` parameter in ``def translate`` is always a string object.
 
-If ``processed_message`` is ``None`` the message will be ignored and not
-acknowledged.
+If ``processed_message`` is ``None`` (or empty) the message will cause
+``ValueError`` exception.
 
-Unhandled errors also makes the message to be ignored, but it's a good practice
-to handle those errors.
+All the exceptions in message translation will be handled over to :doc:`error_handlers`.

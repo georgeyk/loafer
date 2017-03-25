@@ -3,7 +3,7 @@ Release
 
 To release a new version, a few steps are required:
 
-* Update version number at ``loafer/__init__.py`` and ``docs/source/conf.py``
+* Update version/release number in ``docs/source/conf.py``
 
 * Add entry to ``CHANGES.rst`` and documentation
 
