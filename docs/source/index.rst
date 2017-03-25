@@ -16,6 +16,7 @@ Quickstart
     :maxdepth: 1
 
     quickstart/installation.rst
+    tutorial.rst
 
 
 User Guide
@@ -52,7 +53,6 @@ Other
 .. toctree::
     :maxdepth: 2
 
-    tutorial.rst
     faq.rst
     changelog.rst
     contributors.rst

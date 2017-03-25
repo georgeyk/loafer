@@ -60,4 +60,8 @@ To execute::
 
 To see any output, publish some messages using AWS dashboard or utilities like `awscli`_.
 
+For example::
+
+    $ aws sqs send-message --queue-url http://<url-part>/loafer-test --message-body '{"key": true}'
+
 .. _awscli: https://github.com/aws/aws-cli
