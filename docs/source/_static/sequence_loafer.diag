@@ -1,0 +1,18 @@
+seqdiag {
+    Provider; Dispatcher; Route; Handler; "Error Handler";
+    default_fontsize = 12;
+
+    Dispatcher -> Provider [label = "ask messages"];
+    Dispatcher <-- Provider [label = "return messages"];
+    Dispatcher -> Route [label = "ask for message delivery"];
+    Route -> Route [label = "apply message translation", rightnote = "in case of error, follow 'error processing'"];
+    Route <-- Route;
+    Route -> Handler [label = "deliver message"];
+    Route <-- Handler [label = "confirm message"];
+    Route <-- Handler [label = "error", color = "red"];
+    Route -> "Error Handler" [label = "error processing", color = "red"];
+    Route <-- "Error Handler" [label = "message confirmation from error", color = "red"];
+    Dispatcher <-- Route [label = "message confirmation"];
+    Dispatcher -> Provider [label = "confirm message (deletion)"];
+    Dispatcher <-- Provider
+}
