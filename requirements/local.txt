@@ -4,3 +4,4 @@ sphinx-autobuild
 twine
 wheel
 sphinx-rtd-theme
+seqdiag
