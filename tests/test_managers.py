@@ -1,7 +1,7 @@
 import asyncio
 from unittest import mock
 
-from loafer.dispatcher import LoaferDispatcher
+from loafer.dispatchers import LoaferDispatcher
 from loafer.exceptions import ProviderError
 from loafer.managers import LoaferManager
 from loafer.runners import LoaferRunner

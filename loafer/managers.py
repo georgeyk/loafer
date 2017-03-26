@@ -3,7 +3,7 @@ import logging
 
 from cached_property import cached_property
 
-from .dispatcher import LoaferDispatcher
+from .dispatchers import LoaferDispatcher
 from .runners import LoaferRunner
 
 logger = logging.getLogger(__name__)

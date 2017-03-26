@@ -6,7 +6,7 @@ from asynctest import Mock as AsyncMock  # flake8: NOQA
 import pytest
 
 from loafer.exceptions import DeleteMessage
-from loafer.dispatcher import LoaferDispatcher
+from loafer.dispatchers import LoaferDispatcher
 from loafer.routes import Route
 
 
