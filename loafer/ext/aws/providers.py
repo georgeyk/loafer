@@ -11,8 +11,8 @@ logger = logging.getLogger(__name__)
 
 
 class SQSProvider:
-    def __init__(self, source, endpoint_url=None, use_ssl=True, options=None, loop=None):
-        self.source = source
+    def __init__(self, queue_name, endpoint_url=None, use_ssl=True, options=None, loop=None):
+        self.queue_name = queue_name
         self.endpoint_url = endpoint_url
         self.use_ssl = use_ssl
         self._loop = loop or asyncio.get_event_loop()
@@ -26,7 +26,7 @@ class SQSProvider:
 
     async def get_queue_url(self):
         if not self._queue_url:
-            response = await self.client.get_queue_url(QueueName=self.source)
+            response = await self.client.get_queue_url(QueueName=self.queue_name)
             self._queue_url = response['QueueUrl']
         return self._queue_url
 
