@@ -17,8 +17,8 @@ will run in thread, outside the event loop. Performance and error handling
 might be compromised in this scenarios, you might want to look for other
 alternatives.
 
-If your code are too tied to the message producer, you might end writing too
-much boilerplate code in order to use ``Loafer``.
+If your code are too tied to the message producer, you might end up writing
+too much boilerplate code in order to use ``Loafer``.
 
 
 Components

@@ -4,9 +4,9 @@ Routes
 A ``Route`` aggregate all the main entities, the generic parameters are:
 
     * ``provider``: a provider instance
-    * ``message_translator``: a message translator instance
     * ``handler``: a handler instance
     * ``error_handler`` (optional): an error handler instance
+    * ``message_translator`` (optional): a message translator instance
     * ``name`` (optional): a name for this route
 
 

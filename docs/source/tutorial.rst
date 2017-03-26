@@ -4,15 +4,16 @@ Tutorial
 For this tutorial we assume you already have ``loafer`` installed and your
 aws credentials configured.
 
-Let`s create a repository named ``foobar`` with the following structure::
+Let's create a repository named ``foobar`` with the following structure::
 
     foobar/
-        handler.py
+        handlers.py
         routes.py
         __main__.py
+        __init__.py  # empty file
 
 
-The ``handler.py``::
+The ``handlers.py``::
 
     import asyncio
 

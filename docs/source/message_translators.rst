@@ -7,6 +7,8 @@ format expected by the ``handler``.
 The "raw message" is the message received by the ``provider`` "as-is" and
 it might be delivered without any processing if the message translator was
 not set.
+In some cases, you should explicitly set ``message_translator=None`` to disable
+any configured translators.
 
 
 Implementation
@@ -26,11 +28,8 @@ And it should return a dictionary in the format::
 The ``processed_message`` and ``metadata`` (optional) will be delivered to
 ``handler``.
 
-In the example above, message is supposed to be an integer and will be
-delivered as integer too.
-
-
 If ``processed_message`` is ``None`` (or empty) the message will cause
 ``ValueError`` exception.
 
-All the exceptions in message translation will be handled over to :doc:`error_handlers`.
+All the exceptions in message translation will be caught by the configured
+:doc:`error_handlers`.
