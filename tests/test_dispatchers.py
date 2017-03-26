@@ -19,7 +19,7 @@ def provider():
 @pytest.fixture
 def route(provider):
     message_translator = Mock(translate=Mock(return_value={'content': 'message'}))
-    route = AsyncMock(provider=provider, handler='handler',
+    route = AsyncMock(provider=provider, handler=Mock(),
                       message_translator=message_translator, spec=Route)
     return route
 

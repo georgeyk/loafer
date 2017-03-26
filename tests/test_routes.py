@@ -8,12 +8,12 @@ from loafer.routes import Route
 
 def test_provider():
     provider = mock.Mock()
-    route = Route(provider, handler='invalid_job')
+    route = Route(provider, handler=mock.Mock())
     assert route.provider is provider
 
 
 def test_name():
-    route = Route('whatever', handler='invalid_job', name='foo')
+    route = Route('whatever', handler=mock.Mock(), name='foo')
     assert route.name == 'foo'
 
 
@@ -23,13 +23,13 @@ def test_message_translator():
 
 
 def test_default_message_translator():
-    route = Route('foo', 'invalid')
+    route = Route('foo', mock.Mock())
     assert route.message_translator is None
 
 
 def test_apply_message_translator():
     translator = mock.Mock(translate=mock.Mock(return_value={'content': 'foobar', 'metadata': {}}))
-    route = Route('foo', 'invalid', message_translator=translator)
+    route = Route('foo', mock.Mock(), message_translator=translator)
     translated = route.apply_message_translator('message')
     assert translated['content'] == 'foobar'
     assert translated['metadata'] == {}
@@ -39,7 +39,7 @@ def test_apply_message_translator():
 
 def test_apply_message_translator_error():
     translator = mock.Mock(translate=mock.Mock(return_value={'content': '', 'metadata': {}}))
-    route = Route('foo', 'invalid', message_translator=translator)
+    route = Route('foo', mock.Mock(), message_translator=translator)
     with pytest.raises(ValueError):
         route.apply_message_translator('message')
         assert translator.translate.called
@@ -48,7 +48,7 @@ def test_apply_message_translator_error():
 
 @pytest.mark.asyncio
 async def test_error_handler_unset():
-    route = Route('foo', 'invalid')
+    route = Route('foo', mock.Mock())
     exc = TypeError()
     result = await route.error_handler(type(exc), exc, 'whatever')
     assert result is False
@@ -66,7 +66,7 @@ async def test_error_handler():
 
     # we cant mock regular functions in error handlers, because it will
     # be checked with asyncio.iscoroutinefunction() and pass as coro
-    route = Route('foo', 'invalid', error_handler=error_handler)
+    route = Route('foo', mock.Mock(), error_handler=error_handler)
     exc = TypeError()
     result = await route.error_handler(type(exc), exc, 'whatever')
     assert result is True
@@ -78,7 +78,7 @@ async def test_error_handler():
 @pytest.mark.asyncio
 async def test_error_handler_coroutine():
     error_handler = CoroutineMock(return_value=True)
-    route = Route('foo', 'invalid', error_handler=error_handler)
+    route = Route('foo', mock.Mock(), error_handler=error_handler)
     exc = TypeError()
     result = await route.error_handler(type(exc), exc, 'whatever')
     assert result is True
