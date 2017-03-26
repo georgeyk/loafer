@@ -15,6 +15,8 @@ def test_sqs_route():
 def test_sqs_route_keep_message_translator():
     route = SQSRoute('what', handler='ever', message_translator=mock.Mock())
     assert isinstance(route.message_translator, mock.Mock)
+    route = SQSRoute('what', handler='ever', message_translator=None)
+    assert route.message_translator is None
 
 
 def test_sqs_route_keep_name():
@@ -32,6 +34,8 @@ def test_sns_queue_route():
 def test_sns_queue_route_keep_message_translator():
     route = SNSQueueRoute('what', handler='ever', message_translator=mock.Mock())
     assert isinstance(route.message_translator, mock.Mock)
+    route = SNSQueueRoute('what', handler='ever', message_translator=None)
+    assert route.message_translator is None
 
 
 def test_sns_queue_route_keep_name():

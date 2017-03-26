@@ -8,9 +8,9 @@ class SQSRoute(Route):
         provider_options = provider_options or {}
         provider = SQSProvider(provider_queue, **provider_options)
         kwargs['provider'] = provider
-        if not kwargs.get('message_translator', False):
+        if 'message_translator' not in kwargs:
             kwargs['message_translator'] = SQSMessageTranslator()
-        if not kwargs.get('name', False):
+        if 'name' not in kwargs:
             kwargs['name'] = provider_queue
 
         super().__init__(*args, **kwargs)
@@ -21,9 +21,9 @@ class SNSQueueRoute(Route):
         provider_options = provider_options or {}
         provider = SQSProvider(provider_queue, **provider_options)
         kwargs['provider'] = provider
-        if not kwargs.get('message_translator', False):
+        if 'message_translator' not in kwargs:
             kwargs['message_translator'] = SNSMessageTranslator()
-        if not kwargs.get('name', False):
+        if 'name' not in kwargs:
             kwargs['name'] = provider_queue
 
         super().__init__(*args, **kwargs)
