@@ -13,7 +13,7 @@ class LoaferDispatcher:
         self._semaphore = asyncio.Semaphore(jobs)
 
     async def dispatch_message(self, message, route):
-        logger.info('dispatching message to route={!r}'.format(route))
+        logger.debug('dispatching message to route={}'.format(route))
         confirm_message = False
         if not message:
             logger.warning('message will be ignored:\n{!r}\n'.format(message))
@@ -56,6 +56,6 @@ class LoaferDispatcher:
             await self._dispatch_tasks(loop)
 
     def stop_providers(self):
-        logger.info('Stopping providers')
+        logger.info('stopping providers')
         for route in self.routes:
             route.provider.stop()

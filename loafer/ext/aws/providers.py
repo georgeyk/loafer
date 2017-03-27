@@ -31,7 +31,7 @@ class SQSProvider:
         return self._queue_url
 
     async def confirm_message(self, message):
-        logger.info('confirm message (ACK/deletion)')
+        logger.info('confirm message (ack/deletion)')
 
         receipt = message['ReceiptHandle']
         logger.debug('receipt={!r}'.format(receipt))
@@ -46,7 +46,7 @@ class SQSProvider:
         try:
             response = await self.client.receive_message(QueueUrl=queue_url, **self._options)
         except botocore.exceptions.ClientError as exc:
-            raise ProviderError('Error when fetching messages') from exc
+            raise ProviderError('error fetching messages') from exc
 
         return response.get('Messages', [])
 

@@ -36,13 +36,13 @@ class LoaferManager:
         exc = future.exception()
         # Unhandled errors crashes the event loop execution
         if isinstance(exc, BaseException):
-            logger.critical('Fatal error caught: {!r}'.format(exc))
+            logger.critical('fatal error caught: {!r}'.format(exc))
             self.runner.stop()
 
     def on_loop__stop(self, *args, **kwargs):
-        logger.debug('Stopping consumers ...')
+        logger.debug('stopping consumers ...')
         self.dispatcher.stop_providers()
 
         if hasattr(self, '_future'):
-            logger.debug('Cancel schedulled operations ...')
+            logger.debug('cancel schedulled operations ...')
             self._future.cancel()

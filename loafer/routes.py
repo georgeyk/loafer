@@ -15,7 +15,7 @@ class Route:
 
     def __str__(self):
         return '<{}(name={} provider={!r} handler={!r})>'.format(
-            type(self).__name__, self.name, self.provider, self._handler)
+            type(self).__name__, self.name, self.provider, self.handler)
 
     def apply_message_translator(self, message):
         processed_message = {'content': message,
@@ -33,7 +33,9 @@ class Route:
 
     async def deliver(self, raw_message, loop=None):
         message = self.apply_message_translator(raw_message)
-        logger.info('delivering message content to handler={!r}'.format(self.handler))
+        logger.info(
+            'delivering message content to handler={!r}, message={!r}'.format(self.handler, message)
+        )
 
         if asyncio.iscoroutinefunction(self.handler):
             logger.debug('handler is coroutine! {!r}'.format(self.handler))
@@ -44,6 +46,7 @@ class Route:
             return await loop.run_in_executor(None, self.handler, message['content'], message['metadata'])
 
     async def error_handler(self, exc_type, exc, message, loop=None):
+        logger.info('error handler process originated by message={}'.format(message))
         if self._error_handler is not None:
             if asyncio.iscoroutinefunction(self._error_handler):
                 return await self._error_handler(exc_type, exc, message)

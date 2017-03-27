@@ -18,7 +18,7 @@ class SQSMessageTranslator:
         try:
             translated['content'] = json.loads(body)
         except json.decoder.JSONDecodeError as exc:
-            logger.error('error={!r} message={!r}'.format(exc, message))
+            logger.error('error={!r}, message={!r}'.format(exc, message))
             return translated
 
         message.pop('Body')
@@ -45,7 +45,7 @@ class SNSMessageTranslator:
         try:
             translated['content'] = json.loads(message_body)
         except (json.decoder.JSONDecodeError, TypeError) as exc:
-            logger.error('error={!r} message={!r}'.format(exc, message))
+            logger.error('error={!r}, message={!r}'.format(exc, message))
             return translated
 
         translated['metadata'].update(body)

@@ -19,7 +19,7 @@ class LoaferRunner:
         self.loop.set_default_executor(self._executor)
 
     def start(self, future=None, run_forever=True):
-        start = 'Starting Loafer - (pid={} / run_forever={}) ...'
+        start = 'starting Loafer, pid={}, run_forever={}'
         logger.info(start.format(os.getpid(), run_forever))
 
         self.loop.add_signal_handler(signal.SIGINT, self.stop)
@@ -34,7 +34,7 @@ class LoaferRunner:
             self.loop.close()
 
     def stop(self, *args, **kwargs):
-        logger.info('Stopping Loafer ...')
+        logger.info('stopping Loafer ...')
         if callable(self._on_stop_callback):
             self._on_stop_callback()
 
