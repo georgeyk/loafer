@@ -1,13 +1,6 @@
 Loafer
 ======
 
-----
-
-**WARNING: breaking changes are comming, not suitable for production yet**
-==========================================================================
-
-----
-
 |PyPI latest| |PyPI Version| |PyPI License| |PyPI Downloads| |Docs|
 
 |TravisCI Build Status| |Coverage Status| |Requirements Status|
@@ -19,13 +12,13 @@ Loafer is an asynchronous message dispatcher for concurrent tasks processing.
 
 **Currently, only AWS SQS is supported**
 
-It uses asyncio library and provides a friendly CLI.
 
 Features:
 
-* Encourages decoupling from message producers and consumers
-* Highly configurable
-* Easy to extend
+* Encourages decoupling from message providers and consumers
+* Easy to extend and customize
+* Easy error handling, including integration with sentry
+* Easy to create one or multiple message processors
 * Amazon SQS integration
 
 

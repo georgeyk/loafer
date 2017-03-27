@@ -1,3 +1,16 @@
+
+1.0.0 (2017-03-27)
+------------------
+
+* Major code rewrite
+* Remove CLI
+* Add better support for error handlers, including sentry/raven
+* Refactor exceptions
+* Add message metadata information
+* Update message lifecycle with handler/error handler return value
+* Enable execution of one service iteration (by default, it still runs "forever")
+
+
 0.0.3 (2016-04-24)
 ------------------
 
