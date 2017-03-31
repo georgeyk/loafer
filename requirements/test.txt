@@ -4,3 +4,4 @@ pytest-cov
 coveralls
 asynctest
 flake8
+tox

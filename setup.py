@@ -44,7 +44,7 @@ with codecs.open(os.path.join(here, 'CHANGES.rst'), encoding='utf-8') as f:
 
 # Unduplicated tests_requirements and requirements/test.txt
 tests_requirements = ['pytest', 'pytest-asyncio', 'pytest-cov', 'coveralls',
-                      'asynctest']
+                      'asynctest', 'tox']
 
 install_requirements = ['aiohttp>=1.2,<2',
                         'boto3>=1.3.0',
