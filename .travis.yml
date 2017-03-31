@@ -4,7 +4,7 @@ python:
   - "3.5"
   - "3.6"
 
-before_install: "pip install tox-travis"
+before_install: "pip install tox-travis flake8"
 install: "python setup.py install"
 before_script: "flake8 --ignore=E501 loafer"
 script: "tox"
