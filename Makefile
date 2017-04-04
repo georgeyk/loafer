@@ -27,6 +27,9 @@ cov:
 cov-report:
 	py.test -vv --cov=loafer --cov-report=html tests
 
+tox:
+	tox -r
+
 dist: clean
 	python setup.py sdist
 	python setup.py bdist_wheel

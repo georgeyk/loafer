@@ -2,9 +2,10 @@ language: python
 
 python:
   - "3.5"
+  - "3.6"
 
-before_install: "pip install -r requirements/test.txt --upgrade"
+before_install: "pip install tox-travis flake8"
 install: "python setup.py install"
 before_script: "flake8 --ignore=E501 loafer"
-script: "py.test tests --cov loafer"
+script: "tox"
 after_success: coveralls

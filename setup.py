@@ -44,11 +44,12 @@ with codecs.open(os.path.join(here, 'CHANGES.rst'), encoding='utf-8') as f:
 
 # Unduplicated tests_requirements and requirements/test.txt
 tests_requirements = ['pytest', 'pytest-asyncio', 'pytest-cov', 'coveralls',
-                      'asynctest']
+                      'asynctest', 'tox']
 
-install_requirements = ['aiohttp>=1.2,<2',
+# aiohttp version are directly tied with aiobotocore, please check before update it.
+install_requirements = ['aiohttp>=2.0.4',
                         'boto3>=1.3.0',
-                        'aiobotocore>=0.2.2',
+                        'aiobotocore>=0.3.0',
                         'cached-property>=1.3.0']
 
 
@@ -63,7 +64,7 @@ setup(
     download_url='https://github.com/georgeyk/loafer/releases',
     license='MIT',
     author='George Y. Kussumoto',
-    author_email='contato at georgeyk dot com dot br',
+    author_email='contato@georgeyk.com.br',
     packages=find_packages(exclude=['docs', 'tests', 'tests.*', 'requirements']),
     classifiers=[
         'Development Status :: 4 - Beta',
