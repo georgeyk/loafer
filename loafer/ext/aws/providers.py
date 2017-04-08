@@ -40,12 +40,12 @@ class SQSProvider:
         return await self.client.delete_message(QueueUrl=queue_url, ReceiptHandle=receipt)
 
     async def fetch_messages(self):
-        queue_url = await self.get_queue_url()
-        logger.debug('fetching messages on {}'.format(queue_url))
-
         try:
+            queue_url = await self.get_queue_url()
+            logger.debug('fetching messages on {}'.format(queue_url))
+
             response = await self.client.receive_message(QueueUrl=queue_url, **self._options)
-        except botocore.exceptions.ClientError as exc:
+        except (botocore.exceptions.BotoCoreError, botocore.exceptions.ClientError) as exc:
             raise ProviderError('error fetching messages') from exc
 
         return response.get('Messages', [])

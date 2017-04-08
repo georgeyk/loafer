@@ -1,6 +1,6 @@
 from unittest import mock
 
-from botocore.exceptions import ClientError
+from botocore.exceptions import BotoCoreError, ClientError
 
 import pytest
 
@@ -83,6 +83,17 @@ async def test_fetch_messages_with_client_error(mock_boto_session_sqs, boto_clie
     with mock_boto_session_sqs:
         error = ClientError(error_response={'Error': {'Message': 'unknown'}},
                             operation_name='whatever')
+        boto_client_sqs.receive_message.side_effect = error
+
+        provider = SQSProvider('queue-name')
+        with pytest.raises(ProviderError):
+            await provider.fetch_messages()
+
+
+@pytest.mark.asyncio
+async def test_fetch_messages_with_botocoreerror(mock_boto_session_sqs, boto_client_sqs):
+    with mock_boto_session_sqs:
+        error = BotoCoreError()
         boto_client_sqs.receive_message.side_effect = error
 
         provider = SQSProvider('queue-name')
