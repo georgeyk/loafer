@@ -12,9 +12,11 @@ def test_runner_start():
 
 def test_runner_start_run_until_complete():
     runner = LoaferRunner(loop=mock.Mock())
+    runner.stop = mock.Mock()
     runner.start(run_forever=False)
     assert runner.loop.run_until_complete.called
     assert runner.loop.close.called
+    assert runner.stop.called
 
 
 def test_runner_stop():

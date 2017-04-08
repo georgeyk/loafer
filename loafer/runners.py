@@ -30,6 +30,7 @@ class LoaferRunner:
                 self.loop.run_forever()
             else:
                 self.loop.run_until_complete(future)
+                self.stop()
         finally:
             self.loop.close()
 

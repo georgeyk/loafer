@@ -113,7 +113,6 @@ async def test_dispatch_providers(route, event_loop):
 
     assert dispatcher.process_route.called
     dispatcher.process_route.assert_called_once_with(route)
-    assert dispatcher.stop_providers.called
 
 
 def test_stop_providers(route):

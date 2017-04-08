@@ -49,8 +49,7 @@ class LoaferDispatcher:
 
     async def dispatch_providers(self, loop, forever=True):
         if not forever:
-            await self._dispatch_tasks(loop)
-            return self.stop_providers()
+            return await self._dispatch_tasks(loop)
 
         while True:
             await self._dispatch_tasks(loop)
