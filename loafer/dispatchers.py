@@ -43,8 +43,7 @@ class LoaferDispatcher:
                 await provider.confirm_message(message)
 
     async def _dispatch_tasks(self, loop):
-        tasks = [loop.create_task(self.process_route(route))
-                 for route in self.routes]
+        tasks = [self.process_route(route) for route in self.routes]
         await asyncio.wait(tasks, loop=loop)
 
     async def dispatch_providers(self, loop, forever=True):
