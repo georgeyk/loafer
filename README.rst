@@ -18,7 +18,7 @@ Features:
 * Encourages decoupling from message providers and consumers
 * Easy to extend and customize
 * Easy error handling, including integration with sentry
-* Easy to create one or multiple message processors
+* Easy to create one or multiple services
 * Amazon SQS integration
 
 
