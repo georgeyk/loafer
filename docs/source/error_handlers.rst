@@ -10,7 +10,7 @@ coroutine to replace the default error handler behavior.
 
 The callable should be similar to::
 
-    async def custom_error_handler(exc_type, exc, message):
+    async def custom_error_handler(exc_info, message):
         ... custom code here ...
         return True
 
