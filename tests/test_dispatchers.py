@@ -75,7 +75,7 @@ async def test_dispatch_message_task_error(route):
     assert route.deliver.called is True
     route.deliver.assert_called_once_with(message)
     assert route.error_handler.called is True
-    route.error_handler.assert_called_once_with(type(exc), exc, message)
+    route.error_handler.assert_called_once()
 
 
 @pytest.mark.asyncio
