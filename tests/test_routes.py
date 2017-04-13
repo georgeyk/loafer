@@ -50,7 +50,8 @@ def test_apply_message_translator_error():
 async def test_error_handler_unset():
     route = Route('foo', mock.Mock())
     exc = TypeError()
-    result = await route.error_handler(type(exc), exc, 'whatever')
+    exc_info = (type(exc), exc, None)
+    result = await route.error_handler(exc_info, 'whatever')
     assert result is False
 
 
@@ -58,9 +59,8 @@ async def test_error_handler_unset():
 async def test_error_handler():
     attrs = {}
 
-    def error_handler(exc_type, exc, message):
-        attrs['exc_type'] = exc_type
-        attrs['exc'] = exc
+    def error_handler(exc_info, message):
+        attrs['exc_info'] = exc_info
         attrs['message'] = message
         return True
 
@@ -68,10 +68,10 @@ async def test_error_handler():
     # be checked with asyncio.iscoroutinefunction() and pass as coro
     route = Route('foo', mock.Mock(), error_handler=error_handler)
     exc = TypeError()
-    result = await route.error_handler(type(exc), exc, 'whatever')
+    exc_info = (type(exc), exc, 'traceback')
+    result = await route.error_handler(exc_info, 'whatever')
     assert result is True
-    assert attrs['exc_type'] == type(exc)
-    assert attrs['exc'] == exc
+    assert attrs['exc_info'] == exc_info
     assert attrs['message'] == 'whatever'
 
 
@@ -80,10 +80,11 @@ async def test_error_handler_coroutine():
     error_handler = CoroutineMock(return_value=True)
     route = Route('foo', mock.Mock(), error_handler=error_handler)
     exc = TypeError()
-    result = await route.error_handler(type(exc), exc, 'whatever')
+    exc_info = (type(exc), exc, 'traceback')
+    result = await route.error_handler(exc_info, 'whatever')
     assert result is True
     assert error_handler.called
-    error_handler.assert_called_once_with(type(exc), exc, 'whatever')
+    error_handler.assert_called_once_with(exc_info, 'whatever')
 
 
 # FIXME: Improve all test_deliver* tests

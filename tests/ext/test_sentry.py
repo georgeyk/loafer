@@ -7,7 +7,8 @@ def test_sentry_handler():
     mocked_client = mock.Mock()
     handler = sentry_handler(mocked_client)
     exc = ValueError('test')
-    delete_message = handler(type(exc), exc, 'test')
+    exc_info = (type(exc), exc, None)
+    delete_message = handler(exc_info, 'test')
 
     assert delete_message is False
     assert mocked_client.captureException.called
@@ -18,7 +19,8 @@ def test_sentry_handler_delete_message():
     mocked_client = mock.Mock()
     handler = sentry_handler(mocked_client, delete_message=True)
     exc = ValueError('test')
-    delete_message = handler(type(exc), exc, 'test')
+    exc_info = (type(exc), exc, None)
+    delete_message = handler(exc_info, 'test')
 
     assert delete_message is True
     assert mocked_client.captureException.called

@@ -45,13 +45,13 @@ class Route:
             loop = loop or asyncio.get_event_loop()
             return await loop.run_in_executor(None, self.handler, message['content'], message['metadata'])
 
-    async def error_handler(self, exc_type, exc, message, loop=None):
+    async def error_handler(self, exc_info, message, loop=None):
         logger.info('error handler process originated by message={}'.format(message))
         if self._error_handler is not None:
             if asyncio.iscoroutinefunction(self._error_handler):
-                return await self._error_handler(exc_type, exc, message)
+                return await self._error_handler(exc_info, message)
             else:
                 loop = loop or asyncio.get_event_loop()
-                return await loop.run_in_executor(None, self._error_handler, exc_type, exc, message)
+                return await loop.run_in_executor(None, self._error_handler, exc_info, message)
 
         return False

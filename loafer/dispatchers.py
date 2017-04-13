@@ -1,3 +1,4 @@
+import sys
 import asyncio
 import logging
 
@@ -30,7 +31,8 @@ class LoaferDispatcher:
                 logger.warning(msg.format(route.handler, message))
             except Exception as exc:
                 logger.exception('{!r}'.format(exc))
-                confirm_message = await route.error_handler(type(exc), exc, message)
+                exc_info = sys.exc_info()
+                confirm_message = await route.error_handler(exc_info, message)
 
         return confirm_message
 
