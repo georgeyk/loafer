@@ -4,8 +4,9 @@
 
 def sentry_handler(client, delete_message=False):
 
-    def send_to_sentry(exc_type, exc, message):
+    def send_to_sentry(exc_info, message):
         client.captureException(
+            exc_info,
             extra={'message': message},
         )
         return delete_message
