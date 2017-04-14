@@ -1,30 +1,40 @@
 import json
 
-import boto3
+from .bases import BaseSQSClient, BaseSNSClient
 
 
-def sqs_publish(queue, message):
-    _client = boto3.client('sqs')
+class SQSHandler(BaseSQSClient):
+    queue_name = None
 
-    if queue.startswith('https://'):
-        queue_url = queue
-    else:
-        response = _client.get_queue_url(QueueName=queue)
-        queue_url = response['QueueUrl']
+    def __init__(self, queue_name=None, **kwargs):
+        self.queue_name = queue_name or self.queue_name
+        super().__init__(**kwargs)
 
-    return _client.send_message(QueueUrl=queue_url, MessageBody=message)
+    async def publish(self, message):
+        if not self.queue_name:
+            raise ValueError('{}: missing queue_name attribute'.format(type(self).__name__))
+
+        queue_url = await self.get_queue_url(self.queue_name)
+        return await self.client.send_message(QueueUrl=queue_url, MessageBody=message)
+
+    async def handle(self, message, *args):
+        return await self.publish(message)
 
 
-def sns_publish(topic, message):
-    _client = boto3.client('sns')
-    if topic.startswith('arn:'):
-        arn = topic
-    else:
-        topics = _client.list_topics()
-        for topic_data in topics['Topics']:
-            if topic_data['TopicArn'].endswith(topic):
-                arn = topic_data['TopicArn']
-                break
+class SNSHandler(BaseSNSClient):
+    topic_name = None
 
-    msg = json.dumps({'default': message})
-    return _client.publish(TopicArn=arn, MessageStructure='json', Message=msg)
+    def __init__(self, topic_name=None, **kwargs):
+        self.topic_name = topic_name or self.topic_name
+        super().__init__(**kwargs)
+
+    async def publish(self, message):
+        if not self.topic_name:
+            raise ValueError('{}: missing topic_name attribute'.format(type(self).__name__))
+
+        topic_arn = await self.get_topic_arn(self.topic_name)
+        msg = json.dumps({'default': message})
+        return await self.client.publish(TopicArn=topic_arn, MessageStructure='json', Message=msg)
+
+    async def handle(self, message, *args):
+        return await self.publish(message)

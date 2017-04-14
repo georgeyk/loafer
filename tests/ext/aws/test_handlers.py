@@ -1,62 +1,72 @@
 import json
+from unittest import mock
 
-from loafer.ext.aws.publishers import sqs_publish, sns_publish
+from asynctest import CoroutineMock
+import pytest
+
+from loafer.ext.aws.handlers import SQSHandler, SNSHandler
 
 
-def test_sqs_publish(mock_boto_sync_client_sqs):
-    with mock_boto_sync_client_sqs as mock_sqs:
-        message = '{"test": "hey"}'
-        response = sqs_publish('queue-name', message)
-        assert response
+# SQSHandler
+
+@pytest.mark.asyncio
+async def test_sqs_handler_publish(mock_boto_session_sqs, boto_client_sqs):
+    handler = SQSHandler('queue-name')
+    with mock_boto_session_sqs as mock_sqs:
+        retval = await handler.publish('message')
+        assert retval
+
         assert mock_sqs.called
-
-        client = mock_sqs()
-        assert client.send_message.called
-        queue_url = client.get_queue_url()['QueueUrl']
-        assert client.send_message.called_once_with(
-            MessageBody='{}'.format(message),
-            QueueUrl=queue_url)
+        assert boto_client_sqs.send_message.called
+        assert boto_client_sqs.send_message.call_args == mock.call(
+            QueueUrl=await handler.get_queue_url('queue-name'),
+            MessageBody='message')
 
 
-def test_sqs_publish_with_queue_url(mock_boto_sync_client_sqs):
-    with mock_boto_sync_client_sqs as mock_sqs:
-        message = '{"test": "hey"}'
-        response = sqs_publish('https://blabla/queue-name', message)
-        assert response
-        assert mock_sqs.called
-
-        client = mock_sqs()
-        assert client.send_message.called
-        queue_url = client.get_queue_url()['QueueUrl']
-        assert client.send_message.called_once_with(
-            MessageBody='{}'.format(message),
-            QueueUrl=queue_url)
+@pytest.mark.asyncio
+async def test_sqs_handler_publish_without_queue_name():
+    handler = SQSHandler()
+    with pytest.raises(ValueError):
+        await handler.publish('wrong')
 
 
-def test_sns_publisher(mock_boto_sync_client_sns):
-    with mock_boto_sync_client_sns as mock_sns:
-        message = '{"test": "hey"}'
-        topic = 'arn:blabla:topic-name'
-        response = sns_publish(topic, message)
-        assert response
+@pytest.mark.asyncio
+async def test_sqs_handler_hadle():
+    handler = SQSHandler('foobar')
+    handler.publish = CoroutineMock()
+    await handler.handle('message', 'metadata')
+    assert handler.publish.called
+    assert handler.publish.called_once_with('message')
+
+
+# SNSHandler
+
+@pytest.mark.asyncio
+async def test_sns_handler_publisher(mock_boto_session_sns, boto_client_sns):
+    handler = SNSHandler('topic-name')
+    with mock_boto_session_sns as mock_sns:
+        retval = await handler.publish('message')
+        assert retval
+
         assert mock_sns.called
-
-        client = mock_sns()
-        assert client.publish.called
-        message_sent = json.dumps({'default': message})
-        assert client.publish.called_once_with(
-            TopicArn=topic,
+        assert boto_client_sns.publish.called
+        assert boto_client_sns.publish.call_args == mock.call(
+            TopicArn=await handler.get_topic_arn('topic-name'),
             MessageStructure='json',
-            Message=message_sent)
+            Message=json.dumps({'default': 'message'}))
 
 
-def test_sns_publisher_with_topic_name(mock_boto_sync_client_sns):
-    with mock_boto_sync_client_sns as mock_sns:
-        message = '{"test": "hey"}'
-        topic = 'topic-name'
-        response = sns_publish(topic, message)
-        assert response
-        assert mock_sns.called
+@pytest.mark.asyncio
+async def test_sns_handler_publish_without_topic_name():
+    handler = SNSHandler()
+    with pytest.raises(ValueError):
+        await handler.publish('wrong')
 
-        client = mock_sns()
-        assert client.publish.called
+
+@pytest.mark.asyncio
+async def test_sns_handler_hadle():
+    handler = SNSHandler('foobar')
+    handler.publish = CoroutineMock()
+    await handler.handle('message', 'metadata')
+    assert handler.publish.called
+    assert handler.publish.called_once_with('message')
