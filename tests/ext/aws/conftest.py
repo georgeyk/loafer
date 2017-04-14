@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-# vi:si:et:sw=4:sts=4:ts=4
-
 from unittest import mock
 
 from asynctest import CoroutineMock
@@ -19,6 +16,11 @@ def queue_url():
 def sqs_message():
     message = {'Body': 'test'}
     return {'Messages': [message]}
+
+
+def sqs_send_message():
+    return {'MessageId': 'uuid', 'MD5OfMessageBody': 'md5',
+            'ResponseMetada': {'RequestId': 'uuid', 'HTTPStatusCode': 200}}
 
 
 @pytest.fixture
@@ -41,6 +43,7 @@ def boto_client_sqs(queue_url, sqs_message):
     mock_client.get_queue_url.return_value = queue_url
     mock_client.delete_message.return_value = mock.Mock()
     mock_client.receive_message.return_value = sqs_message
+    mock_client.send_message.return_value = sqs_send_message
     return mock_client
 
 
