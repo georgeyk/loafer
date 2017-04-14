@@ -1,10 +1,7 @@
 import asyncio
-import logging
 
 import aiobotocore
 from cached_property import cached_property
-
-logger = logging.getLogger(__name__)
 
 
 class BaseSQSClient:
@@ -29,6 +26,7 @@ class BaseSQSClient:
 
 
 class BaseSNSClient:
+
     def __init__(self, endpoint_url=None, use_ssl=True, loop=None):
         self.endpoint_url = endpoint_url
         self.use_ssl = use_ssl
