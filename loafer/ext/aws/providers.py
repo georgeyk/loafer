@@ -15,6 +15,9 @@ class SQSProvider(BaseSQSClient):
         self._options = options or {}
         super().__init__(**kwargs)
 
+    def __str__(self):
+        return '<{}: {}>'.format(type(self).__name__, self.queue_name)
+
     async def confirm_message(self, message):
         logger.info('confirm message (ack/deletion)')
 
