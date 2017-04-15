@@ -17,12 +17,17 @@ class BaseSQSClient:
         session = aiobotocore.get_session(loop=self._loop)
         return session.create_client('sqs', endpoint_url=self.endpoint_url, use_ssl=self.use_ssl)
 
-    async def get_queue_url(self, queue_name):
-        if queue_name not in self._cached_queue_urls:
-            response = await self.client.get_queue_url(QueueName=queue_name)
-            self._cached_queue_urls[queue_name] = response['QueueUrl']
+    async def get_queue_url(self, queue):
+        if queue and (queue.startswith('http://') or queue.startswith('https://')):
+            name = queue.split('/')[-1]
+            self._cached_queue_urls[name] = queue
+            queue = name
 
-        return self._cached_queue_urls[queue_name]
+        if queue not in self._cached_queue_urls:
+            response = await self.client.get_queue_url(QueueName=queue)
+            self._cached_queue_urls[queue] = response['QueueUrl']
+
+        return self._cached_queue_urls[queue]
 
 
 class BaseSNSClient:

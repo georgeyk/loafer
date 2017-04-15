@@ -33,6 +33,15 @@ async def test_cache_get_queue_url(mock_boto_session_sqs, boto_client_sqs, base_
         assert boto_client_sqs.get_queue_url.call_count == 1
 
 
+@pytest.mark.asyncio
+async def test_get_queue_url_when_queue_name_is_url(mock_boto_session_sqs, boto_client_sqs, base_sqs_client):
+    with mock_boto_session_sqs:
+        queue_url = await base_sqs_client.get_queue_url('https://aws-whatever/queue-name')
+        assert queue_url.startswith('https://')
+        assert queue_url.endswith('queue-name')
+        assert boto_client_sqs.get_queue_url.call_count == 0
+
+
 @pytest.fixture
 def base_sns_client():
     return BaseSNSClient()
