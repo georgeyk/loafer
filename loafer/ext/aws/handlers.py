@@ -33,26 +33,26 @@ class SQSHandler(BaseSQSClient):
 
 
 class SNSHandler(BaseSNSClient):
-    topic_name = None
+    topic = None
 
-    def __init__(self, topic_name=None, **kwargs):
-        self.topic_name = topic_name or self.topic_name
+    def __init__(self, topic=None, **kwargs):
+        self.topic = topic or self.topic
         super().__init__(**kwargs)
 
     def __str__(self):
-        return '<{}: {}>'.format(type(self).__name__, self.topic_name)
+        return '<{}: {}>'.format(type(self).__name__, self.topic)
 
     async def publish(self, message, encoder=json.dumps):
-        if not self.topic_name:
-            raise ValueError('{}: missing topic_name attribute'.format(type(self).__name__))
+        if not self.topic:
+            raise ValueError('{}: missing topic attribute'.format(type(self).__name__))
 
         if encoder:
             message = encoder(message)
 
-        logger.debug('publishing, topic={}, message={}'.format(self.topic_name, message))
+        topic_arn = await self.get_topic_arn(self.topic)
+        logger.debug('publishing, topic={}, message={}'.format(topic_arn, message))
 
         msg = json.dumps({'default': message})
-        topic_arn = await self.get_topic_arn(self.topic_name)
         return await self.client.publish(TopicArn=topic_arn, MessageStructure='json', Message=msg)
 
     async def handle(self, message, *args):
