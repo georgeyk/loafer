@@ -48,23 +48,12 @@ def base_sns_client():
 
 
 @pytest.mark.asyncio
-async def test_get_topic_arn(mock_boto_session_sns, boto_client_sns, base_sns_client):
-    with mock_boto_session_sns as mock_sns:
-        arn = await base_sns_client.get_topic_arn('topic-name')
-        assert arn.startswith('arn:')
-        assert arn.endswith('topic-name')
-
-        assert mock_sns.called
-        assert mock_sns.called_once_with('sns')
-        assert boto_client_sns.list_topics.called
-        assert boto_client_sns.called_once_with()
+async def test_get_topic_arn_using_topic_name(base_sns_client):
+    arn = await base_sns_client.get_topic_arn('topic-name')
+    assert arn == 'arn:sns:*:topic-name'
 
 
 @pytest.mark.asyncio
-async def test_cache_get_topic_arn(mock_boto_session_sns, boto_client_sns, base_sns_client):
-    with mock_boto_session_sns:
-        await base_sns_client.get_topic_arn('topic-name')
-        arn = await base_sns_client.get_topic_arn('topic-name')
-        assert arn.startswith('arn:')
-        assert arn.endswith('topic-name')
-        assert boto_client_sns.list_topics.call_count == 1
+async def test_cache_get_topic_arn_with_arn(base_sns_client):
+    arn = await base_sns_client.get_topic_arn('arn:sns:whatever:topic-name')
+    assert arn == 'arn:sns:whatever:topic-name'
