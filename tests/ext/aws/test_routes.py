@@ -3,39 +3,39 @@ from loafer.ext.aws.providers import SQSProvider
 from loafer.ext.aws.routes import SQSRoute, SNSQueueRoute
 
 
-def test_sqs_route():
-    route = SQSRoute('what', handler='ever')
+def test_sqs_route(dummy_handler):
+    route = SQSRoute('what', handler=dummy_handler)
     assert isinstance(route.message_translator, SQSMessageTranslator)
     assert isinstance(route.provider, SQSProvider)
     assert route.name == 'what'
 
 
-def test_sqs_route_keep_message_translator():
-    route = SQSRoute('what', handler='ever', message_translator=SNSMessageTranslator())
+def test_sqs_route_keep_message_translator(dummy_handler):
+    route = SQSRoute('what', handler=dummy_handler, message_translator=SNSMessageTranslator())
     assert isinstance(route.message_translator, SNSMessageTranslator)
-    route = SQSRoute('what', handler='ever', message_translator=None)
+    route = SQSRoute('what', handler=dummy_handler, message_translator=None)
     assert route.message_translator is None
 
 
-def test_sqs_route_keep_name():
-    route = SQSRoute('what', handler='ever', name='foobar')
+def test_sqs_route_keep_name(dummy_handler):
+    route = SQSRoute('what', handler=dummy_handler, name='foobar')
     assert route.name == 'foobar'
 
 
-def test_sns_queue_route():
-    route = SNSQueueRoute('what', handler='ever')
+def test_sns_queue_route(dummy_handler):
+    route = SNSQueueRoute('what', handler=dummy_handler)
     assert isinstance(route.message_translator, SNSMessageTranslator)
     assert isinstance(route.provider, SQSProvider)
     assert route.name == 'what'
 
 
-def test_sns_queue_route_keep_message_translator():
-    route = SNSQueueRoute('what', handler='ever', message_translator=SQSMessageTranslator())
+def test_sns_queue_route_keep_message_translator(dummy_handler):
+    route = SNSQueueRoute('what', handler=dummy_handler, message_translator=SQSMessageTranslator())
     assert isinstance(route.message_translator, SQSMessageTranslator)
-    route = SNSQueueRoute('what', handler='ever', message_translator=None)
+    route = SNSQueueRoute('what', handler=dummy_handler, message_translator=None)
     assert route.message_translator is None
 
 
-def test_sns_queue_route_keep_name():
-    route = SNSQueueRoute('what', handler='ever', name='foobar')
+def test_sns_queue_route_keep_name(dummy_handler):
+    route = SNSQueueRoute('what', handler=dummy_handler, name='foobar')
     assert route.name == 'foobar'
