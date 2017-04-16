@@ -30,6 +30,8 @@ Examples
 Some examples of route creation::
 
     from loafer.ext.aws.routes import SQSRoute, SNSQueueRoute
+    from loafer.message_translators import StringMessageTranslator
+
 
     # regular route
     route1 = SQSRoute('my-queue1', handler=..., name='route1')
@@ -38,7 +40,10 @@ Some examples of route creation::
     route2 = SNSQueueRoute('my-queue2', {'use_ssl': False, 'options': {'WaitTimeSeconds': 4}}, handler=..., name='route2')
 
     # route with custom message translator
-    route3 = SQSRoute('my-queue3', message_translator=custom_message_translator, handler=...)
+    route3 = SQSRoute('my-queue3', message_translator=StringMessageTranslator(), handler=...)
+
+    # route disabling message translation
+    route4 = SNSQueueRoute('my-queue4', message_translator=None, handler=...)
 
     # route with custom error handler
-    route4 = SNSQueueRoute('my-queue4', handler=..., error_handler=custom_error_handler)
+    route5 = SQSRoute('my-queue5', handler=..., error_handler=custom_error_handler)
