@@ -1,34 +1,22 @@
-import asyncio
 import logging
 
-import aiobotocore
 import botocore.exceptions
-from cached_property import cached_property
 
 from loafer.exceptions import ProviderError
+from .bases import BaseSQSClient
 
 logger = logging.getLogger(__name__)
 
 
-class SQSProvider:
-    def __init__(self, queue_name, endpoint_url=None, use_ssl=True, options=None, loop=None):
+class SQSProvider(BaseSQSClient):
+
+    def __init__(self, queue_name, options=None, **kwargs):
         self.queue_name = queue_name
-        self.endpoint_url = endpoint_url
-        self.use_ssl = use_ssl
-        self._loop = loop or asyncio.get_event_loop()
         self._options = options or {}
-        self._queue_url = None
+        super().__init__(**kwargs)
 
-    @cached_property
-    def client(self):
-        session = aiobotocore.get_session(loop=self._loop)
-        return session.create_client('sqs', endpoint_url=self.endpoint_url, use_ssl=self.use_ssl)
-
-    async def get_queue_url(self):
-        if not self._queue_url:
-            response = await self.client.get_queue_url(QueueName=self.queue_name)
-            self._queue_url = response['QueueUrl']
-        return self._queue_url
+    def __str__(self):
+        return '<{}: {}>'.format(type(self).__name__, self.queue_name)
 
     async def confirm_message(self, message):
         logger.info('confirm message (ack/deletion)')
@@ -36,14 +24,13 @@ class SQSProvider:
         receipt = message['ReceiptHandle']
         logger.debug('receipt={!r}'.format(receipt))
 
-        queue_url = await self.get_queue_url()
+        queue_url = await self.get_queue_url(self.queue_name)
         return await self.client.delete_message(QueueUrl=queue_url, ReceiptHandle=receipt)
 
     async def fetch_messages(self):
+        logger.debug('fetching messages on {}'.format(self.queue_name))
         try:
-            queue_url = await self.get_queue_url()
-            logger.debug('fetching messages on {}'.format(queue_url))
-
+            queue_url = await self.get_queue_url(self.queue_name)
             response = await self.client.receive_message(QueueUrl=queue_url, **self._options)
         except (botocore.exceptions.BotoCoreError, botocore.exceptions.ClientError) as exc:
             raise ProviderError('error fetching messages') from exc

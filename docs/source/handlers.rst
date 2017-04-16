@@ -25,3 +25,5 @@ Another way to acknowledge messages inside a handler is to raise
 Any other exception will be redirected to an ``error_handler``, see :doc:`error_handlers`.
 
 The default ``error_handler`` will log the error and **not** acknowledge the message.
+
+For some generic handlers that can give you starting point, check :doc:`generic_handlers`.

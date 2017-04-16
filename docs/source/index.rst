@@ -30,11 +30,11 @@ User Guide
     exceptions.rst
     handlers.rst
     error_handlers.rst
+    generic_handlers.rst
     message_translators.rst
     providers.rst
     routes.rst
     managers.rst
-    publisher.rst
 
 
 Development
