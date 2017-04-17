@@ -80,6 +80,6 @@ class Route:
     def stop(self):
         logger.info('stopping route {}'.format(self))
         self.provider.stop()
-        # # only for class-based handlers
+        # only for class-based handlers
         if hasattr(self._handler_instance, 'stop'):
             self._handler_instance.stop()
