@@ -39,4 +39,5 @@ class SQSProvider(AbstractProvider, BaseSQSClient):
         return response.get('Messages', [])
 
     def stop(self):
+        logger.info('stopping {}'.format(self))
         self.client.close()

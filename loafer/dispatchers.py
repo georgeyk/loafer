@@ -55,7 +55,6 @@ class LoaferDispatcher:
         while True:
             await self._dispatch_tasks(loop)
 
-    def stop_providers(self):
-        logger.info('stopping providers')
+    def stop(self):
         for route in self.routes:
-            route.provider.stop()
+            route.stop()

@@ -1,7 +1,10 @@
 import asyncio
+import logging
 
 import aiobotocore
 from cached_property import cached_property
+
+logger = logging.getLogger(__name__)
 
 
 class BaseSQSClient:
@@ -29,6 +32,10 @@ class BaseSQSClient:
 
         return self._cached_queue_urls[queue]
 
+    def stop(self):
+        logger.info('closing client={}'.format(self.client))
+        self.client.close()
+
 
 class BaseSNSClient:
 
@@ -46,3 +53,7 @@ class BaseSNSClient:
         if topic.startswith('arn:sns:'):
             return topic
         return 'arn:sns:*:{}'.format(topic)
+
+    def stop(self):
+        logger.info('closing client={}'.format(self.client))
+        self.client.close()

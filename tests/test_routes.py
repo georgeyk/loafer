@@ -132,6 +132,29 @@ async def test_handler_invalid(dummy_provider):
         Route(dummy_provider, 'invalid-handler')
 
 
+def test_route_stop(dummy_provider):
+    dummy_provider.stop = mock.Mock()
+    route = Route(dummy_provider, handler=mock.Mock())
+    route.stop()
+
+    assert dummy_provider.stop.called
+
+
+def test_route_stop_with_handler_stop(dummy_provider):
+    class handler:
+        def handle(self, *args):
+            pass
+
+    dummy_provider.stop = mock.Mock()
+    handler = handler()
+    handler.stop = mock.Mock()
+    route = Route(dummy_provider, handler)
+    route.stop()
+
+    assert dummy_provider.stop.called
+    assert handler.stop.called
+
+
 # FIXME: Improve all test_deliver* tests
 
 @pytest.mark.asyncio

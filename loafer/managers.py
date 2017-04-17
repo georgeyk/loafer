@@ -40,9 +40,12 @@ class LoaferManager:
             self.runner.stop()
 
     def on_loop__stop(self, *args, **kwargs):
-        logger.debug('stopping consumers ...')
-        self.dispatcher.stop_providers()
+        logger.info('cancel schedulled operations ...')
+        for task in asyncio.Task.all_tasks(self.runner.loop):
+            logger.debug('cancelling {}'.format(task))
+            task.cancel()
 
         if hasattr(self, '_future'):
-            logger.debug('cancel schedulled operations ...')
             self._future.cancel()
+
+        self.dispatcher.stop()

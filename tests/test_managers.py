@@ -43,5 +43,5 @@ def test_on_loop__stop():
     manager._future = mock.Mock()
     manager.on_loop__stop()
 
-    assert manager.dispatcher.stop_providers.called
+    assert manager.dispatcher.stop.called
     assert manager._future.cancel.called

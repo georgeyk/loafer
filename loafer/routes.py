@@ -27,8 +27,10 @@ class Route:
 
         if callable(handler):
             self.handler = handler
+            self._handler_instance = None
         else:
             self.handler = getattr(handler, 'handle', None)
+            self._handler_instance = handler
 
         assert self.handler, 'handler must be a callable object or implement `handle` method'
 
@@ -76,6 +78,8 @@ class Route:
         return False
 
     def stop(self):
+        logger.info('stopping route {}'.format(self))
         self.provider.stop()
-        if hasattr(self.handler, 'stop'):
-            self.handler.stop()
+        # # only for class-based handlers
+        if hasattr(self._handler_instance, 'stop'):
+            self._handler_instance.stop()
