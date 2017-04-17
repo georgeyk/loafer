@@ -4,6 +4,8 @@ import logging
 from cached_property import cached_property
 
 from .dispatchers import LoaferDispatcher
+from .exceptions import ConfigurationError
+from .routes import Route
 from .runners import LoaferRunner
 
 logger = logging.getLogger(__name__)
@@ -16,7 +18,9 @@ class LoaferManager:
 
     @cached_property
     def dispatcher(self):
-        # TODO: check routes
+        if not (self.routes and all(isinstance(r, Route) for r in self.routes)):
+            raise ConfigurationError('invalid routes to dispatch, routes={}'.format(self.routes))
+
         return LoaferDispatcher(self.routes)
 
     def run(self, forever=True):

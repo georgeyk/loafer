@@ -1,14 +1,34 @@
 import asyncio
 from unittest import mock
 
+import pytest
+
 from loafer.dispatchers import LoaferDispatcher
-from loafer.exceptions import ProviderError
+from loafer.exceptions import ProviderError, ConfigurationError
 from loafer.managers import LoaferManager
+from loafer.routes import Route
 from loafer.runners import LoaferRunner
 
 
-def test_dispatcher():
+@pytest.fixture
+def dummy_route(dummy_provider):
+    return Route(dummy_provider, handler=mock.Mock())
+
+
+def test_dispatcher_invalid_routes():
     manager = LoaferManager(routes=[])
+    with pytest.raises(ConfigurationError):
+        manager.dispatcher
+
+
+def test_dispatcher_invalid_route_instance():
+    manager = LoaferManager(routes=[mock.Mock()])
+    with pytest.raises(ConfigurationError):
+        manager.dispatcher
+
+
+def test_dispatcher(dummy_route):
+    manager = LoaferManager(routes=[dummy_route])
     assert manager.dispatcher
     assert isinstance(manager.dispatcher, LoaferDispatcher)
 
