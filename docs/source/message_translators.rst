@@ -16,7 +16,7 @@ Implementation
 ~~~~~~~~~~~~~~
 
 The message translator class should subclass ``AbstractMessageTranslator`` and
-implement the method ``translate`` like::
+implement the ``translate`` method like::
 
 
     from loafer.message_translators import AbstractMessageTranslator
@@ -30,7 +30,8 @@ implement the method ``translate`` like::
 
 And it should return a dictionary in the format::
 
-    return {'content': processed_message, 'metadata': {}}
+    {'content': processed_message, 'metadata': {}}
+
 
 The ``processed_message`` and ``metadata`` (optional) will be delivered to
 ``handler``.
@@ -41,7 +42,7 @@ If ``processed_message`` is ``None`` (or empty) the message will cause
 All the exceptions in message translation will be caught by the configured
 :doc:`error_handlers`.
 
-The existing message translators will be described below.
+The existing message translators are described below.
 
 
 loafer.message_translators.StringMessageTranslator

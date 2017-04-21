@@ -27,7 +27,7 @@ Any other exception will be redirected to an ``error_handler``, see more
 
 The default ``error_handler`` will log the error and **not** acknowledge the message.
 
-For some generic handlers that can give you starting point, take a look at
+For some generic handlers that can give you a starting point, take a look at
 :doc:`generic_handlers` section.
 
 
@@ -52,7 +52,7 @@ The method ``stop`` is optional and will be called before loafer shutdown it's
 execution. Note that ``stop`` is not a coroutine.
 
 When configuring your :doc:`routes`, you can set ``handler`` to an instance of
-``MyHandler`` instead of the ``handle`` method (but both ways work)::
+``MyHandler`` instead of the ``handle`` (the callable) method (but both ways work)::
 
     Route(handler=MyHandler(), ...)
     # or
