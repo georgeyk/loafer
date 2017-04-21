@@ -3,12 +3,13 @@ import logging
 import botocore.exceptions
 
 from loafer.exceptions import ProviderError
+from loafer.providers import AbstractProvider
 from .bases import BaseSQSClient
 
 logger = logging.getLogger(__name__)
 
 
-class SQSProvider(BaseSQSClient):
+class SQSProvider(AbstractProvider, BaseSQSClient):
 
     def __init__(self, queue_name, options=None, **kwargs):
         self.queue_name = queue_name
@@ -38,4 +39,5 @@ class SQSProvider(BaseSQSClient):
         return response.get('Messages', [])
 
     def stop(self):
+        logger.info('stopping {}'.format(self))
         self.client.close()

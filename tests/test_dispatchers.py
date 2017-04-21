@@ -114,8 +114,8 @@ async def test_dispatch_providers(route, event_loop):
     dispatcher.process_route.assert_called_once_with(route)
 
 
-def test_stop_providers(route):
-    route.provider.stop = Mock()
+def test_dispatcher_stop(route):
+    route.stop = Mock()
     dispatcher = LoaferDispatcher([route])
-    dispatcher.stop_providers()
-    assert route.provider.stop.called
+    dispatcher.stop()
+    assert route.stop.called

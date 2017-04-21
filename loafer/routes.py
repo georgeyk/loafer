@@ -1,17 +1,38 @@
 import asyncio
 import logging
 
+from .message_translators import AbstractMessageTranslator
+from .providers import AbstractProvider
+
 logger = logging.getLogger(__name__)
 
 
 class Route:
+
     def __init__(self, provider, handler, name='default',
                  message_translator=None, error_handler=None):
         self.name = name
+
+        assert isinstance(provider, AbstractProvider), 'invalid provider instance'
         self.provider = provider
+
         self.message_translator = message_translator
-        self.handler = handler
+        if message_translator:
+            assert isinstance(message_translator, AbstractMessageTranslator), \
+                'invalid message translator instance'
+
         self._error_handler = error_handler
+        if error_handler:
+            assert callable(error_handler), 'error_handler must be a callable object'
+
+        if callable(handler):
+            self.handler = handler
+            self._handler_instance = None
+        else:
+            self.handler = getattr(handler, 'handle', None)
+            self._handler_instance = handler
+
+        assert self.handler, 'handler must be a callable object or implement `handle` method'
 
     def __str__(self):
         return '<{}(name={} provider={!r} handler={!r})>'.format(
@@ -55,3 +76,10 @@ class Route:
                 return await loop.run_in_executor(None, self._error_handler, exc_info, message)
 
         return False
+
+    def stop(self):
+        logger.info('stopping route {}'.format(self))
+        self.provider.stop()
+        # only for class-based handlers
+        if hasattr(self._handler_instance, 'stop'):
+            self._handler_instance.stop()

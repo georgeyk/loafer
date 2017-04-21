@@ -1,10 +1,12 @@
 import json
 import logging
 
+from loafer.message_translators import AbstractMessageTranslator
+
 logger = logging.getLogger(__name__)
 
 
-class SQSMessageTranslator:
+class SQSMessageTranslator(AbstractMessageTranslator):
 
     def translate(self, message):
         translated = {'content': None, 'metadata': {}}
@@ -26,7 +28,7 @@ class SQSMessageTranslator:
         return translated
 
 
-class SNSMessageTranslator:
+class SNSMessageTranslator(AbstractMessageTranslator):
 
     def translate(self, message):
         translated = {'content': None, 'metadata': {}}

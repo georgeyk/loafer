@@ -1,5 +1,5 @@
 import asyncio
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, CancelledError
 import logging
 import os
 import signal
@@ -31,7 +31,7 @@ class LoaferRunner:
             else:
                 self.loop.run_until_complete(future)
                 self.stop()
-        finally:
+        except CancelledError:
             self.loop.close()
 
     def stop(self, *args, **kwargs):

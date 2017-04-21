@@ -42,6 +42,12 @@ async def test_get_queue_url_when_queue_name_is_url(mock_boto_session_sqs, boto_
         assert boto_client_sqs.get_queue_url.call_count == 0
 
 
+def test_sqs_close(base_sqs_client):
+    base_sqs_client.client = mock.Mock()
+    base_sqs_client.stop()
+    assert base_sqs_client.client.close.called
+
+
 @pytest.fixture
 def base_sns_client():
     return BaseSNSClient()
@@ -57,3 +63,9 @@ async def test_get_topic_arn_using_topic_name(base_sns_client):
 async def test_cache_get_topic_arn_with_arn(base_sns_client):
     arn = await base_sns_client.get_topic_arn('arn:sns:whatever:topic-name')
     assert arn == 'arn:sns:whatever:topic-name'
+
+
+def test_sns_close(base_sns_client):
+    base_sns_client.client = mock.Mock()
+    base_sns_client.stop()
+    assert base_sns_client.client.close.called
