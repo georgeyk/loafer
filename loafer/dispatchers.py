@@ -46,7 +46,10 @@ class LoaferDispatcher:
 
     async def _dispatch_tasks(self, loop):
         tasks = [self.process_route(route) for route in self.routes]
-        await asyncio.wait(tasks, loop=loop)
+        done, _ = await asyncio.wait(tasks, loop=loop)
+        # If any unhandled error happened, this will bring up the exception
+        for task_done in done:
+            task_done.result()
 
     async def dispatch_providers(self, loop, forever=True):
         if not forever:

@@ -114,6 +114,17 @@ async def test_dispatch_providers(route, event_loop):
     dispatcher.process_route.assert_called_once_with(route)
 
 
+@pytest.mark.asyncio
+async def test_dispatch_providers_with_error(route, event_loop):
+    dispatcher = LoaferDispatcher([route])
+    dispatcher.process_route = CoroutineMock(side_effect=ValueError)
+    with pytest.raises(ValueError):
+        await dispatcher.dispatch_providers(event_loop, forever=False)
+
+    assert dispatcher.process_route.called
+    dispatcher.process_route.assert_called_once_with(route)
+
+
 def test_dispatcher_stop(route):
     route.stop = Mock()
     dispatcher = LoaferDispatcher([route])
