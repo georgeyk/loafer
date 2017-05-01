@@ -1,3 +1,11 @@
+1.1.0 (2017-05-01)
+------------------
+
+* Added initial contracsts for class-based handlers
+* Added generic handlers: SQSHandler/SNSHander
+* Improve internal error handling
+* Improve docs
+
 1.0.2 (2017-04-13)
 ------------------
 
