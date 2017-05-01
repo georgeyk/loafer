@@ -30,7 +30,9 @@ of changes until the first major version.
 Example
 ~~~~~~~
 
-A simple message forwader, from `source-queue` to `destination-queue`::
+A simple message forwader, from ``source-queue`` to ``destination-queue``:
+
+.. code:: python
 
     from loafer.ext.aws.handlers import SQSHandler
     from loafer.ext.aws.routes import SQSRoute
