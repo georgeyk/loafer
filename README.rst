@@ -19,11 +19,32 @@ Features:
 * Easy to extend and customize
 * Easy error handling, including integration with sentry
 * Easy to create one or multiple services
+* Generic Handlers
 * Amazon SQS integration
 
 
 It requires Python 3.5+ and is very experimental at the moment, expect a lot
 of changes until the first major version.
+
+
+Example
+~~~~~~~
+
+A simple message forwader, from `source-queue` to `destination-queue`::
+
+    from loafer.ext.aws.handlers import SQSHandler
+    from loafer.ext.aws.routes import SQSRoute
+    from loafer.managers import LoaferManager
+
+
+    routes = [
+        SQSRoute('source-queue', handler=SQSHandler('destination-queue'),
+    ]
+
+
+    if __name__ == '__main__':
+        manager = LoaferManager(routes)
+        manager.run()
 
 
 Documentation
