@@ -1,3 +1,8 @@
+1.1.1 (2017-06-14)
+------------------
+
+* Bugfix: fix SNS prefix value in use for topic name wildcard (by @lamenezes)
+
 1.1.0 (2017-05-01)
 ------------------
 
