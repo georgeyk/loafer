@@ -50,9 +50,10 @@ class BaseSNSClient:
         return session.create_client('sns', endpoint_url=self.endpoint_url, use_ssl=self.use_ssl)
 
     async def get_topic_arn(self, topic):
-        if topic.startswith('arn:sns:'):
+        arn_prefix = 'arn:aws:sns:'
+        if topic.startswith(arn_prefix):
             return topic
-        return 'arn:sns:*:{}'.format(topic)
+        return '{}*:{}'.format(arn_prefix, topic)
 
     def stop(self):
         logger.info('closing client={}'.format(self.client))

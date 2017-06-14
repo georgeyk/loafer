@@ -59,7 +59,7 @@ async def test_sqs_handler_hadle():
 @pytest.mark.asyncio
 @pytest.mark.parametrize('encoder', [json.dumps, str])
 async def test_sns_handler_publisher(mock_boto_session_sns, boto_client_sns, encoder):
-    handler = SNSHandler('arn:sns:whatever:topic-name')
+    handler = SNSHandler('arn:aws:sns:whatever:topic-name')
     with mock_boto_session_sns as mock_sns:
         retval = await handler.publish('message', encoder=encoder)
         assert retval
@@ -67,14 +67,14 @@ async def test_sns_handler_publisher(mock_boto_session_sns, boto_client_sns, enc
         assert mock_sns.called
         assert boto_client_sns.publish.called
         assert boto_client_sns.publish.call_args == mock.call(
-            TopicArn='arn:sns:whatever:topic-name',
+            TopicArn='arn:aws:sns:whatever:topic-name',
             MessageStructure='json',
             Message=json.dumps({'default': encoder('message')}))
 
 
 @pytest.mark.asyncio
 async def test_sns_handler_publisher_without_encoder(mock_boto_session_sns, boto_client_sns):
-    handler = SNSHandler('arn:sns:whatever:topic-name')
+    handler = SNSHandler('arn:aws:sns:whatever:topic-name')
     with mock_boto_session_sns as mock_sns:
         retval = await handler.publish('message', encoder=None)
         assert retval
@@ -82,7 +82,7 @@ async def test_sns_handler_publisher_without_encoder(mock_boto_session_sns, boto
         assert mock_sns.called
         assert boto_client_sns.publish.called
         assert boto_client_sns.publish.call_args == mock.call(
-            TopicArn='arn:sns:whatever:topic-name',
+            TopicArn='arn:aws:sns:whatever:topic-name',
             MessageStructure='json',
             Message=json.dumps({'default': 'message'}))
 

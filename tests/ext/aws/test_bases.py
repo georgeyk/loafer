@@ -56,13 +56,13 @@ def base_sns_client():
 @pytest.mark.asyncio
 async def test_get_topic_arn_using_topic_name(base_sns_client):
     arn = await base_sns_client.get_topic_arn('topic-name')
-    assert arn == 'arn:sns:*:topic-name'
+    assert arn == 'arn:aws:sns:*:topic-name'
 
 
 @pytest.mark.asyncio
 async def test_cache_get_topic_arn_with_arn(base_sns_client):
-    arn = await base_sns_client.get_topic_arn('arn:sns:whatever:topic-name')
-    assert arn == 'arn:sns:whatever:topic-name'
+    arn = await base_sns_client.get_topic_arn('arn:aws:sns:whatever:topic-name')
+    assert arn == 'arn:aws:sns:whatever:topic-name'
 
 
 def test_sns_close(base_sns_client):
