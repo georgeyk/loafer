@@ -56,8 +56,8 @@ tests_requirements = [
 # aiohttp version are directly tied with aiobotocore, please check before update it.
 install_requirements = [
     'aiohttp>=2.0.4',
-    'aiobotocore>=0.3.0',
     'boto3>=1.3.0,<1.4.6',
+    'aiobotocore>=0.3.0',
     'cached-property>=1.3.0',
 ]
 
