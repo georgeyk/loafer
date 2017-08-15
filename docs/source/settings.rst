@@ -12,5 +12,8 @@ To configure AWS access, check `boto3 configuration`_ or export (see `boto3 envv
     $ export AWS_DEFAULT_REGION=sa-east-1  # for example
 
 
+You might find some configuration tips in our :doc:`faq` as well.
+
+
 .. _boto3 configuration: https://boto3.readthedocs.org/en/latest/guide/quickstart.html#configuration
 .. _boto3 envvars: http://boto3.readthedocs.org/en/latest/guide/configuration.html#environment-variable-configuration
