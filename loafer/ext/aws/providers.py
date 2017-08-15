@@ -20,10 +20,8 @@ class SQSProvider(AbstractProvider, BaseSQSClient):
         return '<{}: {}>'.format(type(self).__name__, self.queue_name)
 
     async def confirm_message(self, message):
-        logger.info('confirm message (ack/deletion)')
-
         receipt = message['ReceiptHandle']
-        logger.debug('receipt={!r}'.format(receipt))
+        logger.info('confirm message (ack/deletion), receipt={!r}'.format(receipt))
 
         queue_url = await self.get_queue_url(self.queue_name)
         return await self.client.delete_message(QueueUrl=queue_url, ReceiptHandle=receipt)

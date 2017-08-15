@@ -55,7 +55,7 @@ class Route:
     async def deliver(self, raw_message, loop=None):
         message = self.apply_message_translator(raw_message)
         logger.info(
-            'delivering message content to handler={!r}, message={!r}'.format(self.handler, message)
+            'delivering message route={}, message={!r}'.format(self, message)
         )
 
         if asyncio.iscoroutinefunction(self.handler):

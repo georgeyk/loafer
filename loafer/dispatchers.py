@@ -24,10 +24,10 @@ class LoaferDispatcher:
             try:
                 confirm_message = await route.deliver(message)
             except DeleteMessage as exc:
-                logger.info('explicit message deletion\n{!r}\n'.format(message))
+                logger.info('explicit message deletion\n{}\n'.format(message))
                 confirm_message = True
             except asyncio.CancelledError as exc:
-                msg = '"{!r}" was cancelled, the message will not be acknowledged:\n{!r}\n'
+                msg = '"{!r}" was cancelled, the message will not be acknowledged:\n{}\n'
                 logger.warning(msg.format(route.handler, message))
             except Exception as exc:
                 logger.exception('{!r}'.format(exc))
