@@ -1,3 +1,8 @@
+1.2.0 (2017-08-15)
+------------------
+
+* Enable provider parameters (boto client options)
+
 1.1.1 (2017-06-14)
 ------------------
 
