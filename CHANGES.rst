@@ -1,7 +1,7 @@
 1.2.1 (2017-09-11)
 ------------------
 
-* Bump boto3 version
+* Bump boto3 version (by @daneoshiga)
 
 1.2.0 (2017-08-15)
 ------------------
