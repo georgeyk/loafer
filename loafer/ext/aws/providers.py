@@ -24,7 +24,13 @@ class SQSProvider(AbstractProvider, BaseSQSClient):
         logger.info('confirm message (ack/deletion), receipt={!r}'.format(receipt))
 
         queue_url = await self.get_queue_url(self.queue_name)
-        return await self.client.delete_message(QueueUrl=queue_url, ReceiptHandle=receipt)
+        try:
+            return await self.client.delete_message(QueueUrl=queue_url, ReceiptHandle=receipt)
+        except botocore.exceptions.ClientError as exc:
+            if exc.response['ResponseMetadata']['HTTPStatusCode'] == 404:
+                return True
+
+            raise
 
     async def fetch_messages(self):
         logger.debug('fetching messages on {}'.format(self.queue_name))

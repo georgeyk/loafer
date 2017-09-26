@@ -21,6 +21,33 @@ async def test_confirm_message(mock_boto_session_sqs, boto_client_sqs):
 
 
 @pytest.mark.asyncio
+async def test_confirm_message_not_found(mock_boto_session_sqs, boto_client_sqs):
+    error = ClientError(error_response={'ResponseMetadata': {'HTTPStatusCode': 404}},
+                        operation_name='whatever')
+    boto_client_sqs.delete_message.side_effect = error
+    with mock_boto_session_sqs:
+        provider = SQSProvider('queue-name')
+        message = {'ReceiptHandle': 'message-receipt-handle-not-found'}
+        await provider.confirm_message(message)
+
+        assert boto_client_sqs.delete_message.call_args == mock.call(
+            QueueUrl=await provider.get_queue_url('queue-name'),
+            ReceiptHandle='message-receipt-handle-not-found')
+
+
+@pytest.mark.asyncio
+async def test_confirm_message_unknown_error(mock_boto_session_sqs, boto_client_sqs):
+    error = ClientError(error_response={'ResponseMetadata': {'HTTPStatusCode': 400}},
+                        operation_name='whatever')
+    boto_client_sqs.delete_message.side_effect = error
+    with mock_boto_session_sqs:
+        provider = SQSProvider('queue-name')
+        message = {'ReceiptHandle': 'message-receipt-handle-not-found'}
+        with pytest.raises(ClientError):
+            await provider.confirm_message(message)
+
+
+@pytest.mark.asyncio
 async def test_fetch_messages(mock_boto_session_sqs, boto_client_sqs):
     options = {'WaitTimeSeconds': 5, 'MaxNumberOfMessages': 10}
     with mock_boto_session_sqs:
