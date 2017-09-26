@@ -25,7 +25,7 @@ class LoaferManager:
 
     def run(self, forever=True):
         loop = self.runner.loop
-        self._future = asyncio.gather(
+        self._future = asyncio.ensure_future(
             self.dispatcher.dispatch_providers(loop, forever=forever),
             loop=loop,
         )
