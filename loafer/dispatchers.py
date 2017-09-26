@@ -1,6 +1,6 @@
-import sys
 import asyncio
 import logging
+import sys
 
 from .exceptions import DeleteMessage
 
@@ -8,9 +8,10 @@ logger = logging.getLogger(__name__)
 
 
 class LoaferDispatcher:
+
     def __init__(self, routes, max_jobs=None):
         self.routes = routes
-        jobs = max_jobs or len(routes) * 2
+        jobs = max_jobs or len(routes) * 10
         self._semaphore = asyncio.Semaphore(jobs)
 
     async def dispatch_message(self, message, route):
