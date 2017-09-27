@@ -37,20 +37,28 @@ class LoaferDispatcher:
 
         return confirm_message
 
-    async def process_route(self, route):
-        provider = route.provider
-        messages = await provider.fetch_messages()
-        for message in messages:
-            confirmation = await self.dispatch_message(message, route)
-            if confirmation:
-                await provider.confirm_message(message)
+    async def _process_message(self, message, route):
+        confirmation = await self.dispatch_message(message, route)
+        if confirmation:
+            provider = route.provider
+            await provider.confirm_message(message)
+        return confirmation
 
     async def _dispatch_tasks(self, loop):
-        tasks = [self.process_route(route) for route in self.routes]
+        tasks = []
+        for route in self.routes:
+            provider = route.provider
+            messages = await provider.fetch_messages()
+            for message in messages:
+                task = self._process_message(message, route)
+                tasks.append(task)
+
+        if not tasks:
+            return []
+
         done, _ = await asyncio.wait(tasks, loop=loop)
         # If any unhandled error happened, this will bring up the exception
-        for task_done in done:
-            task_done.result()
+        return [t.result() for t in done]
 
     async def dispatch_providers(self, loop, forever=True):
         if not forever:
