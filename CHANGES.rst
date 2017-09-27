@@ -1,3 +1,10 @@
+1.3.0 (2017-09-26)
+------------------
+
+* Refactor tasks dispatching, it should improve performance
+* Refactor SQSProvider to ignore HTTP 404 errors when deleting messages
+* Minor fixes and improvements
+
 1.2.1 (2017-09-11)
 ------------------
 
