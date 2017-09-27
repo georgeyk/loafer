@@ -12,8 +12,14 @@ logger = logging.getLogger(__name__)
 
 
 class LoaferManager:
-    def __init__(self, routes, runner=None):
-        self.runner = runner or LoaferRunner(on_stop_callback=self.on_loop__stop)
+
+    def __init__(self, routes, runner=None, _concurrency_limit=None, _max_threads=None):
+        self._concurrency_limit = _concurrency_limit
+        if runner is None:
+            self.runner = LoaferRunner(on_stop_callback=self.on_loop__stop, max_workers=_max_threads)
+        else:
+            self.runner = runner
+
         self.routes = routes
 
     @cached_property
@@ -21,7 +27,7 @@ class LoaferManager:
         if not (self.routes and all(isinstance(r, Route) for r in self.routes)):
             raise ConfigurationError('invalid routes to dispatch, routes={}'.format(self.routes))
 
-        return LoaferDispatcher(self.routes)
+        return LoaferDispatcher(self.routes, max_jobs=self._concurrency_limit)
 
     def run(self, forever=True):
         loop = self.runner.loop
