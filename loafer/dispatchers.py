@@ -44,11 +44,27 @@ class LoaferDispatcher:
             await provider.confirm_message(message)
         return confirmation
 
+    async def _get_route_messages(self, route):
+        messages = await route.provider.fetch_messages()
+        return {'route': route, 'messages': messages}
+
+    async def _get_routes_messages(self, loop):
+        tasks = []
+
+        for route in self.routes:
+            task = self._get_route_messages(route)
+            tasks.append(task)
+
+        done, _ = await asyncio.wait(tasks, loop=loop)
+        return [t.result() for t in done]
+
     async def _dispatch_tasks(self, loop):
         tasks = []
-        for route in self.routes:
-            provider = route.provider
-            messages = await provider.fetch_messages()
+
+        routes_messages = await self._get_routes_messages(loop)
+        for route_messages in routes_messages:
+            route = route_messages['route']
+            messages = route_messages['messages']
             for message in messages:
                 task = self._process_message(message, route)
                 tasks.append(task)
