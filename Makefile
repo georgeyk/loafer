@@ -13,7 +13,10 @@ clean-dist:
 	@rm -rf build/
 	@rm -rf *.egg-info
 
-clean: clean-pyc clean-dist
+clean-tox:
+	@rm -rf .tox/
+
+clean: clean-pyc clean-dist clean-tox
 
 test:
 	py.test -vv tests
