@@ -1,0 +1,12 @@
+checks:
+  python:
+    code_rating: true
+    duplicate_code: true
+
+build:
+  tests:
+    before:
+      - "python setup.py install"
+
+    override:
+      - py.test -vv --cov loafer --cov-report=term-missing
