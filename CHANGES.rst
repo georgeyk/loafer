@@ -1,3 +1,10 @@
+1.3.1 (2017-10-22)
+------------------
+
+* Improve performance (#35 by @allisson)
+* Fix requirement versions resolution
+* Minor fixes and improvements
+
 1.3.0 (2017-09-26)
 ------------------
 
