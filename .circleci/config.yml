@@ -1,0 +1,31 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/repo
+    docker:
+      - image: circleci/python:3.6.2
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          key: deps-{{ .Branch }}-{{ checksum "setup.py" }}
+
+      - run:
+          name: install
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -r requirements/test.txt
+            python3 setup.py develop
+
+      - save_cache:
+          key: deps-{{ .Branch }}-{{ checksum "setup.py" }}
+          paths:
+            - "venv"
+
+      - run:
+          name: tests
+          command: |
+            . venv/bin/activate
+            py.test -vv --cov=loafer --cov-report=term-missing tests
