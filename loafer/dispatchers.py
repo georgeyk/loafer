@@ -45,7 +45,10 @@ class LoaferDispatcher:
         return confirmation
 
     async def _get_route_messages(self, route):
-        messages = await route.provider.fetch_messages()
+        if route.enabled:
+            messages = await route.provider.fetch_messages()
+        else:
+            messages = []
         return {'route': route, 'messages': messages}
 
     async def _get_routes_messages(self, loop):
