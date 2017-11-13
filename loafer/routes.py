@@ -10,8 +10,9 @@ logger = logging.getLogger(__name__)
 class Route:
 
     def __init__(self, provider, handler, name='default',
-                 message_translator=None, error_handler=None):
+                 message_translator=None, error_handler=None, enabled=True):
         self.name = name
+        self.enabled = enabled
 
         assert isinstance(provider, AbstractProvider), 'invalid provider instance'
         self.provider = provider
