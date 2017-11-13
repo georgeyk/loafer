@@ -85,14 +85,14 @@ workflows:
       - build_py35
       - build_py36
 
-  nightly:
+  scheduled:
     triggers:
       - schedule:
           cron: "0 0 * * *"
           filters:
             branches:
-              only:
-                - master
+              only: master
+
     jobs:
       - build_py35
       - build_py36
