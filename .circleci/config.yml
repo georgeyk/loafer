@@ -1,6 +1,42 @@
 version: 2
 jobs:
-  build:
+  build_py35:
+    working_directory: ~/repo
+    docker:
+      - image: circleci/python:3.5.4
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          key: deps-{{ .Branch }}-{{ checksum "setup.py" }}
+
+      - run:
+          name: install
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -r requirements/test.txt
+            python3 setup.py develop
+
+      - save_cache:
+          key: deps-{{ .Branch }}-{{ checksum "setup.py" }}
+          paths:
+            - "venv"
+
+      - run:
+          name: linters
+          command: |
+            . venv/bin/activate
+            SKIP=no-commit-to-branch pre-commit run -a -v
+
+      - run:
+          name: tests
+          command: |
+            . venv/bin/activate
+            make test-cov
+
+  build_py36:
     working_directory: ~/repo
     docker:
       - image: circleci/python:3.6.2
@@ -25,7 +61,38 @@ jobs:
             - "venv"
 
       - run:
+          name: linters
+          command: |
+            . venv/bin/activate
+            SKIP=no-commit-to-branch pre-commit run -a -v
+
+      - run:
           name: tests
           command: |
             . venv/bin/activate
-            py.test -vv --cov=loafer --cov-report=term-missing tests
+            make test-cov
+
+      - run:
+          name: codecov
+          command: |
+            . venv/bin/activate
+            codecov
+
+workflows:
+  version: 2
+  commit:
+    jobs:
+      - build_py35
+      - build_py36
+
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - build_py35
+      - build_py36

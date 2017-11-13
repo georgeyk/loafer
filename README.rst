@@ -1,9 +1,9 @@
 Loafer
 ======
 
-|PyPI latest| |PyPI Version| |PyPI License| |PyPI Downloads| |Docs|
+|PyPI latest| |PyPI Version| |PyPI License| |Docs|
 
-|TravisCI Build Status| |Coverage Status| |Requirements Status|
+|CI Build Status| |Coverage Status| |Requirements Status|
 |Scrutinizer Code Quality| |Code Climate|
 
 ----
@@ -59,10 +59,10 @@ Check out the latest ``Loafer`` documentation at `Read the Docs`_ website.
 
 .. |Docs| image:: https://readthedocs.org/projects/loafer/badge/?version=latest
    :target: http://loafer.readthedocs.org/en/latest/?badge=latest
-.. |TravisCI Build Status| image:: https://travis-ci.org/georgeyk/loafer.svg?branch=master
-   :target: https://travis-ci.org/georgeyk/loafer
-.. |Coverage Status| image:: https://coveralls.io/repos/github/georgeyk/loafer/badge.svg?branch=master
-   :target: https://coveralls.io/github/georgeyk/loafer?branch=master
+.. |CI Build Status| image:: https://circleci.com/gh/georgeyk/loafer.svg?style=svg
+   :target: https://circleci.com/gh/georgeyk/loafer
+.. |Coverage Status| image:: https://codecov.io/gh/georgeyk/loafer/branch/master/graph/badge.svg
+   :target: https://codecov.io/gh/georgeyk/loafer
 .. |Requirements Status| image:: https://requires.io/github/georgeyk/loafer/requirements.svg?branch=master
    :target: https://requires.io/github/georgeyk/loafer/requirements/?branch=master
 .. |Scrutinizer Code Quality| image:: https://scrutinizer-ci.com/g/georgeyk/loafer/badges/quality-score.png?b=master
@@ -72,8 +72,6 @@ Check out the latest ``Loafer`` documentation at `Read the Docs`_ website.
 .. |PyPI Version| image:: https://img.shields.io/pypi/pyversions/loafer.svg?maxAge=2592000
    :target: https://pypi.python.org/pypi/loafer
 .. |PyPI License| image:: https://img.shields.io/pypi/l/loafer.svg?maxAge=2592000
-   :target: https://pypi.python.org/pypi/loafer
-.. |PyPI Downloads| image:: https://img.shields.io/pypi/dm/loafer.svg?maxAge=2592000
    :target: https://pypi.python.org/pypi/loafer
 .. |PyPI latest| image:: https://img.shields.io/pypi/v/loafer.svg?maxAge=2592000
    :target: https://pypi.python.org/pypi/loafer

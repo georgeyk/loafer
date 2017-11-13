@@ -47,9 +47,8 @@ tests_requirements = [
     'pytest',
     'pytest-asyncio',
     'pytest-cov',
-    'coveralls',
+    'codecov',
     'asynctest',
-    'flake8',
     'tox'
 ]
 

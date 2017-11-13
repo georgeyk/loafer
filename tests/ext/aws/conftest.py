@@ -39,11 +39,11 @@ def sns_publish():
 
 @pytest.fixture
 def boto_client_sqs(queue_url, sqs_message):
-    mock_client = CoroutineMock()
-    mock_client.get_queue_url.return_value = queue_url
-    mock_client.delete_message.return_value = mock.Mock()
-    mock_client.receive_message.return_value = sqs_message
-    mock_client.send_message.return_value = sqs_send_message
+    mock_client = mock.Mock()
+    mock_client.get_queue_url = CoroutineMock(return_value=queue_url)
+    mock_client.delete_message = CoroutineMock()
+    mock_client.receive_message = CoroutineMock(return_value=sqs_message)
+    mock_client.send_message = CoroutineMock(return_value=sqs_send_message)
     return mock_client
 
 
@@ -56,9 +56,8 @@ def mock_boto_session_sqs(boto_client_sqs):
 
 @pytest.fixture
 def boto_client_sns(sns_publish, sns_list_topics):
-    mock_client = CoroutineMock()
-    mock_client.list_topics.return_value = sns_list_topics
-    mock_client.publish.return_value = sns_publish
+    mock_client = mock.Mock()
+    mock_client.publish = CoroutineMock(return_value=sns_publish)
     return mock_client
 
 
