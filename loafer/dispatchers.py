@@ -49,42 +49,31 @@ class LoaferDispatcher:
             messages = await route.provider.fetch_messages()
         else:
             messages = []
-        return {'route': route, 'messages': messages}
-
-    async def _get_routes_messages(self, loop):
-        tasks = []
-
-        for route in self.routes:
-            task = self._get_route_messages(route)
-            tasks.append(task)
-
-        done, _ = await asyncio.wait(tasks, loop=loop)
-        return [t.result() for t in done]
+        return route, messages
 
     async def _dispatch_tasks(self, loop):
-        tasks = []
+        provider_tasks = [
+            self._get_route_messages(route) for route in self.routes
+        ]
 
-        routes_messages = await self._get_routes_messages(loop)
-        for route_messages in routes_messages:
-            route = route_messages['route']
-            messages = route_messages['messages']
-            for message in messages:
-                task = self._process_message(message, route)
-                tasks.append(task)
+        for provider_messages in asyncio.as_completed(provider_tasks):
+            route, messages = await provider_messages
 
-        if not tasks:
-            return []
+            route_tasks = [
+                self._process_message(message, route) for message in messages
+            ]
 
-        done, _ = await asyncio.wait(tasks, loop=loop)
-        # If any unhandled error happened, this will bring up the exception
-        return [t.result() for t in done]
+            if not route_tasks:
+                continue
+
+            done, _ = await asyncio.wait(route_tasks, loop=loop)
 
     async def dispatch_providers(self, loop, forever=True):
-        if not forever:
-            return await self._dispatch_tasks(loop)
-
         while True:
             await self._dispatch_tasks(loop)
+
+            if not forever:
+                break
 
     def stop(self):
         for route in self.routes:
