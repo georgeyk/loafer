@@ -48,16 +48,17 @@ class LoaferDispatcher:
         if route.enabled:
             messages = await route.provider.fetch_messages()
         else:
+            logger.debug('skipped disabled route={}'.format(route))
             messages = []
-        return route, messages
+        return messages, route
 
     async def _dispatch_tasks(self, loop):
-        provider_tasks = [
+        provider_messages_tasks = [
             self._get_route_messages(route) for route in self.routes
         ]
 
-        for provider_messages in asyncio.as_completed(provider_tasks):
-            route, messages = await provider_messages
+        for provider_task in asyncio.as_completed(provider_messages_tasks):
+            messages, route = await provider_task
 
             route_tasks = [
                 self._process_message(message, route) for message in messages
@@ -66,7 +67,7 @@ class LoaferDispatcher:
             if not route_tasks:
                 continue
 
-            done, _ = await asyncio.wait(route_tasks, loop=loop)
+            await asyncio.wait(route_tasks, loop=loop)
 
     async def dispatch_providers(self, loop, forever=True):
         while True:
