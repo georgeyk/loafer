@@ -140,7 +140,7 @@ def test_route_stop(dummy_provider):
     assert dummy_provider.stop.called
 
 
-def test_route_stop_and_disable(dummy_provider):
+def test_route_stop_disabled(dummy_provider):
     dummy_provider.stop = mock.Mock()
     route = Route(dummy_provider, handler=mock.Mock())
 
