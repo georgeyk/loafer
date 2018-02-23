@@ -27,6 +27,9 @@ class LoaferManager:
         if not (self.routes and all(isinstance(r, Route) for r in self.routes)):
             raise ConfigurationError('invalid routes to dispatch, routes={}'.format(self.routes))
 
+        if not any(r.enabled for r in self.routes):
+            raise ConfigurationError('all routes are disabled, routes={}'.format(self.routes))
+
         return LoaferDispatcher(self.routes, max_jobs=self._concurrency_limit)
 
     def run(self, forever=True):

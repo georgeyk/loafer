@@ -27,6 +27,13 @@ def test_dispatcher_invalid_route_instance():
         manager.dispatcher
 
 
+def test_dispatcher_without_enable_routes(dummy_route):
+    dummy_route.enabled = False
+    manager = LoaferManager(routes=[dummy_route])
+    with pytest.raises(ConfigurationError):
+        manager.dispatcher
+
+
 def test_dispatcher(dummy_route):
     manager = LoaferManager(routes=[dummy_route])
     assert manager.dispatcher
