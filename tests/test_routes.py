@@ -140,6 +140,17 @@ def test_route_stop(dummy_provider):
     assert dummy_provider.stop.called
 
 
+def test_route_stop_and_disable(dummy_provider):
+    dummy_provider.stop = mock.Mock()
+    route = Route(dummy_provider, handler=mock.Mock())
+
+    assert route.enabled is True
+    route.stop()
+
+    assert dummy_provider.stop.called
+    assert route.enabled is False
+
+
 def test_route_stop_with_handler_stop(dummy_provider):
     class handler:
         def handle(self, *args):
@@ -172,6 +183,15 @@ async def test_deliver(dummy_provider):
 
     assert result is True
     assert message in attrs['args']
+
+
+@pytest.mark.asyncio
+async def test_delivery_when_not_enabled(dummy_provider):
+    mock_handler = CoroutineMock()
+    route = Route(dummy_provider, mock_handler, enabled=False)
+    result = await route.deliver('whatever')
+    assert result is False
+    assert mock_handler.called is False
 
 
 @pytest.mark.asyncio
