@@ -38,7 +38,7 @@ class SQSProvider(AbstractProvider, BaseSQSClient):
             queue_url = await self.get_queue_url(self.queue_name)
             response = await self.client.receive_message(QueueUrl=queue_url, **self._options)
         except (botocore.exceptions.BotoCoreError, botocore.exceptions.ClientError) as exc:
-            raise ProviderError('error fetching messages from queue={}: {}'.format(str(exc), self.queue_name)) from exc
+            raise ProviderError('error fetching messages from queue={}: {}'.format(self.queue_name, str(exc))) from exc
 
         return response.get('Messages', [])
 
