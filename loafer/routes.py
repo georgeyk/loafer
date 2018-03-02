@@ -54,6 +54,12 @@ class Route:
         return processed_message
 
     async def deliver(self, raw_message, loop=None):
+        if not self.enabled:
+            logger.warning(
+                'ignoring message={!r} route={} is not enabled'.format(raw_message, self)
+            )
+            return False
+
         message = self.apply_message_translator(raw_message)
         logger.info(
             'delivering message route={}, message={!r}'.format(self, message)
@@ -80,6 +86,7 @@ class Route:
 
     def stop(self):
         logger.info('stopping route {}'.format(self))
+        self.enabled = False
         self.provider.stop()
         # only for class-based handlers
         if hasattr(self._handler_instance, 'stop'):
