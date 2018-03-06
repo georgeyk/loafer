@@ -46,7 +46,7 @@ def test_runner_stop_with_callback():
     assert callback.called
 
 
-@mock.patch('asyncio.Task.all_tasks')
+@mock.patch('loafer.runners.asyncio.Task.all_tasks')
 def test_runner_with_cancelled_task(mock_tasks):
     task = mock.Mock()
     mock_tasks.return_value = [task]
