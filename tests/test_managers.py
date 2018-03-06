@@ -74,6 +74,7 @@ def test_on_future_errors_cancelled():
     assert manager.runner.prepare_stop.called
     assert manager.runner.prepare_stop.called_once_with()
 
+
 def test_on_loop__stop():
     manager = LoaferManager(routes=[])
     manager.dispatcher = mock.Mock()
