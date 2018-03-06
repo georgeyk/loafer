@@ -1,13 +1,14 @@
 import asyncio
 from concurrent.futures import ThreadPoolExecutor, CancelledError
+from contextlib import suppress
 import logging
-import os
 import signal
 
 logger = logging.getLogger(__name__)
 
 
 class LoaferRunner:
+
     def __init__(self, loop=None, max_workers=None, on_stop_callback=None):
         self._on_stop_callback = on_stop_callback
         self.loop = loop or asyncio.get_event_loop()
@@ -18,27 +19,47 @@ class LoaferRunner:
         self._executor = ThreadPoolExecutor(max_workers)
         self.loop.set_default_executor(self._executor)
 
-    def start(self, future=None, run_forever=True):
-        start = 'starting Loafer, pid={}, run_forever={}'
-        logger.info(start.format(os.getpid(), run_forever))
+    def start(self, future=None, run_forever=None, debug=False):
+        if debug:
+            self.loop.set_debug(enabled=debug)
 
-        self.loop.add_signal_handler(signal.SIGINT, self.stop)
-        self.loop.add_signal_handler(signal.SIGTERM, self.stop)
+        if future:
+            logger.warning(
+                'runner `future` argument is deprecated and will be removed in the next major version'
+            )
+        if run_forever:
+            logger.warning(
+                'runner `run_forever` argument is deprecated and will be removed in the next major version'
+            )
+
+        self.loop.add_signal_handler(signal.SIGINT, self.prepare_stop)
+        self.loop.add_signal_handler(signal.SIGTERM, self.prepare_stop)
 
         try:
-            if run_forever:
-                self.loop.run_forever()
-            else:
-                self.loop.run_until_complete(future)
-                self.stop()
-        except CancelledError:
+            self.loop.run_forever()
+        finally:
+            self.stop()
             self.loop.close()
+            logger.debug('loop.is_running={}'.format(self.loop.is_running()))
+            logger.debug('loop.is_closed={}'.format(self.loop.is_closed()))
+
+    def prepare_stop(self, *args):
+        if self.loop.is_running():
+            # signals loop.run_forever to exit in the next iteration
+            self.loop.stop()
 
     def stop(self, *args, **kwargs):
         logger.info('stopping Loafer ...')
         if callable(self._on_stop_callback):
             self._on_stop_callback()
 
+        logger.info('cancel schedulled operations ...')
+        for task in asyncio.Task.all_tasks(self.loop):
+            task.cancel()
+            if task.cancelled() or task.done():
+                continue
+
+            with suppress(CancelledError):
+                self.loop.run_until_complete(task)
+
         self._executor.shutdown(wait=True)
-        if self.loop.is_running():
-            self.loop.stop()

@@ -1,7 +1,5 @@
 from unittest import mock
 
-from concurrent.futures import CancelledError
-
 from loafer.runners import LoaferRunner
 
 
@@ -11,31 +9,48 @@ def test_runner_start():
     assert runner.loop.run_forever.called
 
 
-def test_runner_start_run_until_complete():
+def test_runner_start_with_debug():
+    loop = mock.Mock()
+    runner = LoaferRunner(loop=loop)
+    runner.start(debug=True)
+    assert loop.set_debug.called_once_with(enabled=True)
+
+
+def test_runner_start_and_stop():
     runner = LoaferRunner(loop=mock.Mock())
     runner.stop = mock.Mock()
     runner.start(run_forever=False)
-    assert runner.loop.run_until_complete.called
+    assert runner.loop.run_forever.called
     assert runner.stop.called
+    assert runner.loop.close.called
 
 
-def test_runner_stop():
+def test_runner_prepare_stop():
     runner = LoaferRunner(loop=mock.Mock())
-    runner.stop()
-    assert runner.loop.stop.called
+    runner.prepare_stop()
+    runner.loop.stop.assert_called_once_with()
+
+
+def test_runner_prepare_stop_already_stopped():
+    loop = mock.Mock(is_running=mock.Mock(return_value=False))
+    runner = LoaferRunner(loop=loop)
+    runner.prepare_stop()
+    loop.is_running.assert_called_once_with()
+    assert loop.stop.called is False
 
 
 def test_runner_stop_with_callback():
     callback = mock.Mock()
     runner = LoaferRunner(loop=mock.Mock(), on_stop_callback=callback)
     runner.stop()
-    assert runner.loop.stop.called
     assert callback.called
 
 
-def test_runner_with_cancelled_error():
+@mock.patch('asyncio.Task.all_tasks')
+def test_runner_with_cancelled_task(mock_tasks):
+    task = mock.Mock()
+    mock_tasks.return_value = [task]
     runner = LoaferRunner(loop=mock.Mock())
-    runner.loop.run_forever.side_effect = CancelledError
-    runner.start()
-    assert runner.loop.run_forever.called
-    assert runner.loop.close.called
+    runner.stop()
+    mock_tasks.assert_called_once_with(runner.loop)
+    task.cancel.assert_called_once_with()
