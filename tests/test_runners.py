@@ -44,13 +44,3 @@ def test_runner_stop_with_callback():
     runner = LoaferRunner(loop=mock.Mock(), on_stop_callback=callback)
     runner.stop()
     assert callback.called
-
-
-@mock.patch('loafer.runners.asyncio.Task.all_tasks')
-def test_runner_with_cancelled_task(mock_tasks):
-    task = mock.Mock()
-    mock_tasks.return_value = [task]
-    runner = LoaferRunner(loop=mock.Mock())
-    runner.stop()
-    mock_tasks.assert_called_once_with(runner.loop)
-    task.cancel.assert_called_once_with()
