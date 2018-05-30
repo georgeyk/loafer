@@ -39,7 +39,7 @@ jobs:
   build_py36:
     working_directory: ~/repo
     docker:
-      - image: circleci/python:3.6.2
+      - image: circleci/python:3.6.5
 
     steps:
       - checkout
