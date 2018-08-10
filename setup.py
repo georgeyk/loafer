@@ -1,8 +1,8 @@
 import codecs
 import os.path
 import re
-from setuptools import setup, find_packages, Command
 
+from setuptools import Command, find_packages, setup
 
 # metadata
 

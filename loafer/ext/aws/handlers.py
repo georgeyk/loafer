@@ -1,7 +1,7 @@
 import json
 import logging
 
-from .bases import BaseSQSClient, BaseSNSClient
+from .bases import BaseSNSClient, BaseSQSClient
 
 logger = logging.getLogger(__name__)
 

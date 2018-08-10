@@ -1,12 +1,12 @@
 import asyncio
 from unittest.mock import Mock
 
+import pytest
 from asynctest import CoroutineMock
 from asynctest import Mock as AsyncMock  # flake8: NOQA
-import pytest
 
-from loafer.exceptions import DeleteMessage
 from loafer.dispatchers import LoaferDispatcher
+from loafer.exceptions import DeleteMessage
 from loafer.routes import Route
 
 

@@ -1,9 +1,8 @@
 from unittest import mock
 
-from botocore.exceptions import BotoCoreError, ClientError
-
-from asynctest import CoroutineMock
 import pytest
+from asynctest import CoroutineMock
+from botocore.exceptions import BotoCoreError, ClientError
 
 from loafer.exceptions import ProviderError
 from loafer.ext.aws.providers import SQSProvider

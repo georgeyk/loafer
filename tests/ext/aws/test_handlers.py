@@ -1,13 +1,13 @@
 import json
 from unittest import mock
 
-from asynctest import CoroutineMock
 import pytest
+from asynctest import CoroutineMock
 
-from loafer.ext.aws.handlers import SQSHandler, SNSHandler
-
+from loafer.ext.aws.handlers import SNSHandler, SQSHandler
 
 # SQSHandler
+
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize('encoder', [json.dumps, str])

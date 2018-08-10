@@ -1,8 +1,8 @@
 import asyncio
-from concurrent.futures import ThreadPoolExecutor, CancelledError
-from contextlib import suppress
 import logging
 import signal
+from concurrent.futures import CancelledError, ThreadPoolExecutor
+from contextlib import suppress
 
 logger = logging.getLogger(__name__)
 
