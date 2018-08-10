@@ -44,5 +44,4 @@ class SQSProvider(AbstractProvider, BaseSQSClient):
 
     def stop(self):
         logger.info('stopping {}'.format(self))
-        self.client.close()
-        return super().stop()
+        self._loop.run_until_complete(self.client.close())
