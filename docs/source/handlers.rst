@@ -57,3 +57,26 @@ When configuring your :doc:`routes`, you can set ``handler`` to an instance of
     Route(handler=MyHandler(), ...)
     # or
     Route(handler=MyHandler().handle)
+
+
+Message dependency
+~~~~~~~~~~~~~~~~~~
+
+Handlers are supposed to be stateless or have limited dependency on message values.
+Since the same handler instance object are used to process the incoming messages,
+we can't guarantee that an attached value will be kept among several concurrent
+calls to the same handler.
+
+This might be hard to detect in production and probably is an undesired side-effect::
+
+    class Handler:
+
+        async def foo(self):
+            # do something with `self.some_value`
+            print(self.some_value)
+            ... code ...
+
+        async def handle(self, message, *args):
+            self.some_value = message['foo']
+            await self.foo()
+            return True
