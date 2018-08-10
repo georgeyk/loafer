@@ -60,8 +60,19 @@ def test_on_future_errors():
     future.set_exception(ProviderError)
     manager.on_future__errors(future)
 
-    assert manager.runner.stop.called
-    assert manager.runner.stop.called_once_with()
+    assert manager.runner.prepare_stop.called
+    assert manager.runner.prepare_stop.called_once_with()
+
+
+def test_on_future_errors_cancelled():
+    manager = LoaferManager(routes=[])
+    manager.runner = mock.Mock()
+    future = asyncio.Future()
+    future.cancel()
+    manager.on_future__errors(future)
+
+    assert manager.runner.prepare_stop.called
+    assert manager.runner.prepare_stop.called_once_with()
 
 
 def test_on_loop__stop():

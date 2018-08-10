@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import os
 
 from cached_property import cached_property
 
@@ -32,31 +33,37 @@ class LoaferManager:
 
         return LoaferDispatcher(self.routes, max_jobs=self._concurrency_limit)
 
-    def run(self, forever=True):
+    def run(self, forever=True, debug=False):
         loop = self.runner.loop
         self._future = asyncio.ensure_future(
             self.dispatcher.dispatch_providers(loop, forever=forever),
             loop=loop,
         )
+
         self._future.add_done_callback(self.on_future__errors)
-        self.runner.start(self._future, run_forever=forever)
+        if not forever:
+            self._future.add_done_callback(self.runner.prepare_stop)
+
+        start = 'starting loafer, pid={}, forever={}'
+        logger.info(start.format(os.getpid(), forever))
+        self.runner.start(debug=debug)
 
     #
     # Callbacks
     #
 
     def on_future__errors(self, future):
+        if future.cancelled():
+            return self.runner.prepare_stop()
+
         exc = future.exception()
         # Unhandled errors crashes the event loop execution
         if isinstance(exc, BaseException):
             logger.critical('fatal error caught: {!r}'.format(exc))
-            self.runner.stop()
+            self.runner.prepare_stop()
 
     def on_loop__stop(self, *args, **kwargs):
-        logger.info('cancel schedulled operations ...')
-        for task in asyncio.Task.all_tasks(self.runner.loop):
-            logger.debug('cancelling {}'.format(task))
-            task.cancel()
+        logger.info('cancel dispatcher operations ...')
 
         if hasattr(self, '_future'):
             self._future.cancel()

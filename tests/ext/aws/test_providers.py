@@ -2,6 +2,7 @@ from unittest import mock
 
 from botocore.exceptions import BotoCoreError, ClientError
 
+from asynctest import CoroutineMock
 import pytest
 
 from loafer.exceptions import ProviderError
@@ -104,6 +105,6 @@ async def test_fetch_messages_with_botocoreerror(mock_boto_session_sqs, boto_cli
 
 def test_stop():
     provider = SQSProvider('queue-name')
-    provider.client = mock.Mock()
+    provider.client = mock.Mock(close=CoroutineMock())
     provider.stop()
     assert provider.client.close.called
