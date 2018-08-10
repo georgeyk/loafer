@@ -60,9 +60,6 @@ Check out the latest **Loafer** full documentation at `Read the Docs`_ website.
 .. _`Read the Docs`: http://loafer.readthedocs.org/
 
 
-Support
-~~~~~~~
-
 
 .. |Docs| image:: https://readthedocs.org/projects/loafer/badge/?version=latest
    :target: http://loafer.readthedocs.org/en/latest/?badge=latest
