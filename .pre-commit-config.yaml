@@ -38,5 +38,4 @@ repos:
 -   repo: git@github.com:olist/hulks.git
     rev: 0.1.0
     hooks:
-    - id: check-filename
     - id: check-logger
