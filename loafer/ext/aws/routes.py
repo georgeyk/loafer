@@ -1,6 +1,6 @@
 from ...routes import Route
+from .message_translators import SNSMessageTranslator, SQSMessageTranslator
 from .providers import SQSProvider
-from .message_translators import SQSMessageTranslator, SNSMessageTranslator
 
 
 class SQSRoute(Route):

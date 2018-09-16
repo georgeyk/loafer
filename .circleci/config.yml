@@ -3,7 +3,7 @@ jobs:
   build_py35:
     working_directory: ~/repo
     docker:
-      - image: circleci/python:3.5.4
+      - image: circleci/python:3.5.5-stretch
 
     steps:
       - checkout
@@ -39,7 +39,7 @@ jobs:
   build_py36:
     working_directory: ~/repo
     docker:
-      - image: circleci/python:3.6.5
+      - image: circleci/python:3.6.6-stretch
 
     steps:
       - checkout
@@ -78,12 +78,50 @@ jobs:
             . venv/bin/activate
             codecov
 
+  build_py37:
+    working_directory: ~/repo
+    docker:
+      - image: circleci/python:3.7.0-stretch
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          key: deps-{{ .Branch }}-{{ checksum "setup.py" }}
+
+      - run:
+          name: install
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -r requirements/test.txt
+            python3 setup.py develop
+
+      - save_cache:
+          key: deps-{{ .Branch }}-{{ checksum "setup.py" }}
+          paths:
+            - "venv"
+
+      - run:
+          name: linters
+          command: |
+            . venv/bin/activate
+            SKIP=no-commit-to-branch pre-commit run -a -v
+
+      - run:
+          name: tests
+          command: |
+            . venv/bin/activate
+            make test-cov
+
+
 workflows:
   version: 2
   commit:
     jobs:
       - build_py35
       - build_py36
+      - build_py37
 
   scheduled:
     triggers:

@@ -2,9 +2,9 @@ import logging
 
 import botocore.exceptions
 
+from .bases import BaseSQSClient
 from loafer.exceptions import ProviderError
 from loafer.providers import AbstractProvider
-from .bases import BaseSQSClient
 
 logger = logging.getLogger(__name__)
 

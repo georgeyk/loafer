@@ -1,6 +1,6 @@
 repos:
 -   repo: git@github.com:pre-commit/pre-commit-hooks
-    rev: v1.3.0
+    rev: v1.4.0
     hooks:
     - id: debug-statements
     - id: trailing-whitespace
@@ -19,3 +19,23 @@ repos:
       args: ['-b master']
     - id: flake8
       args: ['--exclude=docs/*', '--ignore=E501']
+
+-   repo: https://github.com/pre-commit/mirrors-isort
+    rev: v4.3.4
+    hooks:
+    - id: isort
+
+-   repo: local
+    hooks:
+
+    - id: check-datetime-now
+      name: check_datetime_now
+      description: Prefer datetime.utcnow()
+      language: pygrep
+      entry: 'datetime\.now\(\)'
+      types: [python]
+
+-   repo: git@github.com:olist/hulks.git
+    rev: 0.1.0
+    hooks:
+    - id: check-logger

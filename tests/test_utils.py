@@ -4,7 +4,7 @@ import sys
 
 import pytest
 
-from loafer.utils import import_callable, add_current_dir_to_syspath
+from loafer.utils import add_current_dir_to_syspath, import_callable
 
 
 def test_import_function():

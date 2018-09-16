@@ -4,6 +4,8 @@ checks:
     duplicate_code: true
 
 build:
+  environment:
+    python: 3.6.3
   tests:
     before:
       - "python setup.py install"

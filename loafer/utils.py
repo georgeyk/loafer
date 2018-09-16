@@ -1,7 +1,7 @@
-from functools import wraps
 import importlib
 import os
 import sys
+from functools import wraps
 
 
 def add_current_dir_to_syspath(f):

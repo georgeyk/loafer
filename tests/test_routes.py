@@ -1,7 +1,7 @@
 from unittest import mock
 
-from asynctest import CoroutineMock
 import pytest
+from asynctest import CoroutineMock
 
 from loafer.message_translators import StringMessageTranslator
 from loafer.routes import Route

@@ -1,10 +1,10 @@
 from unittest import mock
 
-from asynctest import CoroutineMock
 import pytest
-
+from asynctest import CoroutineMock
 
 # boto client methods mock
+
 
 @pytest.fixture
 def queue_url():
