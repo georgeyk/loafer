@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  build_py35:
+  build_py35: &test-template
     working_directory: ~/repo
     docker:
       - image: circleci/python:3.5.5-stretch
@@ -37,82 +37,14 @@ jobs:
             make test-cov
 
   build_py36:
-    working_directory: ~/repo
+    <<: *test-template
     docker:
       - image: circleci/python:3.6.6-stretch
 
-    steps:
-      - checkout
-
-      - restore_cache:
-          key: deps-{{ .Branch }}-{{ checksum "setup.py" }}
-
-      - run:
-          name: install
-          command: |
-            python3 -m venv venv
-            . venv/bin/activate
-            pip install -r requirements/test.txt
-            python3 setup.py develop
-
-      - save_cache:
-          key: deps-{{ .Branch }}-{{ checksum "setup.py" }}
-          paths:
-            - "venv"
-
-      - run:
-          name: linters
-          command: |
-            . venv/bin/activate
-            SKIP=no-commit-to-branch pre-commit run -a -v
-
-      - run:
-          name: tests
-          command: |
-            . venv/bin/activate
-            make test-cov
-
-      - run:
-          name: codecov
-          command: |
-            . venv/bin/activate
-            codecov
-
   build_py37:
-    working_directory: ~/repo
+    <<: *test-template
     docker:
       - image: circleci/python:3.7.0-stretch
-
-    steps:
-      - checkout
-
-      - restore_cache:
-          key: deps-{{ .Branch }}-{{ checksum "setup.py" }}
-
-      - run:
-          name: install
-          command: |
-            python3 -m venv venv
-            . venv/bin/activate
-            pip install -r requirements/test.txt
-            python3 setup.py develop
-
-      - save_cache:
-          key: deps-{{ .Branch }}-{{ checksum "setup.py" }}
-          paths:
-            - "venv"
-
-      - run:
-          name: linters
-          command: |
-            . venv/bin/activate
-            SKIP=no-commit-to-branch pre-commit run -a -v
-
-      - run:
-          name: tests
-          command: |
-            . venv/bin/activate
-            make test-cov
 
 
 workflows:
