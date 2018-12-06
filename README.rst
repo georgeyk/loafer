@@ -42,7 +42,7 @@ A simple message forwader, from ``source-queue`` to ``destination-queue``:
 
 
     routes = [
-        SQSRoute('source-queue', handler=SQSHandler('destination-queue'),
+        SQSRoute('source-queue', handler=SQSHandler('destination-queue')),
     ]
 
 
