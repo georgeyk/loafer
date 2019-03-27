@@ -1,8 +1,8 @@
-import asyncio
 import logging
 
 from .message_translators import AbstractMessageTranslator
 from .providers import AbstractProvider
+from .utils import run_in_loop_or_executor
 
 logger = logging.getLogger(__name__)
 
@@ -54,26 +54,14 @@ class Route:
 
     async def deliver(self, raw_message, loop=None):
         message = self.apply_message_translator(raw_message)
-        logger.info(
-            'delivering message route={}, message={!r}'.format(self, message)
-        )
-
-        if asyncio.iscoroutinefunction(self.handler):
-            logger.debug('handler is coroutine! {!r}'.format(self.handler))
-            return await self.handler(message['content'], message['metadata'])
-        else:
-            logger.debug('handler will run in a separate thread: {!r}'.format(self.handler))
-            loop = loop or asyncio.get_event_loop()
-            return await loop.run_in_executor(None, self.handler, message['content'], message['metadata'])
+        logger.info('delivering message route={}, message={!r}'.format(self, message))
+        return await run_in_loop_or_executor(self.handler, message['content'], message['metadata'])
 
     async def error_handler(self, exc_info, message, loop=None):
         logger.info('error handler process originated by message={}'.format(message))
+
         if self._error_handler is not None:
-            if asyncio.iscoroutinefunction(self._error_handler):
-                return await self._error_handler(exc_info, message)
-            else:
-                loop = loop or asyncio.get_event_loop()
-                return await loop.run_in_executor(None, self._error_handler, exc_info, message)
+            return await run_in_loop_or_executor(self._error_handler, exc_info, message)
 
         return False
 
