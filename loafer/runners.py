@@ -22,18 +22,9 @@ class LoaferRunner:
     def loop(self):
         return asyncio.get_event_loop()
 
-    def start(self, future=None, run_forever=None, debug=False):
+    def start(self, debug=False):
         if debug:
             self.loop.set_debug(enabled=debug)
-
-        if future:
-            logger.warning(
-                'runner `future` argument is deprecated and will be removed in the next major version'
-            )
-        if run_forever:
-            logger.warning(
-                'runner `run_forever` argument is deprecated and will be removed in the next major version'
-            )
 
         self.loop.add_signal_handler(signal.SIGINT, self.prepare_stop)
         self.loop.add_signal_handler(signal.SIGTERM, self.prepare_stop)
