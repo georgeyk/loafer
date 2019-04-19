@@ -1,3 +1,4 @@
+import asyncio
 import logging
 
 import botocore.exceptions
@@ -44,5 +45,6 @@ class SQSProvider(AbstractProvider, BaseSQSClient):
 
     def stop(self):
         logger.info('stopping {}'.format(self))
-        self._loop.run_until_complete(self.client.close())
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(self.client.close())
         return super().stop()

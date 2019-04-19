@@ -104,10 +104,10 @@ async def test_message_processing(route):
 
 
 @pytest.mark.asyncio
-async def test_dispatch_tasks(route, event_loop):
+async def test_dispatch_tasks(route):
     route.provider.fetch_messages = CoroutineMock(return_value=['message'])
     dispatcher = LoaferDispatcher([route])
-    await dispatcher._dispatch_tasks(event_loop)
+    await dispatcher._dispatch_tasks()
 
     assert route.provider.fetch_messages.called
     assert route.provider.confirm_message.called
@@ -117,7 +117,7 @@ async def test_dispatch_tasks(route, event_loop):
 async def test_dispatch_without_tasks(route, event_loop):
     route.provider.fetch_messages = CoroutineMock(return_value=[])
     dispatcher = LoaferDispatcher([route])
-    await dispatcher._dispatch_tasks(event_loop)
+    await dispatcher._dispatch_tasks()
 
     assert route.provider.fetch_messages.called
     assert route.provider.confirm_message.called is False
@@ -128,10 +128,10 @@ async def test_dispatch_providers(route, event_loop):
     dispatcher = LoaferDispatcher([route])
     dispatcher._dispatch_tasks = CoroutineMock()
     dispatcher.stop_providers = Mock()
-    await dispatcher.dispatch_providers(event_loop, forever=False)
+    await dispatcher.dispatch_providers(forever=False)
 
     assert dispatcher._dispatch_tasks.called
-    dispatcher._dispatch_tasks.assert_called_once_with(event_loop)
+    dispatcher._dispatch_tasks.assert_called_once_with()
 
 
 @pytest.mark.asyncio
@@ -139,7 +139,7 @@ async def test_dispatch_providers_with_error(route, event_loop):
     route.provider.fetch_messages.side_effect = ValueError
     dispatcher = LoaferDispatcher([route])
     with pytest.raises(ValueError):
-        await dispatcher.dispatch_providers(event_loop, forever=False)
+        await dispatcher.dispatch_providers(forever=False)
 
 
 def test_dispatcher_stop(route):

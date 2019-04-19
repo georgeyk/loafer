@@ -33,7 +33,7 @@ class LoaferManager:
     def run(self, forever=True, debug=False):
         loop = self.runner.loop
         self._future = asyncio.ensure_future(
-            self.dispatcher.dispatch_providers(loop, forever=forever),
+            self.dispatcher.dispatch_providers(forever=forever),
             loop=loop,
         )
 
