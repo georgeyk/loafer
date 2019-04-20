@@ -35,7 +35,7 @@ async def test_dispatch_message(route):
     assert confirmation == 'confirmation'
 
     assert route.deliver.called
-    assert route.deliver.called_once_with(message)
+    route.deliver.assert_called_once_with(message)
 
 
 @pytest.mark.asyncio
@@ -59,7 +59,7 @@ async def test_dispatch_message_task_delete_message(route):
     assert confirmation is True
 
     assert route.deliver.called
-    assert route.deliver.called_once_with(message)
+    route.deliver.assert_called_once_with(message)
 
 
 @pytest.mark.asyncio
@@ -88,7 +88,7 @@ async def test_dispatch_message_task_cancel(route):
     assert confirmation is False
 
     assert route.deliver.called
-    assert route.deliver.called_once_with(message)
+    route.deliver.assert_called_once_with(message)
 
 
 @pytest.mark.asyncio
@@ -98,9 +98,9 @@ async def test_message_processing(route):
     await dispatcher._process_message('message', route)
 
     assert dispatcher.dispatch_message.called
-    assert dispatcher.dispatch_message.called_called_once_with('message', route)
+    dispatcher.dispatch_message.assert_called_once_with('message', route)
     assert route.provider.confirm_message.called
-    assert route.provider.confirm_message.called_once_with('message')
+    route.provider.confirm_message.assert_called_once_with('message')
 
 
 @pytest.mark.asyncio

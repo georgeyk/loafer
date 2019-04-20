@@ -13,7 +13,7 @@ def test_runner_start_with_debug():
     loop = mock.Mock()
     runner = LoaferRunner(loop=loop)
     runner.start(debug=True)
-    assert loop.set_debug.called_once_with(enabled=True)
+    loop.set_debug.assert_called_once_with(enabled=True)
 
 
 def test_runner_start_and_stop():
