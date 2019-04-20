@@ -49,7 +49,9 @@ def import_callable(full_name):
 
 async def run_in_loop_or_executor(func, *args):
     if asyncio.iscoroutinefunction(func):
+        logger.debug('handler is coroutine! {!r}'.format(func))
         return await func(*args)
 
     loop = asyncio.get_event_loop()
+    logger.debug('handler will run in a separate thread: {!r}'.format(func))
     return await loop.run_in_executor(None, func, *args)
