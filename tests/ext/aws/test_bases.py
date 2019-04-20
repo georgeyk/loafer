@@ -18,7 +18,6 @@ async def test_get_queue_url(mock_boto_session_sqs, boto_client_sqs, base_sqs_cl
         assert queue_url.endswith('queue-name')
 
         assert mock_sqs.called
-        assert mock_sqs.called_once_with('sqs')
         assert boto_client_sqs.get_queue_url.called
         assert boto_client_sqs.get_queue_url.call_args == mock.call(QueueName='queue-name')
 

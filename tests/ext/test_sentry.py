@@ -12,7 +12,9 @@ def test_sentry_handler():
 
     assert delete_message is False
     assert mocked_client.captureException.called
-    assert mocked_client.captureException.called_once_with(extra={'message': 'test'})
+    mocked_client.captureException.assert_called_once_with(
+        exc_info, extra={'message': 'test'},
+    )
 
 
 def test_sentry_handler_delete_message():
@@ -24,4 +26,6 @@ def test_sentry_handler_delete_message():
 
     assert delete_message is True
     assert mocked_client.captureException.called
-    assert mocked_client.captureException.called_once_with(extra={'message': 'test'})
+    mocked_client.captureException.assert_called_once_with(
+        exc_info, extra={'message': 'test'},
+    )

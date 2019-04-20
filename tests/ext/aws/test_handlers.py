@@ -51,7 +51,7 @@ async def test_sqs_handler_hadle():
     handler.publish = CoroutineMock()
     await handler.handle('message', 'metadata')
     assert handler.publish.called
-    assert handler.publish.called_once_with('message')
+    handler.publish.assert_called_once_with('message')
 
 
 # SNSHandler
@@ -100,4 +100,4 @@ async def test_sns_handler_hadle():
     handler.publish = CoroutineMock()
     await handler.handle('message', 'metadata')
     assert handler.publish.called
-    assert handler.publish.called_once_with('message')
+    handler.publish.assert_called_once_with('message')
