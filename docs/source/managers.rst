@@ -5,10 +5,6 @@ Managers are responsible for the execution of all the components.
 
 The ``LoaferManager`` (at ``loafer.managers``) receives a ``list`` of :doc:`routes`.
 
-At least one route should be enabled (they all are by default) and trying to
-execute the manager without enabled routes will raise ``ConfigurationError``
-exception (see :doc:`exceptions`).
-
 Every service/application using ``loafer`` should instantiate a manager::
 
     from loafer.managers import LoaferManager
