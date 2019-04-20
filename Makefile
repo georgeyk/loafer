@@ -19,16 +19,19 @@ clean-tox:
 clean: clean-pyc clean-dist clean-tox
 
 test:
-	py.test -vv tests
+	pytest -vv tests
 
 test-cov:
-	py.test -vv --cov=loafer tests
+	pytest -vv --cov=loafer tests
 
 cov:
 	coverage report -m
 
 cov-report:
-	py.test -vv --cov=loafer --cov-report=html tests
+	pytest -vv --cov=loafer --cov-report=html tests
+
+check-fixtures:
+	pytest --dead-fixtures
 
 tox:
 	tox -r
