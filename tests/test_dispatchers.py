@@ -21,7 +21,7 @@ def route(provider):
     message_translator = Mock(translate=Mock(return_value={'content': 'message'}))
     route = AsyncMock(provider=provider, handler=Mock(),
                       message_translator=message_translator,
-                      enabled=True, spec=Route)
+                      spec=Route)
     return route
 
 
@@ -121,14 +121,6 @@ async def test_dispatch_without_tasks(route, event_loop):
 
     assert route.provider.fetch_messages.called
     assert route.provider.confirm_message.called is False
-
-
-@pytest.mark.asyncio
-async def test_dispatch_tasks_disabled(route, event_loop):
-    route.enabled = False
-    dispatcher = LoaferDispatcher([route])
-    await dispatcher._dispatch_tasks(event_loop)
-    assert route.provider.fetch_messages.called is False
 
 
 @pytest.mark.asyncio
