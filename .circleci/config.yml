@@ -38,6 +38,12 @@ jobs:
             . venv/bin/activate
             make test-cov
 
+      - run:
+          name: check-fixtures
+          command: |
+            . venv/bin/activate
+            make check-fixtures
+
   build_py36:
     <<: *test-template
     docker:

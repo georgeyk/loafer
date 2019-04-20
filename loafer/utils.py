@@ -1,7 +1,11 @@
+import asyncio
 import importlib
+import logging
 import os
 import sys
 from functools import wraps
+
+logger = logging.getLogger(__name__)
 
 
 def add_current_dir_to_syspath(f):
@@ -41,3 +45,13 @@ def import_callable(full_name):
         raise ImportError('{!r} should be callable'.format(full_name))
 
     return handler
+
+
+async def run_in_loop_or_executor(func, *args):
+    if asyncio.iscoroutinefunction(func):
+        logger.debug('handler is coroutine! {!r}'.format(func))
+        return await func(*args)
+
+    loop = asyncio.get_event_loop()
+    logger.debug('handler will run in a separate thread: {!r}'.format(func))
+    return await loop.run_in_executor(None, func, *args)
