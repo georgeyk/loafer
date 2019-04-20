@@ -4,6 +4,8 @@ jobs:
     working_directory: ~/repo
     docker:
       - image: circleci/python:3.5.5-stretch
+    environment:
+      PRE_COMMIT_SKIP=no-commit-to-branch,check-mutable-defaults
 
     steps:
       - checkout
@@ -28,7 +30,7 @@ jobs:
           name: linters
           command: |
             . venv/bin/activate
-            SKIP=no-commit-to-branch pre-commit run -a -v
+            SKIP=$PRE_COMMIT_SKIP pre-commit run -a -v
 
       - run:
           name: tests
@@ -40,11 +42,15 @@ jobs:
     <<: *test-template
     docker:
       - image: circleci/python:3.6.6-stretch
+    environment:
+      PRE_COMMIT_SKIP=no-commit-to-branch
 
   build_py37:
     <<: *test-template
     docker:
       - image: circleci/python:3.7.0-stretch
+    environment:
+      PRE_COMMIT_SKIP=no-commit-to-branch
 
 
 workflows:

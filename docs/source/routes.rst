@@ -8,16 +8,6 @@ A ``Route`` aggregate all the main entities previously described, the generic pa
     * ``error_handler`` (optional): an error handler instance
     * ``message_translator`` (optional): a message translator instance
     * ``name`` (optional): a name for this route
-    * ``enabled`` (optional): indicates if the route is enabled or not (defaults to ``True``)
-
-
-The ``enabled`` flag currently skips the execution of the message retrieval from the
-given provider and the handler call.
-As a result, the handler should never be called, but there is nothing
-that will block "manual" calls to the provider.
-
-Since the ``enabled`` flag is experimental, the behavior details are subject to change
-in major versions.
 
 
 We provide some helper routes, so you don't need to setup all this boilerplate code:

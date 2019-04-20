@@ -27,13 +27,6 @@ def test_dispatcher_invalid_route_instance():
         manager.dispatcher
 
 
-def test_dispatcher_without_enabled_routes(dummy_route):
-    dummy_route.enabled = False
-    manager = LoaferManager(routes=[dummy_route])
-    with pytest.raises(ConfigurationError):
-        manager.dispatcher
-
-
 def test_dispatcher(dummy_route):
     manager = LoaferManager(routes=[dummy_route])
     assert manager.dispatcher
@@ -61,7 +54,7 @@ def test_on_future_errors():
     manager.on_future__errors(future)
 
     assert manager.runner.prepare_stop.called
-    assert manager.runner.prepare_stop.called_once_with()
+    manager.runner.prepare_stop.assert_called_once_with()
 
 
 def test_on_future_errors_cancelled():
@@ -72,7 +65,7 @@ def test_on_future_errors_cancelled():
     manager.on_future__errors(future)
 
     assert manager.runner.prepare_stop.called
-    assert manager.runner.prepare_stop.called_once_with()
+    manager.runner.prepare_stop.assert_called_once_with()
 
 
 def test_on_loop__stop():
