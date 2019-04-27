@@ -1,3 +1,11 @@
+1.3.2 (2019-04-27)
+------------------
+
+* Improve message processing (#48 by @lamenezes)
+* Improve error logging (#39 by @wiliamsouza)
+* Refactor in message dispatcher and event-loop shutdown
+* Minor fixes and improvements
+
 1.3.1 (2017-10-22)
 ------------------
 
