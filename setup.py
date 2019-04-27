@@ -47,9 +47,10 @@ tests_requirements = [
     'pytest',
     'pytest-asyncio',
     'pytest-cov',
+    'pytest-deadfixtures',
     'codecov',
     'asynctest',
-    'tox'
+    'pre-commit',
 ]
 
 # We depend on `aiohttp` and `boto3` and since `aiobotocore` works with a range

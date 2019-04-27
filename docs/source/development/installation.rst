@@ -19,7 +19,6 @@ After forking or checking out::
     $ cd loafer/
     $ python setup.py develop
     $ pip install -r requirements/local.txt
-    $ pip install -r requirements/test.txt
     $ pre-commit install
 
 
