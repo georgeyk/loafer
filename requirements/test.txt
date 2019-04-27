@@ -4,5 +4,4 @@ pytest-cov
 pytest-deadfixtures
 codecov
 asynctest
-tox
 pre-commit
