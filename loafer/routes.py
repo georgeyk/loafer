@@ -13,17 +13,26 @@ class Route:
                  message_translator=None, error_handler=None):
         self.name = name
 
-        assert isinstance(provider, AbstractProvider), 'invalid provider instance'
+        if not isinstance(provider, AbstractProvider):
+            raise TypeError('invalid provider instance: {!r}'.format(provider))
+
         self.provider = provider
 
-        self.message_translator = message_translator
         if message_translator:
-            assert isinstance(message_translator, AbstractMessageTranslator), \
-                'invalid message translator instance'
+            if not isinstance(message_translator, AbstractMessageTranslator):
+                raise TypeError(
+                    'invalid message translator instance: {!r}'.format(message_translator)
+                )
+
+        self.message_translator = message_translator
+
+        if error_handler:
+            if not callable(error_handler):
+                raise TypeError(
+                    'error_handler must be a callable object: {!r}'.format(error_handler)
+                )
 
         self._error_handler = error_handler
-        if error_handler:
-            assert callable(error_handler), 'error_handler must be a callable object'
 
         if callable(handler):
             self.handler = handler
@@ -32,7 +41,10 @@ class Route:
             self.handler = getattr(handler, 'handle', None)
             self._handler_instance = handler
 
-        assert self.handler, 'handler must be a callable object or implement `handle` method'
+        if not self.handler:
+            raise ValueError(
+                'handler must be a callable object or implement `handle` method: {!r}'.format(self.handler)
+            )
 
     def __str__(self):
         return '<{}(name={} provider={!r} handler={!r})>'.format(

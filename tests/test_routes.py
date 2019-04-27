@@ -13,7 +13,7 @@ def test_provider(dummy_provider):
 
 
 def test_provider_invalid():
-    with pytest.raises(AssertionError):
+    with pytest.raises(TypeError):
         Route('invalid-provider', handler=mock.Mock())
 
 
@@ -34,7 +34,7 @@ def test_default_message_translator(dummy_provider):
 
 
 def test_message_translator_invalid(dummy_provider):
-    with pytest.raises(AssertionError):
+    with pytest.raises(TypeError):
         Route(dummy_provider, handler=mock.Mock(), message_translator='invalid')
 
 
@@ -69,7 +69,7 @@ async def test_error_handler_unset(dummy_provider):
 
 
 def test_error_handler_invalid(dummy_provider):
-    with pytest.raises(AssertionError):
+    with pytest.raises(TypeError):
         Route(dummy_provider, handler=mock.Mock(), error_handler='invalid')
 
 
@@ -122,13 +122,13 @@ async def test_handler_class_based_invalid(dummy_provider):
         pass
 
     handler = handler()
-    with pytest.raises(AssertionError):
+    with pytest.raises(ValueError):
         Route(dummy_provider, handler=handler)
 
 
 @pytest.mark.asyncio
 async def test_handler_invalid(dummy_provider):
-    with pytest.raises(AssertionError):
+    with pytest.raises(ValueError):
         Route(dummy_provider, 'invalid-handler')
 
 
