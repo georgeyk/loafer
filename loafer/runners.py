@@ -9,9 +9,8 @@ logger = logging.getLogger(__name__)
 
 class LoaferRunner:
 
-    def __init__(self, loop=None, max_workers=None, on_stop_callback=None):
+    def __init__(self, max_workers=None, on_stop_callback=None):
         self._on_stop_callback = on_stop_callback
-        self.loop = loop or asyncio.get_event_loop()
 
         # XXX: See https://github.com/python/asyncio/issues/258
         # The minimum value depends on the number of cores in the machine
@@ -19,18 +18,13 @@ class LoaferRunner:
         self._executor = ThreadPoolExecutor(max_workers)
         self.loop.set_default_executor(self._executor)
 
-    def start(self, future=None, run_forever=None, debug=False):
+    @property
+    def loop(self):
+        return asyncio.get_event_loop()
+
+    def start(self, debug=False):
         if debug:
             self.loop.set_debug(enabled=debug)
-
-        if future:
-            logger.warning(
-                'runner `future` argument is deprecated and will be removed in the next major version'
-            )
-        if run_forever:
-            logger.warning(
-                'runner `run_forever` argument is deprecated and will be removed in the next major version'
-            )
 
         self.loop.add_signal_handler(signal.SIGINT, self.prepare_stop)
         self.loop.add_signal_handler(signal.SIGTERM, self.prepare_stop)

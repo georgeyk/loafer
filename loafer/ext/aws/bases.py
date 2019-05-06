@@ -1,4 +1,3 @@
-import asyncio
 import logging
 
 import aiobotocore
@@ -10,7 +9,7 @@ logger = logging.getLogger(__name__)
 class _BotoClient:
     boto_service_name = None
 
-    def __init__(self, loop=None, **client_options):
+    def __init__(self, **client_options):
         self._client_options = {
             'api_version': client_options.get('api_version', None),
             'aws_access_key_id': client_options.get('aws_access_key_id', None),
@@ -21,11 +20,10 @@ class _BotoClient:
             'use_ssl': client_options.get('use_ssl', True),
             'verify': client_options.get('verify', None),
         }
-        self._loop = loop or asyncio.get_event_loop()
 
     @cached_property
     def client(self):
-        session = aiobotocore.get_session(loop=self._loop)
+        session = aiobotocore.get_session()
         return session.create_client(self.boto_service_name, **self._client_options)
 
 

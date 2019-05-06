@@ -64,12 +64,12 @@ class Route:
 
         return processed_message
 
-    async def deliver(self, raw_message, loop=None):
+    async def deliver(self, raw_message):
         message = self.apply_message_translator(raw_message)
         logger.info('delivering message route={}, message={!r}'.format(self, message))
         return await run_in_loop_or_executor(self.handler, message['content'], message['metadata'])
 
-    async def error_handler(self, exc_info, message, loop=None):
+    async def error_handler(self, exc_info, message):
         logger.info('error handler process originated by message={}'.format(message))
 
         if self._error_handler is not None:
