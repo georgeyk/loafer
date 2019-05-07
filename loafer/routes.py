@@ -50,6 +50,9 @@ class Route:
         return '<{}(name={} provider={!r} handler={!r})>'.format(
             type(self).__name__, self.name, self.provider, self.handler)
 
+    async def fetch_messages(self):
+        return await self.provider.fetch_messages()
+
     def apply_message_translator(self, message):
         processed_message = {'content': message,
                              'metadata': {}}
