@@ -19,7 +19,7 @@ jobs:
             python3 -m venv venv
             . venv/bin/activate
             pip install -r requirements/test.txt
-            python3 setup.py develop
+            pip install -e .
 
       - save_cache:
           key: deps-{{ .Branch }}-{{ checksum "setup.py" }}
