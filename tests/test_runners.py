@@ -1,4 +1,7 @@
+import asyncio
 from unittest import mock
+
+import pytest
 
 from loafer.runners import LoaferRunner
 
@@ -63,3 +66,17 @@ def test_runner_stop_with_callback(loop_mock):
     runner.stop()
 
     assert callback.called
+
+
+def test_runner_stop_dont_raise_cancelled_error():
+    async def some_coro():
+        await asyncio.sleep(1)
+        raise asyncio.CancelledError()
+
+    runner = LoaferRunner()
+    loop = runner.loop
+    task = loop.create_task(some_coro())
+    runner.stop()
+    assert task.cancelled() is True
+    with pytest.raises(asyncio.CancelledError):
+        task.exception()
