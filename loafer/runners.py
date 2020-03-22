@@ -1,7 +1,6 @@
 import asyncio
 import logging
 import signal
-from asyncio.runners import _cancel_all_tasks as cancel_all_tasks
 from concurrent.futures import CancelledError, ThreadPoolExecutor
 from contextlib import suppress
 
@@ -43,6 +42,26 @@ class LoaferRunner:
             # signals loop.run_forever to exit in the next iteration
             self.loop.stop()
 
+    def _cancel_all_tasks(self):
+        to_cancel = asyncio.all_tasks(self.loop)
+        if not to_cancel:
+            return
+        for task in to_cancel:
+            task.cancel()
+
+        self.loop.run_until_complete(
+            asyncio.gather(*to_cancel, loop=self.loop, return_exceptions=True)
+        )
+        for task in to_cancel:
+            if task.cancelled():
+                continue
+            if task.exception() is not None:
+                self.loop.call_exception_handler({
+                    'message': 'unhandled exception during asyncio.run() shutdown',
+                    'exception': task.exception(),
+                    'task': task,
+                })
+
     def stop(self, *args, **kwargs):
         logger.info('stopping Loafer ...')
         if callable(self._on_stop_callback):
@@ -50,6 +69,6 @@ class LoaferRunner:
 
         logger.info('cancel schedulled operations ...')
         with suppress(CancelledError):
-            cancel_all_tasks(self.loop)
+            self._cancel_all_tasks()
 
         self._executor.shutdown(wait=True)
