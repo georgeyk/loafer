@@ -104,6 +104,6 @@ async def test_fetch_messages_with_botocoreerror(mock_boto_session_sqs, boto_cli
 
 def test_stop():
     provider = SQSProvider('queue-name')
-    provider.client = mock.Mock(close=CoroutineMock())
+    provider._client_stop = CoroutineMock()
     provider.stop()
-    assert provider.client.close.called
+    provider._client_stop.assert_awaited()
