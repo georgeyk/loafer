@@ -1,7 +1,6 @@
 import logging
 
 import aiobotocore
-from cached_property import cached_property
 
 logger = logging.getLogger(__name__)
 
@@ -21,10 +20,14 @@ class _BotoClient:
             'verify': client_options.get('verify', None),
         }
 
-    @cached_property
-    def client(self):
+    def get_client(self):
         session = aiobotocore.get_session()
         return session.create_client(self.boto_service_name, **self._client_options)
+
+    async def stop(self):
+        async with self.get_client() as client:
+            logger.info('closing client{}'.format(client))
+            await client.close()
 
 
 class BaseSQSClient(_BotoClient):
@@ -41,14 +44,11 @@ class BaseSQSClient(_BotoClient):
             queue = name
 
         if queue not in self._cached_queue_urls:
-            response = await self.client.get_queue_url(QueueName=queue)
-            self._cached_queue_urls[queue] = response['QueueUrl']
+            async with self.get_client() as client:
+                response = await client.get_queue_url(QueueName=queue)
+                self._cached_queue_urls[queue] = response['QueueUrl']
 
         return self._cached_queue_urls[queue]
-
-    def stop(self):
-        logger.info('closing client={}'.format(self.client))
-        self.client.close()
 
 
 class BaseSNSClient(_BotoClient):
@@ -59,7 +59,3 @@ class BaseSNSClient(_BotoClient):
         if topic.startswith(arn_prefix):
             return topic
         return '{}*:{}'.format(arn_prefix, topic)
-
-    def stop(self):
-        logger.info('closing client={}'.format(self.client))
-        self.client.close()

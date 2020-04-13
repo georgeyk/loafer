@@ -37,6 +37,17 @@ def sns_publish():
 # boto client mock
 
 
+class ClientContextCreator:
+    def __init__(self, client):
+        self._client = client
+
+    async def __aenter__(self):
+        return self._client
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        pass
+
+
 @pytest.fixture
 def boto_client_sqs(queue_url, sqs_message):
     mock_client = mock.Mock()
@@ -44,13 +55,14 @@ def boto_client_sqs(queue_url, sqs_message):
     mock_client.delete_message = CoroutineMock()
     mock_client.receive_message = CoroutineMock(return_value=sqs_message)
     mock_client.send_message = CoroutineMock(return_value=sqs_send_message)
+    mock_client.close = CoroutineMock()
     return mock_client
 
 
 @pytest.fixture
 def mock_boto_session_sqs(boto_client_sqs):
     mock_session = mock.Mock()
-    mock_session.create_client = mock.Mock(return_value=boto_client_sqs)
+    mock_session.create_client.return_value = ClientContextCreator(boto_client_sqs)
     return mock.patch('aiobotocore.get_session', return_value=mock_session)
 
 
@@ -58,11 +70,12 @@ def mock_boto_session_sqs(boto_client_sqs):
 def boto_client_sns(sns_publish, sns_list_topics):
     mock_client = mock.Mock()
     mock_client.publish = CoroutineMock(return_value=sns_publish)
+    mock_client.close = CoroutineMock()
     return mock_client
 
 
 @pytest.fixture
 def mock_boto_session_sns(boto_client_sns):
     mock_session = mock.Mock()
-    mock_session.create_client = mock.Mock(return_value=boto_client_sns)
+    mock_session.create_client.return_value = ClientContextCreator(boto_client_sns)
     return mock.patch('aiobotocore.get_session', return_value=mock_session)
