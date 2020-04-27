@@ -43,7 +43,7 @@ class LoaferRunner:
             self.loop.stop()
 
     def _cancel_all_tasks(self):
-        to_cancel = asyncio.all_tasks(self.loop)
+        to_cancel = asyncio.Task.all_tasks(self.loop)
         if not to_cancel:
             return
         for task in to_cancel:
