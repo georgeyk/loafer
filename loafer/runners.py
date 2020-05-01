@@ -42,33 +42,18 @@ class LoaferRunner:
             # signals loop.run_forever to exit in the next iteration
             self.loop.stop()
 
-    def _cancel_all_tasks(self):
-        to_cancel = asyncio.Task.all_tasks(self.loop)
-        if not to_cancel:
-            return
-        for task in to_cancel:
-            task.cancel()
-
-        self.loop.run_until_complete(
-            asyncio.gather(*to_cancel, loop=self.loop, return_exceptions=True)
-        )
-        for task in to_cancel:
-            if task.cancelled():
-                continue
-            if task.exception() is not None:
-                self.loop.call_exception_handler({
-                    'message': 'unhandled exception during asyncio.run() shutdown',
-                    'exception': task.exception(),
-                    'task': task,
-                })
-
     def stop(self, *args, **kwargs):
         logger.info('stopping Loafer ...')
         if callable(self._on_stop_callback):
             self._on_stop_callback()
 
         logger.info('cancel schedulled operations ...')
-        with suppress(CancelledError):
-            self._cancel_all_tasks()
+        for task in asyncio.Task.all_tasks(self.loop):
+            task.cancel()
+            if task.cancelled() or task.done():
+                continue
+
+            with suppress(CancelledError):
+                self.loop.run_until_complete(task)
 
         self._executor.shutdown(wait=True)
