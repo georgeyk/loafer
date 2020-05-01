@@ -87,6 +87,7 @@ setup(
         'Topic :: System :: Distributed Computing',
     ],
     keywords='asynchronous asyncio message dispatcher tasks microservices',
+    python_requires='>=3.6',
     setup_requires=['pytest-runner'],
     install_requires=install_requirements,
     tests_require=tests_requirements,
