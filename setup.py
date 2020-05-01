@@ -56,8 +56,8 @@ tests_requirements = [
 # We depend on `aiohttp` and `boto3` and since `aiobotocore` works with a range
 # version of them, we will leave to aiobotocore setup the version requirements
 install_requirements = [
-    'aiobotocore[boto3]>=1.0.0',
-    'cached-property>=1.3.0',
+    'aiobotocore[boto3]>=1.0.0,<2',
+    'cached-property>=1.3.0,<2',
 ]
 
 
