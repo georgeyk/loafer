@@ -26,7 +26,8 @@ class SQSProvider(AbstractProvider, BaseSQSClient):
 
         queue_url = await self.get_queue_url(self.queue_name)
         try:
-            return await self.client.delete_message(QueueUrl=queue_url, ReceiptHandle=receipt)
+            async with self.get_client() as client:
+                return await client.delete_message(QueueUrl=queue_url, ReceiptHandle=receipt)
         except botocore.exceptions.ClientError as exc:
             if exc.response['ResponseMetadata']['HTTPStatusCode'] == 404:
                 return True
@@ -37,14 +38,19 @@ class SQSProvider(AbstractProvider, BaseSQSClient):
         logger.debug('fetching messages on {}'.format(self.queue_name))
         try:
             queue_url = await self.get_queue_url(self.queue_name)
-            response = await self.client.receive_message(QueueUrl=queue_url, **self._options)
+            async with self.get_client() as client:
+                response = await client.receive_message(QueueUrl=queue_url, **self._options)
         except (botocore.exceptions.BotoCoreError, botocore.exceptions.ClientError) as exc:
             raise ProviderError('error fetching messages from queue={}: {}'.format(self.queue_name, str(exc))) from exc
 
         return response.get('Messages', [])
 
+    async def _client_stop(self):
+        async with self.get_client() as client:
+            await client.close()
+
     def stop(self):
         logger.info('stopping {}'.format(self))
         loop = asyncio.get_event_loop()
-        loop.run_until_complete(self.client.close())
+        loop.run_until_complete(self._client_stop())
         return super().stop()

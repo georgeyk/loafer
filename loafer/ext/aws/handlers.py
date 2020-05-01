@@ -26,7 +26,8 @@ class SQSHandler(BaseSQSClient):
         logger.debug('publishing, queue={}, message={}'.format(self.queue_name, message))
 
         queue_url = await self.get_queue_url(self.queue_name)
-        return await self.client.send_message(QueueUrl=queue_url, MessageBody=message)
+        async with self.get_client() as client:
+            return await client.send_message(QueueUrl=queue_url, MessageBody=message)
 
     async def handle(self, message, *args):
         return await self.publish(message)
@@ -53,7 +54,8 @@ class SNSHandler(BaseSNSClient):
         logger.debug('publishing, topic={}, message={}'.format(topic_arn, message))
 
         msg = json.dumps({'default': message})
-        return await self.client.publish(TopicArn=topic_arn, MessageStructure='json', Message=msg)
+        async with self.get_client() as client:
+            return await client.publish(TopicArn=topic_arn, MessageStructure='json', Message=msg)
 
     async def handle(self, message, *args):
         return await self.publish(message)

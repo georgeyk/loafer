@@ -41,10 +41,20 @@ async def test_get_queue_url_when_queue_name_is_url(mock_boto_session_sqs, boto_
         assert boto_client_sqs.get_queue_url.call_count == 0
 
 
-def test_sqs_close(base_sqs_client):
-    base_sqs_client.client = mock.Mock()
-    base_sqs_client.stop()
-    assert base_sqs_client.client.close.called
+@pytest.mark.asyncio
+async def test_sqs_close(mock_boto_session_sqs, base_sqs_client, boto_client_sqs):
+    with mock_boto_session_sqs:
+        await base_sqs_client.stop()
+        boto_client_sqs.close.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+async def test_sqs_get_client(mock_boto_session_sqs, base_sqs_client, boto_client_sqs):
+    with mock_boto_session_sqs as mock_session:
+        client_generator = base_sqs_client.get_client()
+        assert mock_session.called
+        async with client_generator as client:
+            assert boto_client_sqs is client
 
 
 @pytest.fixture
@@ -64,7 +74,17 @@ async def test_cache_get_topic_arn_with_arn(base_sns_client):
     assert arn == 'arn:aws:sns:whatever:topic-name'
 
 
-def test_sns_close(base_sns_client):
-    base_sns_client.client = mock.Mock()
-    base_sns_client.stop()
-    assert base_sns_client.client.close.called
+@pytest.mark.asyncio
+async def test_sns_close(mock_boto_session_sns, base_sns_client, boto_client_sns):
+    with mock_boto_session_sns:
+        await base_sns_client.stop()
+        boto_client_sns.close.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+async def test_sns_get_client(mock_boto_session_sns, base_sns_client, boto_client_sns):
+    with mock_boto_session_sns as mock_session:
+        client_generator = base_sns_client.get_client()
+        assert mock_session.called
+        async with client_generator as client:
+            assert boto_client_sns is client
