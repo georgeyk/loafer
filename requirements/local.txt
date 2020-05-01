@@ -1,6 +1,4 @@
 -r test.txt
-aiobotocore>=1.0.0
-cached-property
 Sphinx
 sphinx-autobuild
 twine
