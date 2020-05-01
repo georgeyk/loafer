@@ -17,9 +17,9 @@ Development install
 After forking or checking out::
 
     $ cd loafer/
-    $ python setup.py develop
     $ pip install -r requirements/local.txt
     $ pre-commit install
+    $ pip install -e .
 
 
 The requirements folder are only used for development, so we can easily
@@ -29,8 +29,8 @@ integration platforms.
 The official entrypoint for distritubution is the ``setup.py`` which also
 contains the minimum requirements to execute the tests.
 
-It's important to execute ``setup.py develop`` not only to install the main
-dependencies, but also to include ``loafer`` CLI in our environment.
+It's important to execute ``pip install -e .`` not only to install the main
+dependencies, but also to include ``loafer`` in our environment.
 
 
 Running tests::
