@@ -7,4 +7,4 @@ Thanks to:
 * lamenezes <luiz.menezes@olist.com>
 * luizdepra <luiz.pra@olist.com>
 * wiliamsouza <wiliamsouza83@gmail.com>
-* GuilhermeVBeira
+* GuilhermeVBeira <guilherme.vieira.beira@gmail.com>
