@@ -73,7 +73,7 @@ setup(
     license='MIT',
     author='George Y. Kussumoto',
     author_email='contato@georgeyk.com.br',
-    packages=find_packages(exclude=['docs', 'tests', 'tests.*', 'requirements']),
+    packages=find_packages(exclude=['docs', 'examples', 'tests', 'tests.*', 'requirements']),
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Console',
