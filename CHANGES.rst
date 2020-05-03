@@ -1,3 +1,13 @@
+2.0.0.rc0 (2020-05-01)
+----------------------
+
+* Dropped support for Python 3.5
+* Added support for Python 3.8
+* Update aiobotocore dependency version (#61 by @GuilhermeVBeira)
+* Improvements due to changes in asyncio (#48, #52 by @lamenezes)
+* Sentry wrapper/helper updated to support new sdk (wip)
+* Minor documentation improvements
+
 1.3.2 (2019-04-27)
 ------------------
 
