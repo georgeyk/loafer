@@ -5,4 +5,4 @@ COPY . /loafer
 
 RUN pip install -e .
 
-CMD ["python", "-m", "examples.echo"]
+ENTRYPOINT ["examples/entrypoint.sh"]
