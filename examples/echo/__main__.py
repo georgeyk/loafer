@@ -22,7 +22,7 @@ endpoint_url = os.environ.get("AWS_ENDPOINT_URL", "http://localhost:4100")
 
 routes = (
     SQSRoute(
-        "local-queue1",
+        "echo__loafer__notification",
         {"endpoint_url": endpoint_url},
         handler=echo_message_handler,
         error_handler=error_handler,
