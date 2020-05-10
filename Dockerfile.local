@@ -3,6 +3,7 @@ FROM python:3.7-slim-buster
 WORKDIR /loafer
 COPY . /loafer
 
+RUN pip install awscli==1.18.32
 RUN pip install -e .
 
 ENTRYPOINT ["examples/entrypoint.sh"]
