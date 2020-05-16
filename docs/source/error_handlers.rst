@@ -25,15 +25,15 @@ Sentry
 ~~~~~~
 
 
-To integrate with `sentry`_ you will need the `raven`_ client and your account DSN.
+To integrate with `sentry`_ you will need the `sdk`_ client and your account DSN.
 
 Then you can automatically create an ``error_handler`` with the following code::
 
     from loafer.ext.sentry import sentry_handler
-    from raven import Client
+    from sentry_sdk import init, capture_message
 
-    client = Client(dsn=..., **options)
-    error_handler = sentry_handler(client, delete_message=True)
+    init(...)
+    error_handler = sentry_handler(capture_message, delete_message=True)
 
 
 The optional ``delete_message`` parameter controls the message acknowledgement
@@ -42,4 +42,4 @@ after the error report. By default, ``delete_message`` is ``False``.
 The ``error_handler`` defined can be set on any ``Route`` instance.
 
 .. _sentry: https://sentry.io/
-.. _raven: https://github.com/getsentry/raven-python
+.. _sdk: https://github.com/getsentry/sentry-python

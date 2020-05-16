@@ -1,5 +1,4 @@
 # TODO: it should be async
-# https://github.com/getsentry/raven-aiohttp
 
 
 def sentry_handler(capture_exception, delete_message=False):
