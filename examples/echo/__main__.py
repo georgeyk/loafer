@@ -1,7 +1,7 @@
 import asyncio
 import os
 
-from loafer.ext.aws.routes import SQSRoute
+from loafer.ext.aws.routes import SNSQueueRoute
 from loafer.managers import LoaferManager
 
 
@@ -21,7 +21,7 @@ async def error_handler(exc_type, message):
 endpoint_url = os.environ.get("AWS_ENDPOINT_URL", "http://localhost:4100")
 
 routes = (
-    SQSRoute(
+    SNSQueueRoute(
         "echo__loafer__notification",
         provider_options={"endpoint_url": endpoint_url},
         handler=echo_message_handler,
