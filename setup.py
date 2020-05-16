@@ -56,7 +56,7 @@ tests_requirements = [
 # We depend on `aiohttp` and `boto3` and since `aiobotocore` works with a range
 # version of them, we will leave to aiobotocore setup the version requirements
 install_requirements = [
-    'aiobotocore[boto3]>=1.0.0,<2',
+    'aiobotocore[boto3]>=1.0.4,<2',
     'cached-property>=1.3.0,<2',
 ]
 
@@ -73,7 +73,7 @@ setup(
     license='MIT',
     author='George Y. Kussumoto',
     author_email='contato@georgeyk.com.br',
-    packages=find_packages(exclude=['docs', 'tests', 'tests.*', 'requirements']),
+    packages=find_packages(exclude=['docs', 'examples', 'tests', 'tests.*', 'requirements']),
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Console',

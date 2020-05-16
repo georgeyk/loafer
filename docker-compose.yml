@@ -1,0 +1,19 @@
+version: "2.0"
+services:
+  echo:
+    build:
+      context: .
+      dockerfile: Dockerfile.local
+    environment:
+      AWS_DEFAULT_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: foobar
+      AWS_SECRET_ACCESS_KEY: foobar
+      AWS_ENDPOINT_URL: http://goaws:4100
+      GOAWS_URL: http://goaws:4100
+    depends_on:
+      - goaws
+
+  goaws:
+    image: pafortin/goaws
+    ports:
+      - "4100:4100"
