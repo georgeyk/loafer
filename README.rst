@@ -6,8 +6,6 @@ Loafer
 |CI Build Status| |Coverage Status| |Requirements Status|
 |Scrutinizer Code Quality| |Code Climate|
 
-|Olist Sponsor|
-
 ----
 
 Loafer is an asynchronous message dispatcher for concurrent tasks processing.
@@ -25,7 +23,7 @@ Features:
 * Amazon SQS integration
 
 
-It requires Python 3.5+ and is very experimental at the moment, expect a lot
+It requires Python 3.6+ and is very experimental at the moment, expect a lot
 of changes until the first major version.
 
 
@@ -79,5 +77,3 @@ Check out the latest **Loafer** full documentation at `Read the Docs`_ website.
    :target: https://pypi.python.org/pypi/loafer
 .. |PyPI latest| image:: https://img.shields.io/pypi/v/loafer.svg?maxAge=2592000
    :target: https://pypi.python.org/pypi/loafer
-.. |Olist Sponsor| image:: https://img.shields.io/badge/sponsor-olist-53b5f6.svg?style=flat-square
-   :target: http://opensource.olist.com/
