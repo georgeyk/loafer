@@ -8,3 +8,4 @@ Thanks to:
 * luizdepra <luiz.pra@olist.com>
 * wiliamsouza <wiliamsouza83@gmail.com>
 * GuilhermeVBeira <guilherme.vieira.beira@gmail.com>
+* hartungstenio <hartung@live.com>
