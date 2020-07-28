@@ -1,6 +1,6 @@
 repos:
 -   repo: git@github.com:pre-commit/pre-commit-hooks
-    rev: v2.5.0
+    rev: v3.1.0
     hooks:
     - id: debug-statements
     - id: trailing-whitespace
@@ -17,11 +17,15 @@ repos:
     - id: forbid-new-submodules
     - id: no-commit-to-branch
       args: ['-b master']
+
+-   repo: https://gitlab.com/pycqa/flake8
+    rev: 3.8.3
+    hooks:
     - id: flake8
       args: ['--exclude=docs/*', '--ignore=E501']
 
--   repo: https://github.com/pre-commit/mirrors-isort
-    rev: v4.3.21
+-   repo: https://github.com/timothycrosley/isort
+    rev: 5.2.0
     hooks:
     - id: isort
 
