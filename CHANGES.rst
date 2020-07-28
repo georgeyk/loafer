@@ -1,5 +1,11 @@
+2.0.1 (2020-07-28)
+------------------
+
+* Fix setry integration (# by @hartungstenio)
+* Minor improvements
+
 2.0.0 (2020-05-16)
-----------------------
+------------------
 
 * Dropped support for Python 3.5
 * Added support for Python 3.8
