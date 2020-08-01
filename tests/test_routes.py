@@ -3,6 +3,7 @@ from unittest import mock
 import pytest
 from asynctest import CoroutineMock
 
+from loafer.conditions import Retry
 from loafer.message_translators import StringMessageTranslator
 from loafer.routes import Route
 
@@ -168,7 +169,7 @@ async def test_deliver(dummy_provider):
 
     route = Route(dummy_provider, handler=test_handler)
     message = 'test'
-    result = await route.deliver(message)
+    result = await route._deliver(message)
 
     assert result is True
     assert message in attrs['args']
@@ -179,7 +180,7 @@ async def test_deliver_with_coroutine(dummy_provider):
     mock_handler = CoroutineMock(return_value=False)
     route = Route(dummy_provider, mock_handler)
     message = 'test'
-    result = await route.deliver(message)
+    result = await route._deliver(message)
     assert result is False
     assert mock_handler.called
     assert message in mock_handler.call_args[0]
@@ -190,8 +191,44 @@ async def test_deliver_with_message_translator(dummy_provider):
     mock_handler = CoroutineMock(return_value=True)
     route = Route(dummy_provider, mock_handler)
     route.apply_message_translator = mock.Mock(return_value={'content': 'whatever', 'metadata': {}})
-    result = await route.deliver('test')
+    result = await route._deliver('test')
     assert result is True
     assert route.apply_message_translator.called
     assert mock_handler.called
     mock_handler.assert_called_once_with('whatever', {})
+
+
+def test_conditions_not_specified(dummy_provider):
+    route = Route(dummy_provider, handler=mock.Mock())
+
+    assert route._conditions == []
+    assert route._retry is None
+
+
+def test_conditions_retry(dummy_provider):
+    retry = Retry()
+    route = Route(dummy_provider, handler=mock.Mock(), conditions=[retry])
+
+    assert len(route._conditions) == 1
+    assert route._retry == retry
+
+
+@pytest.mark.asyncio
+async def test_deliver_without_conditions(dummy_provider):
+    route = Route(dummy_provider, handler=mock.Mock())
+    route.deliver = CoroutineMock()
+
+    assert await route.deliver('test')
+
+    route.deliver.assert_awaited_once_with('test')
+
+
+@pytest.mark.asyncio
+async def test_deliver_with_retry_condition(dummy_provider):
+    retry_mocked = Retry()
+    retry_mocked.deliver = CoroutineMock()
+    route = Route(dummy_provider, handler=mock.Mock(), conditions=[retry_mocked])
+
+    assert await route.deliver('test')
+
+    retry_mocked.deliver.assert_awaited_once_with(route, 'test')

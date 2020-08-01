@@ -1,5 +1,9 @@
 import logging
+from copy import copy
 
+from cached_property import cached_property
+
+from .conditions import Retry
 from .message_translators import AbstractMessageTranslator
 from .providers import AbstractProvider
 from .utils import run_in_loop_or_executor
@@ -10,8 +14,9 @@ logger = logging.getLogger(__name__)
 class Route:
 
     def __init__(self, provider, handler, name='default',
-                 message_translator=None, error_handler=None):
+                 message_translator=None, error_handler=None, conditions=None):
         self.name = name
+        self._conditions = conditions or []
 
         if not isinstance(provider, AbstractProvider):
             raise TypeError('invalid provider instance: {!r}'.format(provider))
@@ -50,6 +55,15 @@ class Route:
         return '<{}(name={} provider={!r} handler={!r})>'.format(
             type(self).__name__, self.name, self.provider, self.handler)
 
+    @cached_property
+    def _retry(self):
+        for condition in self._conditions:
+            if isinstance(condition, Retry):
+                return condition
+
+    async def fetch_messages(self):
+        return await self.provider.fetch_messages()
+
     def apply_message_translator(self, message):
         processed_message = {'content': message,
                              'metadata': {}}
@@ -64,10 +78,17 @@ class Route:
 
         return processed_message
 
-    async def deliver(self, raw_message):
+    async def _deliver(self, raw_message):
         message = self.apply_message_translator(raw_message)
         logger.info('delivering message route={}, message={!r}'.format(self, message))
         return await run_in_loop_or_executor(self.handler, message['content'], message['metadata'])
+
+    async def deliver(self, raw_message):
+        if self._retry:
+            retry = copy(self._retry)  # retry must be individual to each message
+            return await retry.deliver(self, raw_message)
+
+        return await self._deliver(raw_message)
 
     async def error_handler(self, exc_info, message):
         logger.info('error handler process originated by message={}'.format(message))
