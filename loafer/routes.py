@@ -51,18 +51,14 @@ class Route:
             type(self).__name__, self.name, self.provider, self.handler)
 
     def apply_message_translator(self, message):
-        processed_message = {'content': message,
-                             'metadata': {}}
         if not self.message_translator:
-            return processed_message
+            return {'content': message, 'metadata': {}}
 
-        translated = self.message_translator.translate(processed_message['content'])
-        processed_message['metadata'].update(translated.get('metadata', {}))
-        processed_message['content'] = translated['content']
-        if not processed_message['content']:
+        translated = self.message_translator.translate(message)
+        if not translated['content']:
             raise ValueError('{} failed to translate message={}'.format(self.message_translator, message))
 
-        return processed_message
+        return translated
 
     async def deliver(self, raw_message):
         message = self.apply_message_translator(raw_message)
@@ -72,7 +68,7 @@ class Route:
     async def error_handler(self, exc_info, message):
         logger.info('error handler process originated by message={}'.format(message))
 
-        if self._error_handler is not None:
+        if self._error_handler:
             return await run_in_loop_or_executor(self._error_handler, exc_info, message)
 
         return False
