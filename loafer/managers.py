@@ -16,7 +16,7 @@ class LoaferManager:
 
     def __init__(self, routes, runner=None, _concurrency_limit=None, _max_threads=None):
         self._concurrency_limit = _concurrency_limit
-        if runner is None:
+        if not runner:
             self.runner = LoaferRunner(on_stop_callback=self.on_loop__stop, max_workers=_max_threads)
         else:
             self.runner = runner
@@ -62,7 +62,8 @@ class LoaferManager:
     def on_loop__stop(self, *args, **kwargs):
         logger.info('cancel dispatcher operations ...')
 
-        if hasattr(self, '_future'):
+        future = getattr(self, '_future', None)
+        if future:
             self._future.cancel()
 
         self.dispatcher.stop()
