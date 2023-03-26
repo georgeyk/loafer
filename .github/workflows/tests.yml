@@ -1,0 +1,72 @@
+name: Tests
+
+on:
+  pull_request:
+    paths-ignore:
+      - "docs/**"
+      - "examples/**"
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - "docs/**"
+      - "examples/**"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: lint
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.6"
+      - name: Install deps
+        run: |
+          python3 -m venv venv
+          source venv/bin/activate
+          pip install -r requirements/test.txt
+          pip install -e .
+
+      - name: Run linters
+        run: |
+          source venv/bin/activate
+          SKIP=no-commit-to-branch pre-commit run -a -v
+
+      - name: Check dead fixtures
+        run: |
+          source venv/bin/activate
+          make check-fixtures
+
+  test:
+    name: Run tests
+    runs-on: ubuntu-18.04
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.6", "3.7", "3.8"]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install deps
+        run: |
+          python3 -m venv venv
+          source venv/bin/activate
+          pip install -r requirements/test.txt
+          pip install -e .
+
+      - name: Run tests
+        run: |
+          source venv/bin/activate
+          make test-cov
